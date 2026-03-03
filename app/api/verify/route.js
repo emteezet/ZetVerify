@@ -18,12 +18,23 @@ export async function POST(request) {
         if (process.env.NODE_ENV === 'development') {
             console.log('MOCK MODE: Returning development mock profile for NIN', nin);
 
-            // In a real mock scenario, we might want to vary data slightly or just return 
-            // the same profile for any valid 11-digit input.
+            const { getMockByNin, mockUsers } = require('@/lib/mockData');
+            const user = getMockByNin(nin) || mockUsers[0];
+
             return NextResponse.json({
                 success: true,
                 status: 'VALID',
-                user: mockUserProfile,
+                user: {
+                    nin: user.nin || nin,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    middleName: user.middleName || '',
+                    dob: user.dob,
+                    gender: user.gender,
+                    state: user.state,
+                    lga: user.lga,
+                    photo: user.photo,
+                },
                 generatedAt: new Date().toISOString()
             });
         }

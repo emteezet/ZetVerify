@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import NinForm from "@/components/NinForm";
 import FullSlipTemplate from "@/components/FullSlipTemplate";
-import PremiumSlipTemplate from "@/components/PremiumSlipTemplate";
+import PremiumPlasticCard from "@/components/PremiumPlasticCard";
 import PdfGenerator from "@/components/PdfGenerator";
 import { Shield, CreditCard, FileText, Fingerprint, Info, Loader2 } from "lucide-react";
 
@@ -143,7 +143,7 @@ export default function DashboardVerifyPage() {
                                         </div>
                                     ) : (
                                         <div className="py-10 scale-[0.5] sm:scale-100">
-                                            <PremiumSlipTemplate userData={userData} />
+                                            <PremiumPlasticCard userData={userData} />
                                         </div>
                                     )}
                                 </div>

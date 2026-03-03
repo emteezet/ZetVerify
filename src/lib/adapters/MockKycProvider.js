@@ -1,4 +1,5 @@
 import { IKycProvider } from "./IKycProvider";
+import { getMockByNin, getMockByBvn, mockUsers } from "../../../lib/mockData";
 
 /**
  * @class MockKycProvider
@@ -15,23 +16,24 @@ export class MockKycProvider extends IKycProvider {
         // Simulate delay
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        if (nin === "00000000000") {
-            throw new Error("NIN not found in mock database.");
-        }
+        // Attempt to find specific mock user, otherwise fall back to the first one
+        const user = getMockByNin(nin) || mockUsers[0];
+
+        console.log(`[MockKycProvider] Result: ${user === mockUsers[0] ? 'FALLBACK' : 'MATCH'} Found ${user.firstName} ${user.lastName}`);
 
         return {
             success: true,
             data: {
-                firstName: "JOHN",
-                lastName: "DOE",
-                middleName: "MOCK",
-                gender: "Male",
-                dob: "1990-01-01",
-                nin: nin,
-                photo: "/uploads/default-avatar.png",
-                phone: "08012345678",
-                state: "Lagos",
-                lga: "Ikeja"
+                firstName: user.firstName,
+                lastName: user.lastName,
+                middleName: user.middleName,
+                gender: user.gender,
+                dob: user.dob,
+                nin: user.nin || nin, // Use searched NIN if fallback
+                photo: user.photo,
+                phone: user.phone,
+                state: user.state,
+                lga: user.lga
             }
         };
     }
@@ -44,14 +46,19 @@ export class MockKycProvider extends IKycProvider {
 
         await new Promise(resolve => setTimeout(resolve, 800));
 
+        // Attempt to find specific mock user, otherwise fall back to the first BVN-capable one
+        const user = getMockByBvn(bvn) || mockUsers.find(u => u.bvn) || mockUsers[0];
+
+        console.log(`[MockKycProvider] Result: ${user.bvn === bvn ? 'MATCH' : 'FALLBACK'} Found ${user.firstName} ${user.lastName}`);
+
         return {
             success: true,
             data: {
-                firstName: "JANE",
-                lastName: "DOE",
-                bvn: bvn,
-                gender: "Female",
-                dob: "1992-05-15"
+                firstName: user.firstName,
+                lastName: user.lastName,
+                bvn: user.bvn || bvn, // Use searched BVN if fallback
+                gender: user.gender,
+                dob: user.dob
             }
         };
     }

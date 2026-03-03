@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/src/lib/supabase/client';
 import { generatePDF } from '@/lib/utils/generatePDF';
+import { generatePremiumPDF } from '@/lib/utils/generatePremiumPDF';
 import { generateQR } from '@/lib/utils/generateQR';
 
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { query } = body;
+        const { query, slipType } = body;
 
         // Validate input
         if (!query || typeof query !== 'string') {
@@ -31,38 +32,71 @@ export async function POST(request) {
             );
         }
 
-        // Find user in Registry
-        const { data: user, error: userError } = await supabase
-            .from('registry')
-            .select('*')
-            .or(filter)
-            .single();
+        // DB Bypass: Fetch from mock data instead of Supabase Registry
+        let user = null;
+        if (process.env.NODE_ENV === 'development') {
+            const { getMockByNin, getMockByPhone, mockUsers } = require('@/lib/mockData');
+            user = getMockByNin(sanitized) || getMockByPhone(sanitized) || mockUsers[0];
+            console.log(`[API] Generation for: ${sanitized} (DB Bypass active, using ${user.firstName})`);
+        } else {
+            const { data, error: userError } = await supabase
+                .from('registry')
+                .select('*')
+                .or(filter)
+                .single();
 
-        if (userError || !user) {
-            console.error('Registry lookup error:', userError);
-            return NextResponse.json(
-                { error: 'Record not found. Please check your NIN or phone number.' },
-                { status: 404 }
-            );
+            if (userError || !data) {
+                console.error('Registry lookup error:', userError);
+                return NextResponse.json(
+                    { error: 'Record not found. Please check your NIN or phone number.' },
+                    { status: 404 }
+                );
+            }
+            user = data;
         }
 
         // Generate QR code as data URL
-        const qrCode = await generateQR(user.nin);
+        const qrCode = await generateQR(user.nin || sanitized);
 
-        // Generate PDF
-        const { buffer: pdfBuffer, serialNumber } = await generatePDF(user);
+        // Map user properties if they came from mock data (camelCase vs snake_case)
+        const formattedUser = {
+            nin: user.nin || sanitized,
+            phone: user.phone,
+            first_name: user.firstName || user.first_name,
+            last_name: user.lastName || user.last_name,
+            middle_name: user.middleName || user.middle_name || '',
+            dob: user.dob,
+            gender: user.gender,
+            state: user.state,
+            lga: user.lga,
+            photo: user.photo
+        };
 
-        // Track the slip generation in Supabase
-        const { error: slipError } = await supabase
-            .from('slips')
-            .insert({
-                nin: user.nin,
-                serial_number: serialNumber,
-                // userId: ... (optional: could get from session if needed)
-            });
+        // Generate PDF based on slipType
+        let pdfBuffer, serialNumber;
 
-        if (slipError) {
-            console.error('Slip tracking error:', slipError);
+        if (slipType === 'premium') {
+            const result = await generatePremiumPDF(formattedUser);
+            pdfBuffer = result.buffer;
+            serialNumber = result.serialNumber;
+        } else {
+            const result = await generatePDF(formattedUser);
+            pdfBuffer = result.buffer;
+            serialNumber = result.serialNumber;
+        }
+
+        // Track the slip generation in Supabase (Skip in dev if no DB)
+        if (process.env.NODE_ENV !== 'development') {
+            const { error: slipError } = await supabase
+                .from('slips')
+                .insert({
+                    nin: user.nin || sanitized,
+                    serial_number: serialNumber,
+                });
+
+            if (slipError) {
+                console.error('Slip tracking error:', slipError);
+            }
         }
 
         // Convert PDF buffer to base64

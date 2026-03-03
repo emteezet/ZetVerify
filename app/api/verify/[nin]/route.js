@@ -1,62 +1,42 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/src/lib/supabase/client';
+import { getMockByNin, mockUsers } from '@/lib/mockData';
 
 export async function GET(request, { params }) {
     try {
-        const { nin } = params;
+        // In Next.js 15+, params is a promise
+        const resolvedParams = await params;
+        const { nin } = resolvedParams;
+
+        console.log(`[API] Verifying NIN: ${nin} (DB Bypass active)`);
 
         // Validate NIN format
         if (!nin || !/^\d{11}$/.test(nin)) {
             return NextResponse.json(
-                { error: 'Invalid NIN format.' },
+                { error: 'Invalid NIN format. Must be 11 digits.' },
                 { status: 400 }
             );
         }
 
-        // Find user in Registry
-        const { data: user, error: userError } = await supabase
-            .from('registry')
-            .select('*')
-            .eq('nin', nin)
-            .single();
-
-        if (userError || !user) {
-            console.error('Verify registry error:', userError);
-            return NextResponse.json(
-                { error: 'Record not found.' },
-                { status: 404 }
-            );
-        }
-
-        // Get latest slip for this NIN from Supabase
-        const { data: latestSlip, error: slipError } = await supabase
-            .from('slips')
-            .select('*')
-            .eq('nin', nin)
-            .order('generated_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-        if (slipError) {
-            console.error('Verify slip lookup error:', slipError);
-        }
+        // DB Bypass: Fetch from mock data instead of Supabase Registry
+        // Fallback to first mock user if not found to ensure "fetch successfully even if its wrong"
+        const user = getMockByNin(nin) || mockUsers[0];
 
         return NextResponse.json({
             success: true,
             status: 'VALID',
             user: {
-                nin: user.nin,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                middleName: user.middle_name || '',
+                nin: user.nin || nin,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                middleName: user.middleName || '',
                 dob: user.dob,
                 gender: user.gender,
                 state: user.state,
                 lga: user.lga,
                 photo: user.photo,
             },
-            lastGenerated: latestSlip ? latestSlip.generated_at : null,
-            serialNumber: latestSlip ? latestSlip.serial_number : null,
+            lastGenerated: new Date().toISOString(),
+            serialNumber: "MOCK-" + Math.random().toString(36).substring(7).toUpperCase(),
         });
     } catch (err) {
         console.error('Verify API error:', err);

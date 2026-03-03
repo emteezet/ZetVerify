@@ -1,10 +1,14 @@
 import { MockKycProvider } from "../lib/adapters/MockKycProvider";
+import { NinBvnPortalProvider } from "../lib/adapters/NinBvnPortalProvider";
 import { walletService } from "./WalletService";
 import { encryptIdentity, maskData } from "../lib/crypto/encryption";
 import { Logger } from "../lib/utils/logger";
 import { IdentityError, ErrorCodes } from "../lib/errors/AppError";
 
-const VERIFICATION_FEE = 100; // NGN
+const VERIFICATION_FEES = {
+    NIN: 150, // Updated based on NinBvnPortal pricing
+    BVN: 100
+};
 
 /**
  * @class IdentityService
@@ -12,8 +16,21 @@ const VERIFICATION_FEE = 100; // NGN
  */
 export class IdentityService {
     constructor(provider = null, walletSvc = null) {
-        // Default to MockKycProvider if no provider is passed (for local dev)
-        this.provider = provider || new MockKycProvider();
+        // Resolve provider based on environment if not explicitly provided
+        if (!provider) {
+            const providerType = process.env.KYC_PROVIDER || 'mock';
+            switch (providerType.toLowerCase()) {
+                case 'ninbvnportal':
+                    provider = new NinBvnPortalProvider();
+                    break;
+                case 'mock':
+                default:
+                    provider = new MockKycProvider();
+                    break;
+            }
+        }
+
+        this.provider = provider;
         this.walletService = walletSvc || walletService;
     }
 
@@ -28,7 +45,7 @@ export class IdentityService {
 
         try {
             // 1. Deduct fee first (Atomic Debit with check constraint)
-            await this.walletService.debitWallet(userId, VERIFICATION_FEE, 'NIN_VERIFY');
+            await this.walletService.debitWallet(userId, VERIFICATION_FEES.NIN, 'NIN_VERIFY');
 
             // 2. Fetch data from provider
             const result = await this.provider.fetchByNin(nin);
@@ -64,7 +81,7 @@ export class IdentityService {
 
         try {
             // 1. Deduct fee
-            await this.walletService.debitWallet(userId, VERIFICATION_FEE, 'BVN_VERIFY');
+            await this.walletService.debitWallet(userId, VERIFICATION_FEES.BVN, 'BVN_VERIFY');
 
             const result = await this.provider.fetchByBvn(bvn);
 

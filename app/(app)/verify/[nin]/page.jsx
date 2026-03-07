@@ -223,7 +223,7 @@ function VerifyContent() {
         {slipType === "premium" ? (
           <div className="mt-8 animate-in fade-in zoom-in duration-500 py-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl flex justify-center w-full">
             <div className="w-full max-w-[800px] scale-[0.6] sm:scale-100 origin-top flex justify-center items-center">
-              <PremiumPlasticCard userData={user} qrCodeData={data?.qrCode} />
+              <PremiumPlasticCard user={user} qrCodeData={data?.qrCode} />
             </div>
           </div>
         ) : (

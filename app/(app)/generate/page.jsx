@@ -1,13 +1,16 @@
 'use client';
 
+import { useRef } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import PremiumPlasticCard from '@/components/PremiumPlasticCard';
+import DownloadButton from '@/components/DownloadButton';
 import { CheckCircle2, Search, ArrowLeft } from 'lucide-react';
 
 export default function GeneratePage() {
     const router = useRouter();
     const [result, setResult] = useState(null);
+    const documentRef = useRef(null);
 
     useEffect(() => {
         const stored = sessionStorage.getItem('nin-result');
@@ -75,8 +78,20 @@ export default function GeneratePage() {
 
                 {/* Master Component */}
                 <div className="bg-white p-1 sm:p-2 rounded-[3.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
-                    <div className="p-6 md:p-12">
-                         {/* Slip display removed as requested */}
+                    <div className="p-6 md:p-12 flex flex-col items-center gap-12">
+                         <div className="scale-75 sm:scale-100 lg:scale-[1.1] transition-all origin-center">
+                            <PremiumPlasticCard 
+                                user={result.user} 
+                                qrCodeData={`NIN:${result.user.nin}`} 
+                                forwardedRef={documentRef} 
+                            />
+                         </div>
+                         
+                         <DownloadButton 
+                            templateRef={documentRef} 
+                            fileName={`${result.user.lastName}-ID`}
+                            slipType="plastic"
+                         />
                     </div>
                 </div>
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import NinForm from "@/components/NinForm";
+import PremiumPlasticCard from "@/components/PremiumPlasticCard";
+import DownloadButton from "@/components/DownloadButton";
 import { Loader2 } from "lucide-react";
 
 function BVNContent() {
@@ -12,6 +14,7 @@ function BVNContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const slipType = searchParams.get("slipType") || "slip";
+  const documentRef = useRef(null);
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -165,7 +168,32 @@ function BVNContent() {
     : "N/A";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 gap-8">
+      {/* Premium View if selected */}
+      {slipType === "premium" && data && (
+        <div className="w-full max-w-lg mb-8 space-y-8 animate-in fade-in zoom-in duration-500">
+           <div className="flex flex-col items-center justify-center p-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl shadow-slate-200/50">
+                <div className="scale-75 sm:scale-100 origin-center">
+                    <PremiumPlasticCard 
+                        user={{
+                            firstName: bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                            lastName: bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                            nin: data.bvn, // Using BVN as ID for this template
+                            gender: "M",
+                            dob: "1990-05-15",
+                            photo: "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                        }} 
+                        qrCodeData={`BVN:${data.bvn}`} 
+                        forwardedRef={documentRef} 
+                    />
+                </div>
+           </div>
+           <div className="flex justify-center">
+                <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-ID`} slipType="plastic" />
+           </div>
+        </div>
+      )}
+
       <div className="max-w-lg w-full">
         {/* Status */}
         <div className="text-center mb-8">

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import NinForm from "@/components/NinForm";
 
+import PremiumPlasticCard from "@/components/PremiumPlasticCard";
+import DownloadButton from "@/components/DownloadButton";
 import { Shield, Fingerprint, Info, Loader2 } from "lucide-react";
 
 export default function DashboardVerifyPage() {
@@ -13,6 +15,7 @@ export default function DashboardVerifyPage() {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const documentRef = useRef(null);
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -91,8 +94,24 @@ export default function DashboardVerifyPage() {
 
                     {/* Result Section */}
                     {userData && (
-                        <div className="animate-in fade-in slide-in-from-bottom-5 duration-700">
-                             {/* Slip display removed as requested */}
+                        <div className="animate-in fade-in slide-in-from-bottom-5 duration-700 space-y-8">
+                            <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-[3rem] border-2 border-slate-100 shadow-inner min-h-[450px]">
+                                <div className="scale-75 sm:scale-100 lg:scale-[1.1] transition-all origin-center">
+                                    <PremiumPlasticCard 
+                                        user={userData} 
+                                        qrCodeData={`NIN:${userData.nin}`} 
+                                        forwardedRef={documentRef} 
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-center">
+                                <DownloadButton 
+                                    templateRef={documentRef} 
+                                    fileName={`${userData.lastName}-ID`}
+                                    slipType="plastic"
+                                />
+                            </div>
                         </div>
                     )}
                 </div>

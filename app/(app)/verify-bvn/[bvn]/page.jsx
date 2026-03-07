@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import InputForm from "@/components/InputForm";
+
 import { Loader2 } from "lucide-react";
 
 function BVNContent() {

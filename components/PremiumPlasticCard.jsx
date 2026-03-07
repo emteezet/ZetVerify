@@ -94,6 +94,8 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
             text-transform: uppercase;
             font-weight: 600;
             z-index: 10;
+            backface-visibility: hidden;
+            transform: translateZ(1px);
         }
         .premium-value {
             position: absolute;
@@ -103,6 +105,8 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
             font-family: Arial, sans-serif;
             text-transform: uppercase;
             z-index: 10;
+            backface-visibility: hidden;
+            transform: translateZ(1px);
         }
     `;
 
@@ -121,20 +125,20 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
                         <img src="/premium.svg" className="absolute inset-0 w-full h-full object-cover" alt="" />
                         
                         {/* Header Text (simulated) */}
-                        <div className="absolute top-[18px] left-[150px] transform -translate-x-1/2 text-[15px] font-black text-[#006400] whitespace-nowrap">
+                        <div className="absolute top-[18px] left-[150px] transform -translate-x-1/2 text-[15px] font-black text-[#006400] whitespace-nowrap z-10" style={{ backfaceVisibility: 'hidden' }}>
                             FEDERAL REPUBLIC OF NIGERIA
                         </div>
-                        <div className="absolute top-[35px] left-[95px] transform -translate-x-1/2 text-[13px] font-bold text-slate-800 uppercase tracking-tighter">
+                        <div className="absolute top-[35px] left-[95px] transform -translate-x-1/2 text-[13px] font-bold text-slate-800 uppercase tracking-tighter z-10" style={{ backfaceVisibility: 'hidden' }}>
                             Digital NIN Slip
                         </div>
 
                         {/* Photo */}
-                        <div className="absolute top-[75px] left-[30px] w-[90px] h-[110px] bg-slate-100 border border-slate-200 overflow-hidden">
+                        <div className="absolute top-[75px] left-[30px] w-[90px] h-[110px] bg-slate-100 border border-slate-200 overflow-hidden z-10" style={{ backfaceVisibility: 'hidden' }}>
                             {user?.photo && <img src={user.photo} className="w-full h-full object-cover" alt="User" />}
                         </div>
 
                         {/* QR Code */}
-                        <div className="absolute top-[20px] right-[20px] w-[90px] h-[100px] bg-white p-1 flex items-center justify-center">
+                        <div className="absolute top-[20px] right-[20px] w-[90px] h-[100px] bg-white p-1 flex items-center justify-center z-10" style={{ backfaceVisibility: 'hidden' }}>
                             {qrImage && <img src={qrImage} className="w-full h-full object-contain" alt="QR" />}
                         </div>
 
@@ -157,8 +161,8 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
                         <div className="premium-value top-[188px] right-[40px] text-[10px] font-light whitespace-nowrap text-right">{formatIssueDate()}</div>
 
                         {/* NIN Display */}
-                        <div className="absolute top-[215px] left-0 w-full text-center text-[10px] text-slate-500 font-bold uppercase z-10">National Identification Number (NIN)</div>
-                        <div className="absolute top-[228px] left-0 w-full text-center text-[36px] font-black tracking-[0.2em] text-black z-10">
+                        <div className="absolute top-[215px] left-0 w-full text-center text-[10px] text-slate-500 font-bold uppercase z-10" style={{ backfaceVisibility: 'hidden' }}>National Identification Number (NIN)</div>
+                        <div className="absolute top-[228px] left-0 w-full text-center text-[36px] font-black tracking-[0.2em] text-black z-10" style={{ backfaceVisibility: 'hidden' }}>
                             {formatNIN(user?.nin) || "0000 0000 000"}
                         </div>
                     </div>

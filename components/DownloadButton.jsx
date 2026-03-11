@@ -24,115 +24,99 @@ export default function DownloadButton({
       const jsPDF = (await import("jspdf")).jsPDF;
       const element = templateRef.current;
 
-      // ==========================================
-      // FRONTEND-ONLY A4 STACKED LOGIC
-      // ==========================================
+      // ============================================================
+      // HIDDEN RENDER STRATEGY (Solid Fix for Mobile Cropping)
+      // ============================================================
+      // Create a hidden, desktop-sized container to render the clone
+      const hiddenContainer = document.createElement("div");
+      hiddenContainer.style.position = "absolute";
+      hiddenContainer.style.left = "-9999px";
+      hiddenContainer.style.top = "0";
+      hiddenContainer.style.width = slipType === "premium" || slipType === "plastic" ? "500px" : "900px";
+      hiddenContainer.style.background = "white";
+      document.body.appendChild(hiddenContainer);
+
+      const clonedElement = element.cloneNode(true);
+      hiddenContainer.appendChild(clonedElement);
+
+      let frontCanvas, backCanvas, mainCanvas;
+
       if (slipType === "premium" || slipType === "plastic") {
+        // Target faces inside the CLONE
+        const frontClone = clonedElement.querySelector('.premium-card-front');
+        const backClone = clonedElement.querySelector('.premium-card-back');
 
-        // 1. Directly target the front and back elements inside the preview
-        const frontElement = element.querySelector('.premium-card-front');
-        const backElement = element.querySelector('.premium-card-back');
-
-        if (!frontElement || !backElement) {
-          throw new Error("Could not find the card faces on the screen.");
+        if (!frontClone || !backClone) {
+          document.body.removeChild(hiddenContainer);
+          throw new Error("Could not find the card faces in clones.");
         }
 
-        // 2. Temporarily disable the 3D flipping CSS so html2canvas can read it flat
-        const originalBackTransform = backElement.style.transform;
-        const originalBackDisplay = backElement.style.display;
+        // Flatten the back face in the clone
+        backClone.style.transform = 'none';
+        backClone.style.display = 'block';
 
-        backElement.style.transform = 'none'; // Un-flip the back card
-        backElement.style.display = 'block';
-
-        // 3. Take High-Res pictures of the individual elements
         const captureOptions = { scale: 4, useCORS: true, backgroundColor: null, logging: false };
+        
+        frontCanvas = await html2canvas(frontClone, captureOptions);
+        backCanvas = await html2canvas(backClone, captureOptions);
 
-        const frontCanvas = await html2canvas(frontElement, captureOptions);
-        const backCanvas = await html2canvas(backElement, captureOptions);
+      } else {
+        // Standard full page slip via clone
+        mainCanvas = await html2canvas(clonedElement, {
+          scale: 4,
+          backgroundColor: "#ffffff",
+          useCORS: true,
+          logging: false,
+          width: 850
+        });
+      }
 
-        // 4. Restore the 3D CSS so the user's UI doesn't break
-        backElement.style.transform = originalBackTransform;
-        backElement.style.display = originalBackDisplay;
+      // Cleanup hidden container immediately after capture
+      document.body.removeChild(hiddenContainer);
 
+      // ==========================================
+      // PDF GENERATION
+      // ==========================================
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      if (slipType === "premium" || slipType === "plastic") {
         const frontImgData = frontCanvas.toDataURL("image/png");
         const backImgData = backCanvas.toDataURL("image/png");
 
-        // 5. Create the A4 PDF Document
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4",
-        });
-
-        // Standard CR80 ID Card dimensions (85.6mm x 53.98mm)
         const cardW = 85.6;
         const cardH = 53.98;
-
-        // Center Alignment for A4
-        const pageWidth = pdf.internal.pageSize.getWidth();
         const xOffset = (pageWidth - cardW) / 2;
+        const yTop = 30;
+        const gap = 15;
 
-        // Vertical Spacing
-        const yTop = 30; // 30mm from the top of the page
-        const gap = 15; // 15mm gap between cards
-
-        // 6. Draw Both Cards onto the A4 PDF
         pdf.addImage(frontImgData, "PNG", xOffset, yTop, cardW, cardH);
         pdf.addImage(backImgData, "PNG", xOffset, yTop + cardH + gap, cardW, cardH);
-
-        // 7. Force Download
         pdf.save(`${fileName}-Print-Ready.pdf`);
-        setIsLoading(false);
-        return;
-      }
 
-      // ==========================================
-      // STANDARD FULL PAGE SLIP LOGIC
-      // ==========================================
-      const canvas = await html2canvas(element, {
-        scale: 4,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        logging: false,
-        width: 850,
-        onclone: (clonedDoc, clonedElement) => {
-            clonedElement.style.width = "850px";
-            // Ensure any children that might shrink are also set
-            clonedElement.style.maxWidth = "none";
-        }
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      
-      // Calculate aspect ratio
-      const imgRatio = canvas.height / canvas.width;
-      
-      // Set margins (10mm on each side)
-      const margin = 10;
-      
-      const maxImgWidth = pageWidth - (margin * 2);
-      const maxImgHeight = pageHeight - (margin * 2);
-      
-      // Determine final dimensions
-      let finalImgWidth = maxImgWidth;
-      let finalImgHeight = finalImgWidth * imgRatio;
-      
-      // If the resulting height is too large for the page, scale down by height
-      if (finalImgHeight > maxImgHeight) {
+      } else {
+        const imgData = mainCanvas.toDataURL("image/png");
+        const imgRatio = mainCanvas.height / mainCanvas.width;
+        const margin = 10;
+        
+        const maxImgWidth = pageWidth - (margin * 2);
+        const maxImgHeight = pageHeight - (margin * 2);
+        
+        let finalImgWidth = maxImgWidth;
+        let finalImgHeight = finalImgWidth * imgRatio;
+        
+        if (finalImgHeight > maxImgHeight) {
           finalImgHeight = maxImgHeight;
           finalImgWidth = finalImgHeight / imgRatio;
-      }
-      
-      // Align to top centered horizontally
-      const xPos = (pageWidth - finalImgWidth) / 2;
-      const yPos = margin;
+        }
+        
+        const xPos = (pageWidth - finalImgWidth) / 2;
+        const yPos = margin;
 
-      pdf.addImage(imgData, "PNG", xPos, yPos, finalImgWidth, finalImgHeight);
-      pdf.save(`${fileName}-Verified.pdf`);
+        pdf.addImage(imgData, "PNG", xPos, yPos, finalImgWidth, finalImgHeight);
+        pdf.save(`${fileName}-Verified.pdf`);
+      }
 
     } catch (err) {
       console.error("PDF generation error:", err);

@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import { supabase } from "@/src/lib/supabase/client";
-import { useNotification } from "@/src/components/NotificationContext";
+import { supabase } from "@/lib/supabase/client";
+import { useNotification } from "@/components/NotificationContext";
 import {
   LayoutDashboard, User, Mail, ShieldCheck,
   Lock, CheckCircle2, Loader2, LogOut, Pencil, X

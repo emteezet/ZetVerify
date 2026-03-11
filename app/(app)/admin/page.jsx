@@ -16,8 +16,8 @@ import {
     RefreshCw,
     Search
 } from "lucide-react";
-import { getPlatformStatsAction } from "@/src/actions/admin";
-import { useNotification } from "@/src/components/NotificationContext";
+import { getPlatformStatsAction } from "@/actions/admin";
+import { useNotification } from "@/components/NotificationContext";
 
 export default function AdminDashboardPage() {
     const { showNotification } = useNotification();

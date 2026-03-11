@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import TransactionList from "@/src/components/dashboard/TransactionList";
-import { getTransactionsAction } from "@/src/actions/wallet";
+import TransactionList from "@/components/dashboard/TransactionList";
+import { getTransactionsAction } from "@/actions/wallet";
 import { LayoutDashboard, ArrowUpRight, ArrowDownLeft, Activity } from "lucide-react";
 
 export default function TransactionsPage() {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { paystackService } from "../../../../src/services/PaystackService";
-import { walletService } from "../../../../src/services/WalletService";
-import { supabase } from "../../../../src/lib/supabase/client";
+import { paystackService } from "@/services/PaystackService";
+import { walletService } from "@/services/WalletService";
+import { supabase } from "@/lib/supabase/client";
 
 /**
  * @description Paystack Webhook Handler

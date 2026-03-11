@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import WalletWidget from "@/src/components/dashboard/WalletWidget";
-import IdentityRequestForm from "@/src/components/dashboard/IdentityRequestForm";
-import TransactionList from "@/src/components/dashboard/TransactionList";
+import WalletWidget from "@/components/dashboard/WalletWidget";
+import IdentityRequestForm from "@/components/dashboard/IdentityRequestForm";
+import TransactionList from "@/components/dashboard/TransactionList";
 import Link from "next/link";
 import { LayoutDashboard, ShieldCheck, History, Settings, Info } from "lucide-react";
 

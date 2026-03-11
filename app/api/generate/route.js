@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/src/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { generatePDF } from '@/lib/utils/generatePDF';
 import { generatePremiumPDF } from '@/lib/utils/generatePremiumPDF';
 import { generateQR } from '@/lib/utils/generateQR';

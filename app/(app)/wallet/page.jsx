@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import WalletWidget from "@/src/components/dashboard/WalletWidget";
-import TransactionList from "@/src/components/dashboard/TransactionList";
+import WalletWidget from "@/components/dashboard/WalletWidget";
+import TransactionList from "@/components/dashboard/TransactionList";
 import { Wallet, LayoutDashboard } from "lucide-react";
 
 export default function WalletPage() {

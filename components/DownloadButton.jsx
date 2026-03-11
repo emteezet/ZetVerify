@@ -93,7 +93,13 @@ export default function DownloadButton({
         scale: 4,
         backgroundColor: "#ffffff",
         useCORS: true,
-        logging: false
+        logging: false,
+        width: 850,
+        onclone: (clonedDoc, clonedElement) => {
+            clonedElement.style.width = "850px";
+            // Ensure any children that might shrink are also set
+            clonedElement.style.maxWidth = "none";
+        }
       });
 
       const imgData = canvas.toDataURL("image/png");
@@ -101,11 +107,32 @@ export default function DownloadButton({
 
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
-      const yPos = (pageHeight - imgHeight) / 2;
+      
+      // Calculate aspect ratio
+      const imgRatio = canvas.height / canvas.width;
+      
+      // Set margins (10mm on each side)
+      const margin = 10;
+      
+      const maxImgWidth = pageWidth - (margin * 2);
+      const maxImgHeight = pageHeight - (margin * 2);
+      
+      // Determine final dimensions
+      let finalImgWidth = maxImgWidth;
+      let finalImgHeight = finalImgWidth * imgRatio;
+      
+      // If the resulting height is too large for the page, scale down by height
+      if (finalImgHeight > maxImgHeight) {
+          finalImgHeight = maxImgHeight;
+          finalImgWidth = finalImgHeight / imgRatio;
+      }
+      
+      // Align to top centered horizontally
+      const xPos = (pageWidth - finalImgWidth) / 2;
+      const yPos = margin;
 
-      pdf.addImage(imgData, "PNG", 0, Math.max(0, yPos), pageWidth, imgHeight);
-      pdf.save(`${fileName}-Full.pdf`);
+      pdf.addImage(imgData, "PNG", xPos, yPos, finalImgWidth, finalImgHeight);
+      pdf.save(`${fileName}-Verified.pdf`);
 
     } catch (err) {
       console.error("PDF generation error:", err);

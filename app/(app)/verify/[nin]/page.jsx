@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import PremiumPlasticCard from "@/components/PremiumPlasticCard";
+import NinRegularSlip from "@/components/NinRegularSlip";
 import DownloadButton from "@/components/DownloadButton"; // Added the new smart button
 
 function VerifyContent() {
@@ -150,15 +151,25 @@ function VerifyContent() {
         </div>
 
         {/* 2. Wrap the visual ID cards in the documentRef */}
-        <div ref={documentRef}>
-            {slipType === "premium" ? (
-              <div className="mt-8 animate-in fade-in zoom-in duration-500 py-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl flex justify-center w-full">
+        <div ref={documentRef} className="w-full flex justify-center">
+            {slipType === "premium" && (
+              <div className="mt-8 animate-in fade-in zoom-in duration-500 py-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl flex justify-center w-full max-w-lg">
                 <div className="w-full max-w-[800px] scale-[0.6] sm:scale-100 origin-top flex justify-center items-center">
                   <PremiumPlasticCard user={user} qrCodeData={data?.qrCode} />
                 </div>
               </div>
-            ) : (
-              <div className="glass-card overflow-hidden animate-in animate-delay-1">
+            )}
+            
+            {slipType === "regular" && (
+              <div className="mt-8 animate-in fade-in zoom-in duration-500 w-full overflow-x-auto">
+                <div className="min-w-[850px] origin-top scale-75 sm:scale-100">
+                  <NinRegularSlip user={user} />
+                </div>
+              </div>
+            )}
+            
+            {(slipType !== "premium" && slipType !== "regular") && (
+              <div className="glass-card overflow-hidden animate-in animate-delay-1 max-w-lg w-full mt-8">
                 <div className="h-1.5" style={{ background: "linear-gradient(90deg, #0d6b0d, #1a8c1a, #0d6b0d)" }} />
                 <div className="p-6">
                   <div className="flex items-center gap-4 mb-6 pb-6 border-b" style={{ borderColor: "var(--border-color)" }}>
@@ -213,7 +224,7 @@ function VerifyContent() {
             <DownloadButton 
                 templateRef={documentRef} 
                 fileName={`NIN-Slip-${params.nin}`} 
-                slipType={slipType === "premium" ? "premium" : "full"} 
+                slipType={slipType === "premium" ? "plastic" : "full"} 
             />
         </div>
 

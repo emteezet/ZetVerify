@@ -4,8 +4,9 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-import UnifiedVerificationForm from "@/components/UnifiedVerificationForm";
+import NinForm from "@/components/NinForm";
 import PlasticBvn from "@/components/PlasticBvn";
+import BvnRegularSlip from "@/components/BvnRegularSlip";
 import DownloadButton from "@/components/DownloadButton";
 import { Loader2 } from "lucide-react";
 import { getMockByBvn } from "@/lib/mockData";
@@ -33,9 +34,9 @@ function BVNContent() {
       try {
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 800));
-        
+
         let mockData = getMockByBvn(params.bvn);
-        
+
         if (!mockData) {
           // Fallback to a default mock user to ensure testing always works
           const defaultMock = getMockByBvn("33333333333");
@@ -156,16 +157,12 @@ function BVNContent() {
               border: "1px solid var(--border-color)",
             }}
           >
-            <UnifiedVerificationForm
-              onSubmit={(payload) => {
-                if (payload.type === 'phone') {
-                   // This is a special edge case where if they use the phone tab on the bvn specific verify page, we can route it here
-                   router.push(`/verify-bvn/${payload.data.phone}`);
-                } else {
-                   router.push(`/verify-bvn/${payload.data.nin || payload.data.phone || payload.data.tracking_id}`);
-                }
+            <NinForm
+              onSubmit={(value) => {
+                router.push(`/verify-bvn/${value}`);
               }}
-              loading={loading}
+              placeholder="11-digit BVN"
+              buttonText="Verify BVN"
             />
           </div>
         </div>
@@ -193,28 +190,58 @@ function BVNContent() {
       {/* Premium View if selected */}
       {slipType === "premium" && data && (
         <div className="w-full max-w-lg mb-8 space-y-8 animate-in fade-in zoom-in duration-500">
-           <div className="flex flex-col items-center justify-center p-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl shadow-slate-200/50">
-                <div className="scale-75 sm:scale-100 origin-center">
-                    <PlasticBvn 
-                        user={{
-                            firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                            lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                            middleName: data.middleName || "",
-                            bvn: data.bvn, // Using BVN as ID for this template
-                            gender: data.gender || "M",
-                            dob: data.dob || "1990-05-15",
-                            photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
-                        }} 
-                        forwardedRef={documentRef} 
-                    />
-                </div>
-           </div>
-           <div className="flex justify-center">
-                <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-ID`} slipType="plastic" />
-           </div>
+          <div className="flex flex-col items-center justify-center p-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl shadow-slate-200/50">
+            <div className="scale-75 sm:scale-100 origin-center">
+              <PlasticBvn
+                user={{
+                  firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                  lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                  middleName: data.middleName || "",
+                  bvn: data.bvn, // Using BVN as ID for this template
+                  gender: data.gender || "M",
+                  dob: data.dob || "1990-05-15",
+                  photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                }}
+                forwardedRef={documentRef}
+              />
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-ID`} slipType="plastic" />
+          </div>
         </div>
       )}
 
+      {/* Regular Slip View */}
+      {slipType === "slip" && data && (
+        <div className="w-full max-w-4xl mb-8 space-y-8 animate-in fade-in duration-500">
+           <div className="flex justify-center w-full overflow-x-auto">
+              <div className="min-w-[850px] origin-top sm:scale-100 scale-75">
+                  <BvnRegularSlip 
+                    user={{
+                      firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                      lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                      middleName: data.middleName || "",
+                      bvn: data.bvn,
+                      nin: data.nin || data.tracking_id || "18691733426",
+                      gender: data.gender || "MALE",
+                      dob: data.dob || "1996-09-04",
+                      phone: data.phone || "07036730633",
+                      state: data.state || "KATSINA STATE",
+                      lga: data.lga || "MATAZU",
+                      address: data.address || "SHARARRAR PIPE KOFAR KWAYA KATSINA",
+                      maritalStatus: data.maritalStatus || "SINGLE",
+                      photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                    }}
+                    forwardedRef={documentRef}
+                  />
+              </div>
+           </div>
+           <div className="flex justify-center">
+              <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-Slip`} slipType="full" />
+           </div>
+        </div>
+      )}
     </div>
   );
 }

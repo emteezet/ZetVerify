@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-import NinForm from "@/components/NinForm";
+import UnifiedVerificationForm from "@/components/UnifiedVerificationForm";
 import PlasticBvn from "@/components/PlasticBvn";
 import DownloadButton from "@/components/DownloadButton";
 import { Loader2 } from "lucide-react";
@@ -156,12 +156,16 @@ function BVNContent() {
               border: "1px solid var(--border-color)",
             }}
           >
-            <NinForm
-              onSubmit={(value) => {
-                router.push(`/verify-bvn/${value}`);
+            <UnifiedVerificationForm
+              onSubmit={(payload) => {
+                if (payload.type === 'phone') {
+                   // This is a special edge case where if they use the phone tab on the bvn specific verify page, we can route it here
+                   router.push(`/verify-bvn/${payload.data.phone}`);
+                } else {
+                   router.push(`/verify-bvn/${payload.data.nin || payload.data.phone || payload.data.tracking_id}`);
+                }
               }}
-              placeholder="11-digit BVN"
-              buttonText="Verify BVN"
+              loading={loading}
             />
           </div>
         </div>

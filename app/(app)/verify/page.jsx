@@ -1,144 +1,32 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Hash, Phone, CreditCard, Star, ShieldCheck,
-  ChevronRight, AlertCircle, Loader2, FileText, UserCheck
-} from "lucide-react";
-
-const SERVICE_TABS = [
-  { value: "nin", label: "NIN Verification", icon: ShieldCheck },
-  { value: "bvn", label: "BVN Verification", icon: UserCheck },
-];
-
-const NIN_SLIP_TYPES = [
-  {
-    value: "regular",
-    label: "Regular Slip",
-    description: "Standard digital NIN slip",
-    icon: FileText,
-    badge: null,
-  },
-  {
-    value: "premium",
-    label: "Premium Slip",
-    description: "High-quality plastic ID card",
-    icon: CreditCard,
-    badge: "Popular",
-  },
-  {
-    value: "improved",
-    label: "Improved Slip",
-    description: "Enhanced format with QR code",
-    icon: Star,
-    badge: null,
-  },
-];
-
-const BVN_SLIP_TYPES = [
-  {
-    value: "slip",
-    label: "Regular Slip",
-    description: "Standard digital BVN slip",
-    icon: FileText,
-    badge: null,
-  },
-  {
-    value: "premium",
-    label: "Premium Slip",
-    description: "High-quality plastic ID card",
-    icon: CreditCard,
-    badge: "Popular",
-  },
-];
-
-const NIN_SEARCH_TABS = [
-  { value: "nin", label: "NIN Number", icon: Hash },
-  { value: "phone", label: "Phone Number", icon: Phone },
-];
+import { useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { ShieldCheck, Loader2 } from "lucide-react";
+import UnifiedVerificationForm from "@/components/UnifiedVerificationForm";
 
 function HubContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [serviceType, setServiceType] = useState("nin");
-  const [searchTab, setSearchTab] = useState("nin");
-  const [idValue, setIdValue] = useState("");
-  const [slipType, setSlipType] = useState("regular");
-  const [consent, setConsent] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Sync with URL params
-  useEffect(() => {
-    const type = searchParams.get("type");
-    const id = searchParams.get("id");
-    const searchBy = searchParams.get("searchBy");
-    const slip = searchParams.get("slipType");
-
-    if (type === "bvn") {
-      setServiceType("bvn");
-      setSlipType(slip || "slip");
-    } else if (type === "nin") {
-      setServiceType("nin");
-      setSlipType(slip || "regular");
-    }
-
-    if (id) setIdValue(id);
-    if (searchBy && (searchBy === "nin" || searchBy === "phone")) {
-      setSearchTab(searchBy);
-    }
-  }, [searchParams]);
-
-  const handleIdChange = (e) => {
-    setIdValue(e.target.value.replace(/\D/g, "").slice(0, 11));
-    setError("");
-  };
-
-  const handleServiceSwitch = (type) => {
-    setServiceType(type);
-    setSlipType(type === "nin" ? "regular" : "slip");
-    setIdValue("");
-    setError("");
-    setConsent(false);
-  };
-
-  const handleVerify = async (e) => {
-    e.preventDefault();
-
-    if (!idValue) {
-      setError(`Please enter your ${serviceType.toUpperCase()} number`);
-      return;
-    }
-
-    if (idValue.length !== 11 && (serviceType === "bvn" || searchTab === "nin")) {
-      setError(`${serviceType.toUpperCase()} must be exactly 11 digits`);
-      return;
-    }
-
-    if (!consent) {
-      setError("Please accept the terms and conditions");
-      return;
-    }
-
+  
+  const handleVerify = (queryPayload) => {
     setLoading(true);
-    setError("");
 
-    try {
-      if (serviceType === "nin") {
-        router.push(`/verify/${idValue}?slipType=${slipType}&searchBy=${searchTab}`);
-      } else {
-        router.push(`/verify-bvn/${idValue}?slipType=${slipType}`);
-      }
-    } catch {
-      setError("An error occurred. Please try again.");
-      setLoading(false);
-    }
+    // Simulated API delay
+    setTimeout(() => {
+        setLoading(false);
+        
+        // Allow bypassing auth in development for specific mocks
+        const devBypass = process.env.NEXT_PUBLIC_DEV_BYPASS === 'true';
+        
+        if (devBypass) {
+            // Forward the payload directly to the authenticated builder page
+            router.push(`/dashboard/verify`); 
+        } else {
+            router.push("/auth/login?redirect=/dashboard/verify");
+        }
+    }, 1500);
   };
-
-  const slipTypes = serviceType === "nin" ? NIN_SLIP_TYPES : BVN_SLIP_TYPES;
-  const maxLen = 11;
 
   return (
     <div className="max-w-lg w-full">
@@ -148,235 +36,21 @@ function HubContent() {
           className="w-16 h-16 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg animate-in"
           style={{ background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)" }}
         >
-          {serviceType === "nin" ? <ShieldCheck className="w-8 h-8" /> : <UserCheck className="w-8 h-8" />}
+          <ShieldCheck className="w-8 h-8" />
         </div>
         <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
-          {serviceType === "nin" ? "NIN Verification" : "BVN Verification"}
+          Identity Verification
         </h1>
         <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-          {serviceType === "nin"
-            ? "Search by your NIN or registered phone number"
-            : "Verify your identity using your Bank Verification Number"}
+          Securely verify Nigerian Identities via NIN, BVN, Phone or Demographics
         </p>
       </div>
 
       <div
-        className="glass-card rounded-2xl overflow-hidden"
-        style={{ border: "1px solid var(--border-color)" }}
+        className="glass-card rounded-2xl overflow-hidden p-6"
+        style={{ border: "1px solid var(--border-color)", background: "var(--bg-card)" }}
       >
-        {/* Service Type Tabs */}
-        <div className="flex border-b" style={{ borderColor: "var(--border-color)" }}>
-          {SERVICE_TABS.map(({ value, label, icon: Icon }) => (
-            <button
-              key={value}
-              onClick={() => handleServiceSwitch(value)}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all ${serviceType === value
-                ? "text-accent-green border-b-4 border-green-800"
-                : "text-text-muted hover:text-text-secondary bg-bg-secondary/30"
-                }`}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <form onSubmit={handleVerify} className="p-6 space-y-5 animate-in">
-
-          {/* NIN-only Search Method Tabs */}
-          {serviceType === "nin" && (
-            <div
-              className="flex p-1.5 rounded-xl gap-1 mb-4 shadow-inner"
-              style={{ background: "var(--bg-secondary)" }}
-            >
-              {NIN_SEARCH_TABS.map(({ value, label, icon: Icon }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => { setSearchTab(value); setIdValue(""); }}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200"
-                  style={
-                    searchTab === value
-                      ? {
-                        background: "var(--accent-green)",
-                        color: "white",
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
-                      }
-                      : { color: "var(--text-muted)" }
-                  }
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Input Field */}
-          <div>
-            <label
-              className="block text-xs font-bold uppercase tracking-wider mb-2"
-              style={{ color: "var(--text-muted)" }}
-            >
-              {serviceType === "nin"
-                ? (searchTab === "nin" ? "NIN Number" : "Phone Number")
-                : "BVN Number"}
-            </label>
-            <div
-              className="flex items-center rounded-xl border-2 transition-all duration-200 focus-within:ring-2"
-              style={{
-                background: "var(--bg-secondary)",
-                borderColor: "var(--border-color)",
-                "--tw-ring-color": "#0d6b0d30",
-              }}
-            >
-              <div className="pl-4 pr-2 py-3" style={{ color: "var(--text-muted)" }}>
-                {serviceType === "nin" && searchTab === "phone" ? <Phone className="w-4 h-4" /> : <Hash className="w-4 h-4" />}
-              </div>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={idValue}
-                onChange={handleIdChange}
-                placeholder={
-                  serviceType === "nin"
-                    ? (searchTab === "nin" ? "Enter 11-digit NIN" : "e.g. 08012345678")
-                    : "Enter 11-digit BVN"
-                }
-                maxLength={maxLen}
-                className="flex-1 bg-transparent py-3 pr-4 text-sm focus:outline-none"
-                style={{ color: "var(--text-primary)" }}
-              />
-              <div
-                className="pr-4 text-xs font-mono"
-                style={{ color: idValue.length === maxLen ? "#0d6b0d" : "var(--text-muted)" }}
-              >
-                {idValue.length}/{maxLen}
-              </div>
-            </div>
-          </div>
-
-          {/* Slip Type Picker */}
-          <div>
-            <label
-              className="block text-xs font-bold uppercase tracking-wider mb-3"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Select Template
-            </label>
-            <div className={`grid ${serviceType === "nin" ? "grid-cols-3" : "grid-cols-2"} gap-3`}>
-              {slipTypes.map(({ value, label, description, icon: Icon, badge }) => {
-                const selected = slipType === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSlipType(value)}
-                    className="relative flex flex-col items-center text-center p-4 rounded-xl border-2 transition-all duration-200 gap-2"
-                    style={{
-                      borderColor: selected ? "#0d6b0d" : "var(--border-color)",
-                      background: selected ? "rgba(13,107,13,0.06)" : "var(--bg-secondary)",
-                    }}
-                  >
-                    {badge && (
-                      <span
-                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-black px-2 py-0.5 rounded-full text-white uppercase tracking-tighter"
-                        style={{ background: "#0d6b0d" }}
-                      >
-                        {badge}
-                      </span>
-                    )}
-                    <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center shadow-sm"
-                      style={{
-                        background: selected ? "rgba(13,107,13,0.15)" : "var(--bg-card)",
-                        color: selected ? "#0d6b0d" : "var(--text-muted)",
-                      }}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p
-                        className="text-[11px] font-bold leading-tight"
-                        style={{ color: selected ? "#0d6b0d" : "var(--text-primary)" }}
-                      >
-                        {label}
-                      </p>
-                      <p
-                        className="text-[9px] mt-0.5 leading-tight opacity-70"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {description}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Consent */}
-          <label
-            className="flex items-start gap-3 cursor-pointer group"
-            htmlFor="consent-hub"
-          >
-            <div className="relative mt-0.5">
-              <input
-                type="checkbox"
-                id="consent-hub"
-                checked={consent}
-                onChange={(e) => { setConsent(e.target.checked); setError(""); }}
-                className="sr-only"
-              />
-              <div
-                className="w-5 h-5 rounded flex items-center justify-center border-2 transition-all duration-150"
-                style={{
-                  borderColor: consent ? "#0d6b0d" : "var(--border-color)",
-                  background: consent ? "#0d6b0d" : "transparent",
-                }}
-              >
-                {consent && (
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </div>
-            </div>
-            <span className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-              I hereby declare that this information is mine and I consent to the verification fee of ₦100.
-            </span>
-          </label>
-
-          {/* Error Message */}
-          {error && (
-            <div
-              className="flex items-center gap-2.5 p-3 rounded-xl text-sm"
-              style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#dc2626" }}
-            >
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 rounded-xl font-bold text-white text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
-            style={{
-              background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
-              opacity: (loading || idValue.length < 11) ? 0.6 : 1,
-              cursor: (loading || idValue.length < 11) ? "not-allowed" : "pointer",
-              transform: loading ? "scale(0.98)" : "none"
-            }}
-          >
-            {loading ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Verifying...</>
-            ) : (
-              <><ShieldCheck className="w-5 h-5" /> Proceed to Verification <ChevronRight className="w-4 h-4 opacity-50" /></>
-            )}
-          </button>
-        </form>
+        <UnifiedVerificationForm onSubmit={handleVerify} loading={loading} />
       </div>
 
       {/* Tip */}

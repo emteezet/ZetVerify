@@ -14,11 +14,11 @@ const SERVICE_TABS = [
 
 const NIN_SLIP_TYPES = [
   {
-    value: "regular",
-    label: "Regular Slip",
-    description: "Standard digital NIN slip",
-    icon: FileText,
-    badge: null,
+    value: "improved",
+    label: "Improved Slip",
+    description: "Enhanced format with QR code",
+    icon: Star,
+    badge: "New",
   },
   {
     value: "premium",
@@ -28,10 +28,10 @@ const NIN_SLIP_TYPES = [
     badge: "Popular",
   },
   {
-    value: "improved",
-    label: "Improved Slip",
-    description: "Enhanced format with QR code",
-    icon: Star,
+    value: "regular",
+    label: "Regular Slip",
+    description: "Standard digital NIN slip",
+    icon: FileText,
     badge: null,
   },
 ];

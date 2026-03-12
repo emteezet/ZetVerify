@@ -113,17 +113,17 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
     return (
         <div className="flex flex-col items-center">
             <style>{cardStyles}</style>
-            <div 
+            <div
                 ref={forwardedRef}
-                className="premium-card-container group" 
+                className="premium-card-container group"
                 onClick={() => setIsFlipped(!isFlipped)}
             >
                 <div className={`premium-card-inner ${isFlipped ? 'is-flipped' : ''}`}>
                     {/* Front of card */}
                     <div className="premium-card-front">
                         {/* Background SVG - Always visible on front */}
-                        <img src="/premium.svg" className="absolute inset-0 w-full h-full object-cover" alt="" />
-                        
+                        <img src="/premium.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />
+
                         {/* Conditional Wrapper for Data: Hides content manually when flipped to prevent mobile 'ghosting' */}
                         <div className={`absolute inset-0 transition-opacity duration-300 ${isFlipped ? 'opacity-0' : 'opacity-100'}`}>
                             {/* Header Text (simulated) */}
@@ -175,7 +175,7 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
                         <img src="/premiumback.svg" className="w-full h-full object-cover" alt="Card back" />
                     </div>
                 </div>
-                
+
                 <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mt-6 animate-pulse">
                     {isFlipped ? "Tap to view front" : "Tap to view back"}
                 </p>

@@ -7,7 +7,9 @@ import Link from "next/link";
 import NinForm from "@/components/NinForm";
 import PlasticBvn from "@/components/PlasticBvn";
 import BvnRegularSlip from "@/components/BvnRegularSlip";
+import ImprovedNinSlip from "@/components/ImprovedNinSlip";
 import DownloadButton from "@/components/DownloadButton";
+import ProfilePreview from "@/components/ProfilePreview";
 import { Loader2 } from "lucide-react";
 import { getMockByBvn } from "@/lib/mockData";
 
@@ -187,61 +189,89 @@ function BVNContent() {
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 gap-8">
-      {/* Premium View if selected */}
-      {slipType === "premium" && data && (
-        <div className="w-full max-w-lg mb-8 space-y-8 animate-in fade-in zoom-in duration-500">
-          <div className="flex flex-col items-center justify-center p-8 bg-white rounded-[3rem] border border-slate-200 shadow-xl shadow-slate-200/50">
-            <div className="scale-75 sm:scale-100 origin-center">
-              <PlasticBvn
-                user={{
-                  firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                  lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                  middleName: data.middleName || "",
-                  bvn: data.bvn, // Using BVN as ID for this template
-                  gender: data.gender || "M",
-                  dob: data.dob || "1990-05-15",
-                  photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
-                }}
-                forwardedRef={documentRef}
-              />
-            </div>
+      {/* Hidden container for PDF rendering */}
+      <div ref={documentRef} style={{ position: "absolute", left: "-9999px", top: 0 }}>
+        {slipType === "improved" && data && (
+          <div className="w-[500px] bg-white">
+            <ImprovedNinSlip
+              user={{
+                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: data.middleName || "",
+                nin: data.nin || data.tracking_id || "00000000000",
+                dob: data.dob || "1990-05-15",
+                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+              }}
+              forwardedRef={documentRef}
+            />
           </div>
-          <div className="flex justify-center">
-            <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-ID`} slipType="plastic" />
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Regular Slip View */}
-      {slipType === "slip" && data && (
-        <div className="w-full max-w-4xl mb-8 space-y-8 animate-in fade-in duration-500">
-           <div className="flex justify-center w-full overflow-x-auto">
-              <div className="min-w-[850px] origin-top sm:scale-100 scale-75">
-                  <BvnRegularSlip 
-                    user={{
-                      firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                      lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                      middleName: data.middleName || "",
-                      bvn: data.bvn,
-                      nin: data.nin || data.tracking_id || "18691733426",
-                      gender: data.gender || "MALE",
-                      dob: data.dob || "1996-09-04",
-                      phone: data.phone || "07036730633",
-                      state: data.state || "KATSINA STATE",
-                      lga: data.lga || "MATAZU",
-                      address: data.address || "SHARARRAR PIPE KOFAR KWAYA KATSINA",
-                      maritalStatus: data.maritalStatus || "SINGLE",
-                      photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
-                    }}
-                    forwardedRef={documentRef}
-                  />
-              </div>
-           </div>
-           <div className="flex justify-center">
-              <DownloadButton templateRef={documentRef} fileName={`${bankDetails.accountName}-BVN-Slip`} slipType="full" />
-           </div>
-        </div>
-      )}
+        {slipType === "premium" && data && (
+          <div className="w-[500px] bg-white">
+            <PlasticBvn
+              user={{
+                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: data.middleName || "",
+                bvn: data.bvn,
+                gender: data.gender || "M",
+                dob: data.dob || "1990-05-15",
+                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+              }}
+              forwardedRef={documentRef}
+            />
+          </div>
+        )}
+
+        {slipType === "slip" && data && (
+          <div className="w-[850px] bg-white">
+            <BvnRegularSlip 
+              user={{
+                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: data.middleName || "",
+                bvn: data.bvn,
+                nin: data.nin || data.tracking_id || "18691733426",
+                gender: data.gender || "MALE",
+                dob: data.dob || "1996-09-04",
+                phone: data.phone || "07036730633",
+                state: data.state || "KATSINA STATE",
+                lga: data.lga || "MATAZU",
+                address: data.address || "SHARARRAR PIPE KOFAR KWAYA KATSINA",
+                maritalStatus: data.maritalStatus || "SINGLE",
+                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+              }}
+              forwardedRef={documentRef}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Visible Profile Preview with Custom Download Button Layering */}
+      <div className="w-full max-w-md relative z-10 mx-auto">
+        {data && (slipType === "improved" || slipType === "premium" || slipType === "slip") ? (
+          <DownloadButton
+            templateRef={documentRef}
+            fileName={`${bankDetails.accountName}-BVN-${slipType === "slip" ? "Slip" : "ID"}`}
+            slipType={slipType === "slip" ? "full" : "plastic"}
+            renderCustom={({ onClick, isLoading, error }) => (
+              <ProfilePreview
+                user={data}
+                idType="BVN"
+                idNumber={data.bvn}
+                onDownload={onClick}
+                isDownloading={isLoading}
+                error={error}
+              />
+            )}
+          />
+        ) : (
+          <div className="p-6 glass-card text-center max-w-md w-full mx-auto">
+            <p className="text-slate-500">Please select a valid slip type to preview.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

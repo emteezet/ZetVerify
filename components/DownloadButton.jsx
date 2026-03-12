@@ -6,6 +6,7 @@ export default function DownloadButton({
   templateRef,
   fileName = "NIN-Slip",
   slipType = "full",
+  renderCustom,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -125,6 +126,10 @@ export default function DownloadButton({
       setIsLoading(false);
     }
   };
+
+  if (renderCustom) {
+      return renderCustom({ onClick: handleDownload, isLoading, error });
+  }
 
   return (
     <div className="flex flex-col gap-2">

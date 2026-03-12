@@ -6,7 +6,9 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import PremiumPlasticCard from "@/components/PremiumPlasticCard";
 import NinRegularSlip from "@/components/NinRegularSlip";
+import ImprovedNinSlip from "@/components/ImprovedNinSlip";
 import DownloadButton from "@/components/DownloadButton"; // Added the new smart button
+import ProfilePreview from "@/components/ProfilePreview";
 
 function VerifyContent() {
   const params = useParams();
@@ -150,82 +152,50 @@ function VerifyContent() {
           </p>
         </div>
 
-        {/* 2. Wrap the visual ID cards in the documentRef */}
-        <div ref={documentRef} className="w-full flex justify-center">
+        {/* 2. Hidden visual ID cards rendered securely for PDF generation */}
+        <div ref={documentRef} style={{ position: "absolute", left: "-9999px", top: 0 }}>
             {slipType === "premium" && (
-              <div className="mt-8 animate-in fade-in zoom-in duration-500 py-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl flex justify-center w-full max-w-lg">
-                <div className="w-full max-w-[800px] scale-[0.6] sm:scale-100 origin-top flex justify-center items-center">
-                  <PremiumPlasticCard user={user} qrCodeData={data?.qrCode} />
+                <div className="w-[500px] bg-white">
+                  <PremiumPlasticCard user={user} qrCodeData={data?.qrCode} forwardedRef={documentRef} />
                 </div>
-              </div>
+            )}
+
+            {slipType === "improved" && (
+                <div className="w-[500px] bg-white">
+                  <ImprovedNinSlip user={user} qrCodeData={data?.qrCode} forwardedRef={documentRef} />
+                </div>
             )}
             
             {slipType === "regular" && (
-              <div className="mt-8 animate-in fade-in zoom-in duration-500 w-full overflow-x-auto">
-                <div className="min-w-[850px] origin-top scale-75 sm:scale-100">
-                  <NinRegularSlip user={user} />
+                <div className="w-[850px] bg-white">
+                  <NinRegularSlip user={user} forwardedRef={documentRef} />
                 </div>
-              </div>
-            )}
-            
-            {(slipType !== "premium" && slipType !== "regular") && (
-              <div className="glass-card overflow-hidden animate-in animate-delay-1 max-w-lg w-full mt-8">
-                <div className="h-1.5" style={{ background: "linear-gradient(90deg, #0d6b0d, #1a8c1a, #0d6b0d)" }} />
-                <div className="p-6">
-                  <div className="flex items-center gap-4 mb-6 pb-6 border-b" style={{ borderColor: "var(--border-color)" }}>
-                    <div className="w-16 h-16 rounded-xl border-2 flex items-center justify-center overflow-hidden flex-shrink-0" style={{ borderColor: "var(--accent-green)", backgroundColor: "var(--bg-secondary)" }}>
-                      {user.photo && user.photo !== "/uploads/default-avatar.png" ? (
-                        <img src={user.photo} alt="Photo" className="w-full h-full object-cover" />
-                      ) : (
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-muted)" }}>
-                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      )}
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)", fontFamily: "Outfit, sans-serif" }}>
-                        {fullName}
-                      </h2>
-                      <p className="text-sm font-mono" style={{ color: "var(--accent-green)" }}>
-                        {user.nin}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b" style={{ borderColor: "var(--border-color)" }}>
-                    <VerifyField label="Date of Birth" value={dob} />
-                    <VerifyField label="Gender" value={user.gender} />
-                    <VerifyField label="State" value={user.state} />
-                    <VerifyField label="LGA" value={user.lga} />
-                    <VerifyField label="Last Generated" value={generatedDate} />
-                    <VerifyField label="Serial No." value={data.serialNumber || "—"} />
-                  </div>
-
-                  <div className="mb-6 pb-6 border-b" style={{ borderColor: "var(--border-color)" }}>
-                    <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>Selected Slip Type</p>
-                    <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                      {slipType === "improved" ? "Improved NIN Slip" : "NIN Regular Slip"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="px-6 py-3" style={{ backgroundColor: "var(--bg-secondary)" }}>
-                  <p className="text-xs text-center" style={{ color: "var(--text-muted)" }}>
-                    Verified on {new Date().toLocaleDateString("en-NG", { year: "numeric", month: "long", day: "numeric" })} — School Project Simulation
-                  </p>
-                </div>
-              </div>
             )}
         </div>
 
-        {/* 3. Drop in the new DownloadButton right under the card */}
-        <div className="mt-8 flex justify-center">
-            <DownloadButton 
-                templateRef={documentRef} 
-                fileName={`NIN-Slip-${params.nin}`} 
-                slipType={slipType === "premium" ? "plastic" : "full"} 
-            />
+        {/* 3. Display Profile Preview with custom DownloadButton rendering */}
+        <div className="mt-8 flex justify-center w-full relative z-10">
+            {(slipType === "premium" || slipType === "regular" || slipType === "improved") ? (
+                <DownloadButton 
+                    templateRef={documentRef} 
+                    fileName={`NIN-Slip-${params.nin}`} 
+                    slipType={slipType === "premium" ? "plastic" : "full"} 
+                    renderCustom={({ onClick, isLoading, error }) => (
+                        <ProfilePreview
+                            user={user}
+                            idType="NIN"
+                            idNumber={params.nin}
+                            onDownload={onClick}
+                            isDownloading={isLoading}
+                            error={error}
+                        />
+                    )}
+                />
+            ) : (
+                <div className="p-6 glass-card text-center max-w-md w-full mx-auto">
+                  <p className="text-slate-500">Please select a valid slip type to preview.</p>
+                </div>
+            )}
         </div>
 
         {/* New Search Button */}

@@ -55,6 +55,24 @@ export async function initializePaymentAction(email, amount) {
 }
 
 /**
+ * Server Action: Verifies a Paystack transaction
+ * @param {string} reference 
+ */
+export async function verifyPaymentAction(reference) {
+    try {
+        const response = await paystackService.verifyTransaction(reference);
+        
+        if (response.status && response.data.status === 'success') {
+            return { success: true, data: response.data };
+        }
+        
+        return { success: false, error: response.message || "Transaction not successful" };
+    } catch (error) {
+        return { success: false, error: error.message, code: error.code || 'WALLET_ERROR' };
+    }
+}
+
+/**
  * Server Action: Fetches recent transactions
  * @param {string} userId 
  */

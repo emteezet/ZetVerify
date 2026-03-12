@@ -86,9 +86,14 @@ export class PaystackService {
     }
 
     verifyWebhookSignature(bodyString, signature) {
-        if (!this.secretKey) return true;
-        // In product: use crypto.createHmac and compare
-        return true;
+        if (!this.secretKey) {
+            Logger.warn("[PaystackService] No secret key for signature verification. Defaulting to true for development.");
+            return true;
+        }
+        
+        const crypto = require("crypto");
+        const hash = crypto.createHmac('sha512', this.secretKey).update(bodyString).digest('hex');
+        return hash === signature;
     }
 }
 

@@ -11,20 +11,36 @@ function CallbackContent() {
     const [status, setStatus] = useState("verifying"); // verifying, success, error
     const reference = searchParams.get("reference");
 
+    const [errorMsg, setErrorMsg] = useState("");
+
     useEffect(() => {
         if (!reference) {
             setStatus("error");
+            setErrorMsg("Missing transaction reference.");
             return;
         }
 
-        const timer = setTimeout(() => {
-            setStatus("success");
-            setTimeout(() => {
-                router.push("/wallet");
-            }, 3000);
-        }, 2000);
+        const verifyPayment = async () => {
+            try {
+                const { verifyPaymentAction } = await import("@/actions/wallet");
+                const result = await verifyPaymentAction(reference);
 
-        return () => clearTimeout(timer);
+                if (result.success) {
+                    setStatus("success");
+                    setTimeout(() => {
+                        router.push("/wallet");
+                    }, 3000);
+                } else {
+                    setStatus("error");
+                    setErrorMsg(result.error);
+                }
+            } catch (err) {
+                setStatus("error");
+                setErrorMsg("Verification failed. Please try again or contact support.");
+            }
+        };
+
+        verifyPayment();
     }, [reference, router]);
 
     return (
@@ -71,7 +87,7 @@ function CallbackContent() {
                     <div>
                         <h1 className="text-2xl font-bold text-text-primary">Transaction Issue</h1>
                         <p className="text-text-muted mt-2">
-                            We couldn't find a valid transaction reference. If you've been charged, please contact support.
+                            {errorMsg || "We couldn't find a valid transaction reference. If you've been charged, please contact support."}
                         </p>
                     </div>
                     <div className="pt-4">

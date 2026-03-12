@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase/client";
+import { supabaseAdmin as supabase } from "../lib/supabase/admin";
 import { Logger } from "../lib/utils/logger";
 import { WalletError, ErrorCodes } from "../lib/errors/AppError";
 
@@ -14,14 +14,18 @@ export class WalletService {
      */
     async getBalance(userId) {
         try {
+            console.log('[WalletService.getBalance] Called with userId:', userId);
+            
             const { data: wallet, error: walletError } = await supabase
                 .from('wallets')
                 .select('id')
                 .eq('user_id', userId)
                 .single();
 
+            console.log('[WalletService.getBalance] Wallet query result:', { wallet, walletError: walletError?.message });
+
             if (walletError || !wallet) {
-                Logger.info("Balance requested for non-existent wallet", { userId });
+                Logger.info("[WalletService] No wallet record found for user", { userId });
                 return 0;
             }
 
@@ -30,9 +34,12 @@ export class WalletService {
                 .select('amount')
                 .eq('wallet_id', wallet.id);
 
+            console.log('[WalletService.getBalance] Transactions:', { count: data?.length, error: error?.message });
+
             if (error) throw error;
 
             const balance = data.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            console.log('[WalletService.getBalance] Computed balance:', balance);
             return balance;
         } catch (error) {
             Logger.error("Failed to fetch wallet balance", error, { userId });
@@ -50,11 +57,25 @@ export class WalletService {
         try {
             if (amount <= 0) throw new WalletError("Amount must be positive", ErrorCodes.VALIDATION_ERROR);
 
-            const { data: wallet } = await supabase
+            let { data: wallet } = await supabase
                 .from('wallets')
                 .select('id')
                 .eq('user_id', userId)
                 .single();
+
+            // The database trigger 'handle_new_user' should have created this.
+            // We keep a lightweight fail-safe here just in case of race conditions.
+            if (!wallet) {
+                Logger.info("Wallet not found, attempting auto-creation fail-safe.", { userId });
+                const { data: newWallet, error: createError } = await supabase
+                    .from('wallets')
+                    .insert({ user_id: userId })
+                    .select('id')
+                    .single();
+                
+                if (createError) throw createError;
+                wallet = newWallet;
+            }
 
             const { error } = await supabase
                 .from('transactions')

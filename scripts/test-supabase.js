@@ -16,7 +16,7 @@ async function checkSupabase() {
     console.log('URL:', supabaseUrl);
 
     try {
-        const { data: users, error: usersError } = await supabase.from('users').select('*').limit(1);
+        const { data: users, error: usersError } = await supabase.from('profiles').select('*').limit(1);
         if (usersError) console.error('Error fetching from users table:', usersError.message);
         else console.log('Successfully connected to Supabase "users" table!');
 

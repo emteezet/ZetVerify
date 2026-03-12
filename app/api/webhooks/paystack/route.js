@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { paystackService } from "@/services/PaystackService";
 import { walletService } from "@/services/WalletService";
-import { supabase } from "@/lib/supabase/client";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
  * @description Paystack Webhook Handler
@@ -25,23 +25,22 @@ export async function POST(req) {
             const amount = data.amount / 100; // Convert Kobo to NGN
             const email = data.customer.email;
 
-            // Find user by email in Supabase
-            const { data: user, error: userError } = await supabase
-                .from('users')
+            // Find profile by email (use admin client to bypass RLS)
+            const { data: profile, error: profileError } = await supabaseAdmin
+                .from('profiles')
                 .select('id')
                 .eq('email', email)
                 .single();
 
-            if (userError || !user) {
-                console.error(`[Webhook] User not found for email: ${email}`);
-                return NextResponse.json({ message: "User not found" }, { status: 404 });
+            if (profileError || !profile) {
+                console.error(`[Webhook] Profile not found for email: ${email}`);
+                return NextResponse.json({ message: "User profile not found" }, { status: 404 });
             }
 
-            // 3. Fund Wallet (Ledger Entry)
-            // This is idempotent because fundWallet checks for duplicate reference
+            // 3. Fund Wallet
             try {
-                await walletService.fundWallet(user.id, amount, reference);
-                console.log(`[Webhook] Successfully funded user ${user.id} with ${amount} NGN. Ref: ${reference}`);
+                await walletService.fundWallet(profile.id, amount, reference);
+                console.log(`[Webhook] Successfully funded profile ${profile.id} with ${amount} NGN. Ref: ${reference}`);
             } catch (fundError) {
                 if (fundError.message.includes("Duplicate")) {
                     return NextResponse.json({ message: "Transaction already processed" }, { status: 200 });

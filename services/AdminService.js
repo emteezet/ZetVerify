@@ -13,7 +13,7 @@ export class AdminService {
         try {
             // 1. Total Users
             const { count: userCount, error: userError } = await supabase
-                .from('users')
+                .from('profiles')
                 .select('*', { count: 'exact', head: true });
 
             if (userError) throw userError;
@@ -50,7 +50,7 @@ export class AdminService {
                 .from('transactions')
                 .select(`
                     *,
-                    wallet:wallets(user:users(email, first_name, last_name))
+                    wallet:wallets(user:profiles(email, first_name, last_name))
                 `)
                 .order('created_at', { ascending: false })
                 .limit(10);

@@ -55,7 +55,7 @@ export async function initializePaymentAction(email, amount) {
 }
 
 /**
- * Server Action: Verifies a Paystack transaction
+ * Server Action: Verifies a Paystack transaction AND credits the wallet
  * @param {string} reference 
  */
 export async function verifyPaymentAction(reference) {
@@ -63,6 +63,30 @@ export async function verifyPaymentAction(reference) {
         const response = await paystackService.verifyTransaction(reference);
         
         if (response.status && response.data.status === 'success') {
+            const { amount, customer, reference: txRef } = response.data;
+            const amountInNGN = amount / 100; // Convert Kobo to NGN
+            const email = customer.email;
+
+            // Look up the user's profile by email
+            const { supabaseAdmin } = await import('../lib/supabase/admin');
+            const { data: profile } = await supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('email', email)
+                .single();
+
+            if (profile) {
+                // Credit the wallet (idempotent — skips if reference already exists)
+                try {
+                    await walletService.fundWallet(profile.id, amountInNGN, txRef);
+                } catch (fundErr) {
+                    // Duplicate reference means it was already processed — that's fine
+                    if (!fundErr.message?.includes('Duplicate') && !fundErr.code === '23505') {
+                        console.error('[verifyPaymentAction] Funding error:', fundErr.message);
+                    }
+                }
+            }
+
             return { success: true, data: response.data };
         }
         

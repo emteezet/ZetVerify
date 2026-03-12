@@ -7,7 +7,7 @@ export default function PlasticBvn({ user, forwardedRef }) {
 
     const formatBVN = (bvn) => {
         if (!bvn) return "";
-        return bvn.replace(/(\d{4})(\d{4})(\d{3})/, "$1 $2 $3");
+        return bvn.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
     };
 
     const formatDOB = (dob) => {
@@ -44,7 +44,7 @@ export default function PlasticBvn({ user, forwardedRef }) {
             position: absolute;
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: 0px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             background-color: white;
@@ -79,16 +79,16 @@ export default function PlasticBvn({ user, forwardedRef }) {
     return (
         <div className="flex flex-col items-center">
             <style>{cardStyles}</style>
-            <div 
+            <div
                 ref={forwardedRef}
-                className="premium-card-container" 
+                className="premium-card-container"
             >
                 <div className="premium-card-inner">
                     {/* Front of card */}
                     <div className="premium-card-front">
                         {/* Background SVG - Always visible on front */}
                         <img src="/BVN--front.png" className="absolute inset-0 w-full h-full object-cover" alt="" />
-                        
+
                         {/* Conditional Wrapper for Data: Hides content manually when flipped to prevent mobile 'ghosting' */}
                         <div className="absolute inset-0">
                             {/* Photo */}

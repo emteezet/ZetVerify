@@ -66,7 +66,7 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
             position: absolute;
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: 0px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             background-color: white;
@@ -159,7 +159,7 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
 
                     {/* Back of card */}
                     <div className="premium-card-back">
-                        <img src="/premiumback.svg" className="w-[200px] h-[280px] object-cover" alt="Card back" />
+                        <img src="/premiumback.jpg" className="w-full h-full border-[1px] border-black-200 object-cover" alt="Card back" />
                     </div>
                 </div>
             </div>

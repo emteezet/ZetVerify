@@ -29,7 +29,7 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
 
     const formatNIN = (nin) => {
         if (!nin) return "";
-        return nin.replace(/(\d{4})(\d{4})(\d{3})/, "$1 $2 $3");
+        return nin.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
     };
 
     const formatDOB = (dob) => {
@@ -64,9 +64,10 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
         }
         .premium-card-front, .premium-card-back {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
+            width: 450px; /* Use explicit width for clones */
+            height: 280px; /* Use explicit height for clones */
+            border-radius: 0px;
+            border:1px solid black;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             background-color: white;
@@ -74,6 +75,8 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
         }
         .premium-card-back {
             display: none; 
+            top: 0;
+            left: 0;
         }
         .improved-value {
             position: absolute;
@@ -134,7 +137,7 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
 
                     {/* Back of card */}
                     <div className="premium-card-back">
-                        <img src="/premiumback.svg" className="w-[200px] h-[280px] object-cover" alt="Card back" />
+                        <img src="/premiumback.jpg" className="absolute inset-0 w-full h-full object-cover" alt="Card back" />
                     </div>
                 </div>
             </div>

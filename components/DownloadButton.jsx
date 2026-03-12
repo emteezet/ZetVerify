@@ -56,7 +56,8 @@ export default function DownloadButton({
         backClone.style.transform = 'none';
         backClone.style.display = 'block';
 
-        const captureOptions = { scale: 4, useCORS: true, backgroundColor: null, logging: false };
+        // Optimizing PDF size: Reducing scale from 4 to 2 (high quality enough for print)
+        const captureOptions = { scale: 2, useCORS: true, backgroundColor: null, logging: false };
         
         frontCanvas = await html2canvas(frontClone, captureOptions);
         backCanvas = await html2canvas(backClone, captureOptions);
@@ -64,7 +65,7 @@ export default function DownloadButton({
       } else {
         // Standard full page slip via clone
         mainCanvas = await html2canvas(clonedElement, {
-          scale: 4,
+          scale: 2,
           backgroundColor: "#ffffff",
           useCORS: true,
           logging: false,
@@ -76,15 +77,21 @@ export default function DownloadButton({
       document.body.removeChild(hiddenContainer);
 
       // ==========================================
-      // PDF GENERATION
+      // PDF GENERATION (Optimized Size)
       // ==========================================
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pdf = new jsPDF({ 
+        orientation: "portrait", 
+        unit: "mm", 
+        format: "a4",
+        compress: true // Internal PDF compression
+      });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
 
       if (slipType === "premium" || slipType === "plastic") {
-        const frontImgData = frontCanvas.toDataURL("image/png");
-        const backImgData = backCanvas.toDataURL("image/png");
+        // Use JPEG with 0.7 compression for photographic quality vs size balance
+        const frontImgData = frontCanvas.toDataURL("image/jpeg", 0.7);
+        const backImgData = backCanvas.toDataURL("image/jpeg", 0.7);
 
         const cardW = 85.6;
         const cardH = 53.98;
@@ -92,12 +99,13 @@ export default function DownloadButton({
         const yTop = 30;
         const gap = 15;
 
-        pdf.addImage(frontImgData, "PNG", xOffset, yTop, cardW, cardH);
-        pdf.addImage(backImgData, "PNG", xOffset, yTop + cardH + gap, cardW, cardH);
+        pdf.addImage(frontImgData, "JPEG", xOffset, yTop, cardW, cardH);
+        pdf.addImage(backImgData, "JPEG", xOffset, yTop + cardH + gap, cardW, cardH);
         pdf.save(`${fileName}-Print-Ready.pdf`);
 
       } else {
-        const imgData = mainCanvas.toDataURL("image/png");
+        // Use JPEG with 0.7 compression for regular slips
+        const imgData = mainCanvas.toDataURL("image/jpeg", 0.7);
         const imgRatio = mainCanvas.height / mainCanvas.width;
         const margin = 10;
         
@@ -115,7 +123,7 @@ export default function DownloadButton({
         const xPos = (pageWidth - finalImgWidth) / 2;
         const yPos = margin;
 
-        pdf.addImage(imgData, "PNG", xPos, yPos, finalImgWidth, finalImgHeight);
+        pdf.addImage(imgData, "JPEG", xPos, yPos, finalImgWidth, finalImgHeight);
         pdf.save(`${fileName}-Verified.pdf`);
       }
 

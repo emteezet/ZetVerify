@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { Wallet, Plus, CreditCard, RefreshCw, Loader2, ArrowRight } from "lucide-react";
 import { getBalanceAction, initializePaymentAction } from "../../actions/wallet";
 import { useNotification } from "../NotificationContext";
+import { useAuth } from "../AuthContext";
 
 export default function WalletWidget({ userId, userEmail }) {
     const { showNotification } = useNotification();
+    const { isOnline } = useAuth();
     const [balance, setBalance] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showFundInput, setShowFundInput] = useState(false);
@@ -81,7 +83,9 @@ export default function WalletWidget({ userId, userEmail }) {
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={() => setShowFundInput(true)}
-                        className="btn-primary flex items-center justify-center gap-2 py-3 text-sm px-4"
+                        disabled={!isOnline}
+                        className="btn-primary flex items-center justify-center gap-2 py-3 text-sm px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={!isOnline ? "Connect to internet to fund" : ""}
                     >
                         <Plus className="w-4 h-4" />
                         Fund
@@ -114,8 +118,8 @@ export default function WalletWidget({ userId, userEmail }) {
                     <div className="flex gap-2">
                         <button
                             type="submit"
-                            disabled={isInitializing}
-                            className="btn-primary flex-1 flex items-center justify-center gap-2 py-2.5 text-sm"
+                            disabled={isInitializing || !isOnline}
+                            className="btn-primary flex-1 flex items-center justify-center gap-2 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isInitializing ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />

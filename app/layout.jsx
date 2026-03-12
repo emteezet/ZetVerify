@@ -1,5 +1,6 @@
 import "./globals.css";
 import Providers from "@/components/Providers";
+import OfflineBanner from "@/components/OfflineBanner";
 
 export const metadata = {
   title: "NIN Slip Generator | Third-Party Simulation",
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
         <Providers>
+          <OfflineBanner />
           {children}
         </Providers>
       </body>

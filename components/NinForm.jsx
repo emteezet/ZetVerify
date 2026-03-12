@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Search, Loader2, Smartphone, Hash } from "lucide-react";
+import { useAuth } from "./AuthContext";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,6 +11,7 @@ function cn(...inputs) {
 }
 
 export default function NinForm({ onSubmit, loading, placeholder = "Enter NIN or Phone Number" }) {
+    const { isOnline } = useAuth();
     const [query, setQuery] = useState("");
     const [error, setError] = useState("");
 
@@ -83,7 +85,7 @@ export default function NinForm({ onSubmit, loading, placeholder = "Enter NIN or
 
             <button
                 type="submit"
-                disabled={loading || !isInputValid}
+                disabled={loading || !isInputValid || !isOnline}
                 className={cn(
                     "w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2",
                     "bg-[#008751] hover:bg-[#007043] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 shadow-lg shadow-[#008751]/20"
@@ -97,7 +99,7 @@ export default function NinForm({ onSubmit, loading, placeholder = "Enter NIN or
                 ) : (
                     <>
                         <Search className="h-5 w-5" />
-                        <span>Verify & Generate Slip</span>
+                        <span>{!isOnline ? "Connect to Internet" : "Verify & Generate Slip"}</span>
                     </>
                 )}
             </button>

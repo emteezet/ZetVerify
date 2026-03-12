@@ -9,21 +9,38 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
+    // Check initial online status
+    setIsOnline(window.navigator.onLine);
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-          firstName: session.user.user_metadata?.first_name,
-          lastName: session.user.user_metadata?.last_name,
-        });
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            firstName: session.user.user_metadata?.first_name,
+            lastName: session.user.user_metadata?.last_name,
+          });
+        }
+      } catch (err) {
+        console.warn("[Auth] Initial session fetch failed (likely offline):", err.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     getInitialSession();
@@ -45,6 +62,8 @@ export function AuthProvider({ children }) {
 
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -108,6 +127,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     loading,
+    isOnline,
     signup,
     login,
     logout,

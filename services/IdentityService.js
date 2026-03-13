@@ -5,8 +5,11 @@ import { Logger } from "../lib/utils/logger";
 import { IdentityError, ErrorCodes } from "../lib/errors/AppError";
 
 const VERIFICATION_FEES = {
-    NIN: 150, // All NIN related types (lookup, phone, tracking, demography)
-    BVN: 100  // All BVN related types
+    NIN: 150,           // Verify NIN (Direct)
+    NIN_PHONE: 200,     // Search NIN by Phone
+    NIN_TRACKING: 200,  // Search NIN by Tracking ID
+    BVN: 100,           // Verify BVN (Direct)
+    BVN_PHONE: 150      // Search BVN by Phone
 };
 
 /**
@@ -77,14 +80,14 @@ export class IdentityService {
      * Processes a NIN by Phone verification request
      */
     async verifyByNinPhone(userId, phone) {
-        return this._processVerification(userId, phone, VERIFICATION_FEES.NIN, 'NIN_PHONE_VERIFY', () => this.provider.fetchByNinPhone(phone));
+        return this._processVerification(userId, phone, VERIFICATION_FEES.NIN_PHONE, 'NIN_PHONE_VERIFY', () => this.provider.fetchByNinPhone(phone));
     }
 
     /**
      * Processes a NIN by Tracking ID verification request
      */
     async verifyByNinTracking(userId, trackingId) {
-        return this._processVerification(userId, trackingId, VERIFICATION_FEES.NIN, 'NIN_TRACKING_VERIFY', () => this.provider.fetchByNinTracking(trackingId));
+        return this._processVerification(userId, trackingId, VERIFICATION_FEES.NIN_TRACKING, 'NIN_TRACKING_VERIFY', () => this.provider.fetchByNinTracking(trackingId));
     }
 
     /**
@@ -93,7 +96,7 @@ export class IdentityService {
     async verifyByNinDemography(userId, payload) {
         // payload: { firstname, lastname, gender, dob }
         const identifier = `${payload.firstname} ${payload.lastname}`;
-        return this._processVerification(userId, identifier, VERIFICATION_FEES.NIN, 'NIN_DEMO_VERIFY', () =>
+        return this._processVerification(userId, identifier, VERIFICATION_FEES.NIN_TRACKING, 'NIN_DEMO_VERIFY', () =>
             this.provider.fetchByNinDemography(payload.firstname, payload.lastname, payload.gender, payload.dob)
         );
     }
@@ -109,7 +112,7 @@ export class IdentityService {
      * Processes a BVN by Phone verification request
      */
     async verifyBvnPhone(userId, phone) {
-        return this._processVerification(userId, phone, VERIFICATION_FEES.BVN, 'BVN_PHONE_VERIFY', () => this.provider.fetchByBvnPhone(phone));
+        return this._processVerification(userId, phone, VERIFICATION_FEES.BVN_PHONE, 'BVN_PHONE_VERIFY', () => this.provider.fetchByBvnPhone(phone));
     }
 }
 

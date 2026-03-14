@@ -219,8 +219,10 @@ function BVNContent() {
           >
             <NinForm
               onSubmit={(value) => {
+                setLoading(true); // Reuse existing loading state or use a local one
                 router.push(`/verify-bvn/${value}`);
               }}
+              loading={loading}
               placeholder="11-digit BVN"
               buttonText="Verify BVN"
             />

@@ -1,5 +1,6 @@
 import { Logger } from "../lib/utils/logger";
 import { WalletError, ErrorCodes } from "../lib/errors/AppError";
+import { httpsFetch } from "../lib/utils/httpsFetch";
 
 /**
  * @class PaystackService
@@ -31,7 +32,7 @@ export class PaystackService {
         }
 
         try {
-            const response = await fetch(`${this.baseUrl}/transaction/initialize`, {
+            const response = await httpsFetch(`${this.baseUrl}/transaction/initialize`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${this.secretKey}`,
@@ -47,10 +48,10 @@ export class PaystackService {
             const data = await response.json();
             if (!data.status) throw new WalletError(data.message || "Initialization failed");
 
-            Logger.info("Paystack transaction initialized", { email, amount });
+            Logger.info("Paystack transaction initialized", { email, amountNaira: amount / 100 });
             return data;
         } catch (error) {
-            Logger.error("Paystack initialization failure", error, { email, amount });
+            Logger.error("Paystack initialization failure", error, { email, amountNaira: amount / 100 });
             throw error instanceof WalletError ? error : new WalletError("Failed to connect to payment gateway");
         }
     }
@@ -67,7 +68,7 @@ export class PaystackService {
         }
 
         try {
-            const response = await fetch(`${this.baseUrl}/transaction/verify/${reference}`, {
+            const response = await httpsFetch(`${this.baseUrl}/transaction/verify/${reference}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${this.secretKey}`,

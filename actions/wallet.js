@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { walletService } from "../services/WalletService";
 import { paystackService } from "../services/PaystackService";
 
@@ -38,7 +39,11 @@ export async function fundWalletAction(userId, amount, reference) {
  */
 export async function initializePaymentAction(email, amount) {
     try {
-        const callbackUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/wallet/callback`;
+        const headerList = await headers();
+        const host = headerList.get("host");
+        const protocol = host.includes("localhost") ? "http" : "https";
+        const callbackUrl = `${protocol}://${host}/wallet/callback`;
+
         const response = await paystackService.initializeTransaction(
             email,
             amount * 100, // Convert to Kobo
@@ -80,9 +85,13 @@ export async function verifyPaymentAction(reference) {
                 try {
                     await walletService.fundWallet(profile.id, amountInNGN, txRef);
                 } catch (fundErr) {
-                    // Duplicate reference means it was already processed — that's fine
-                    if (!fundErr.message?.includes('Duplicate') && !fundErr.code === '23505') {
+                    // Duplicate reference means it was already processed (by webhook) — that's a success case for the UI
+                    const isDuplicate = fundErr.message?.includes('Duplicate') || fundErr.code === '23505' || (fundErr.message?.includes('Duplicate transaction reference'));
+                    
+                    if (!isDuplicate) {
                         console.error('[verifyPaymentAction] Funding error:', fundErr.message);
+                        // We still return success: true because Paystack confirmed the payment.
+                        // The user's balance should reflect the update via the webhook.
                     }
                 }
             }

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin as supabase } from '@/lib/supabase/admin';
+import { validateAdminSession, unauthorizedAdminResponse } from '@/lib/auth/admin';
 
-export async function GET() {
+export async function GET(request) {
+    if (!await validateAdminSession(request)) return unauthorizedAdminResponse();
     try {
         // Get total users in registry
         const { count: totalUsers, error: userCountError } = await supabase

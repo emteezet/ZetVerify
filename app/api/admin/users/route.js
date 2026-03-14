@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin as supabase } from '@/lib/supabase/admin';
+import { validateAdminSession, unauthorizedAdminResponse } from '@/lib/auth/admin';
 
 // GET — List all registry users
-export async function GET() {
+export async function GET(request) {
+    if (!await validateAdminSession(request)) return unauthorizedAdminResponse();
     try {
         const { data: users, error } = await supabase
             .from('registry')
@@ -35,6 +37,7 @@ export async function GET() {
 
 // POST — Add new registry user
 export async function POST(request) {
+    if (!await validateAdminSession(request)) return unauthorizedAdminResponse();
     try {
         const body = await request.json();
 
@@ -107,6 +110,7 @@ export async function POST(request) {
 
 // DELETE — Remove registry user by ID
 export async function DELETE(request) {
+    if (!await validateAdminSession(request)) return unauthorizedAdminResponse();
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');

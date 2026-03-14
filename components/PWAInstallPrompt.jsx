@@ -83,20 +83,20 @@ export default function PWAInstallPrompt() {
         </div>
 
         {isIOS ? (
-          <div className="bg-slate-50 rounded-xl p-3 space-y-2">
-            <p className="text-[11px] font-medium text-slate-600 flex items-center gap-2">
-              1. Tap the Share button <Share className="w-3.5 h-3.5 text-blue-500" />
+          <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+            <p className="text-xs font-semibold text-slate-700 flex items-center gap-3">
+              1. Tap the Share button <Share className="w-4 h-4 text-blue-500" />
             </p>
-            <p className="text-[11px] font-medium text-slate-600 flex items-center gap-2">
-              2. Scroll down and tap <PlusSquare className="w-3.5 h-3.5" /> "Add to Home Screen"
+            <p className="text-xs font-semibold text-slate-700 flex items-center gap-3">
+              2. Scroll down and tap <PlusSquare className="w-4 h-4" /> "Add to Home Screen"
             </p>
           </div>
         ) : (
           <button
             onClick={handleInstallClick}
-            className="w-full bg-accent-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg shadow-green-900/10"
+            className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-sm shadow-xl"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-5 h-5 text-white" />
             Install Application
           </button>
         )}

@@ -56,8 +56,29 @@ export class IdentityService {
                 Logger.info(`${type} verification successful and debited`, { userId });
 
                 const mappedData = { ...result.data };
+                
+                // 3. Normalize and Encrypt sensitive data
                 if (mappedData.nin) mappedData.nin = encryptIdentity(mappedData.nin);
                 if (mappedData.bvn) mappedData.bvn = encryptIdentity(mappedData.bvn);
+                
+                // Standardize Photo format (Base64 prefixing)
+                if (mappedData.photo && !mappedData.photo.startsWith('http') && !mappedData.photo.startsWith('data:image')) {
+                    mappedData.photo = `data:image/jpeg;base64,${mappedData.photo}`;
+                }
+
+                // Standardize DOB format (Ensures YYYY-MM-DD for reliable frontend parsing)
+                if (mappedData.dob) {
+                    const dob = mappedData.dob;
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+                        const parts = dob.split(/[-/]/);
+                        if (parts.length === 3) {
+                            // Convert DD-MM-YYYY to YYYY-MM-DD
+                            if (parts[0].length === 2 && parts[2].length === 4) {
+                                mappedData.dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                        }
+                    }
+                }
 
                 return {
                     ...result,

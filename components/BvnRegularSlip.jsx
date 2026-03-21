@@ -10,11 +10,22 @@ export default function BvnRegularSlip({ user, forwardedRef }) {
 
     const formatDOB = (dob) => {
         if (!dob) return "";
-        return new Date(dob).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-        }).replace(/ /g, "-");
+        try {
+            const normalized = dob.includes('-') && dob.split('-')[0].length === 2 
+                ? dob.split('-').reverse().join('-') 
+                : dob;
+                
+            const date = new Date(normalized);
+            if (isNaN(date.getTime())) return dob;
+            
+            return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }).replace(/ /g, "-");
+        } catch (e) {
+            return dob;
+        }
     };
 
     const DataRow = ({ label, value }) => (

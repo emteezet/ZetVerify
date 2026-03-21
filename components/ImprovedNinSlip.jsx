@@ -34,11 +34,22 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
 
     const formatDOB = (dob) => {
         if (!dob) return "";
-        return new Date(dob).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-        }).toUpperCase();
+        try {
+            const normalized = dob.includes('-') && dob.split('-')[0].length === 2 
+                ? dob.split('-').reverse().join('-') 
+                : dob;
+                
+            const date = new Date(normalized);
+            if (isNaN(date.getTime())) return dob;
+            
+            return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }).toUpperCase();
+        } catch (e) {
+            return dob;
+        }
     };
 
     const formatIssueDate = () => {

@@ -34,11 +34,23 @@ export default function PremiumPlasticCard({ user, qrCodeData, forwardedRef }) {
 
     const formatDOB = (dob) => {
         if (!dob) return "";
-        return new Date(dob).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-        }).toUpperCase();
+        try {
+            // Normalize DD-MM-YYYY to DD/MM/YYYY for Safari/Mobile compatibility if needed
+            const normalized = dob.includes('-') && dob.split('-')[0].length === 2 
+                ? dob.split('-').reverse().join('-') // Try to flip to YYYY-MM-DD
+                : dob;
+                
+            const date = new Date(normalized);
+            if (isNaN(date.getTime())) return dob; // Fallback to raw string if parsing fails
+            
+            return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }).toUpperCase();
+        } catch (e) {
+            return dob;
+        }
     };
 
     const formatIssueDate = () => {

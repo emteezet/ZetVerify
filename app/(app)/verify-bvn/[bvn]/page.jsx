@@ -247,60 +247,72 @@ function BVNContent() {
     })
     : "N/A";
 
+  // Strip [UNENCRYPTED_DEV_MODE]: prefix on the frontend if present
+  const displayData = { ...data };
+  if (displayData.nin && displayData.nin.startsWith('[UNENCRYPTED_DEV_MODE]:')) {
+      displayData.nin = displayData.nin.replace('[UNENCRYPTED_DEV_MODE]:', '');
+  }
+  if (displayData.bvn && displayData.bvn.startsWith('[UNENCRYPTED_DEV_MODE]:')) {
+      displayData.bvn = displayData.bvn.replace('[UNENCRYPTED_DEV_MODE]:', '');
+  }
+  if (displayData.tracking_id && displayData.tracking_id.startsWith('[UNENCRYPTED_DEV_MODE]:')) {
+      displayData.tracking_id = displayData.tracking_id.replace('[UNENCRYPTED_DEV_MODE]:', '');
+  }
+
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-12 gap-8">
       {/* Hidden container for PDF rendering */}
       <div ref={documentRef} style={{ position: "absolute", left: "-9999px", top: 0 }}>
-        {slipType === "improved" && data && (
+        {slipType === "improved" && displayData && (
           <div className="w-[500px] bg-white">
             <ImprovedNinSlip
               user={{
-                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                middleName: data.middleName || "",
-                nin: data.nin || data.tracking_id || "00000000000",
-                dob: data.dob || "1990-05-15",
-                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                firstName: displayData.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: displayData.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: displayData.middleName || "",
+                nin: displayData.nin || displayData.tracking_id || "00000000000",
+                dob: displayData.dob || "1990-05-15",
+                photo: displayData.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
               }}
               forwardedRef={documentRef}
             />
           </div>
         )}
 
-        {slipType === "premium" && data && (
+        {slipType === "premium" && displayData && (
           <div className="w-[500px] bg-white">
             <PlasticBvn
               user={{
-                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                middleName: data.middleName || "",
-                bvn: data.bvn,
-                gender: data.gender || "M",
-                dob: data.dob || "1990-05-15",
-                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                firstName: displayData.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: displayData.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: displayData.middleName || "",
+                bvn: displayData.bvn,
+                gender: displayData.gender || "M",
+                dob: displayData.dob || "1990-05-15",
+                photo: displayData.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
               }}
               forwardedRef={documentRef}
             />
           </div>
         )}
 
-        {slipType === "slip" && data && (
+        {slipType === "slip" && displayData && (
           <div className="w-[850px] bg-white">
             <BvnRegularSlip 
               user={{
-                firstName: data.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
-                lastName: data.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
-                middleName: data.middleName || "",
-                bvn: data.bvn,
-                nin: data.nin || data.tracking_id || "18691733426",
-                gender: data.gender || "MALE",
-                dob: data.dob || "1996-09-04",
-                phone: data.phone || "07036730633",
-                state: data.state || "KATSINA STATE",
-                lga: data.lga || "MATAZU",
-                address: data.address || "SHARARRAR PIPE KOFAR KWAYA KATSINA",
-                maritalStatus: data.maritalStatus || "SINGLE",
-                photo: data.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
+                firstName: displayData.firstName || bankDetails.accountName?.split(' ')[1] || "IBRAHIM",
+                lastName: displayData.lastName || bankDetails.accountName?.split(' ')[0] || "ADEBAYO",
+                middleName: displayData.middleName || "",
+                bvn: displayData.bvn,
+                nin: displayData.nin || displayData.tracking_id || "18691733426",
+                gender: displayData.gender || "MALE",
+                dob: displayData.dob || "1996-09-04",
+                phone: displayData.phone || "07036730633",
+                state: displayData.state || "KATSINA STATE",
+                lga: displayData.lga || "MATAZU",
+                address: displayData.address || "SHARARRAR PIPE KOFAR KWAYA KATSINA",
+                maritalStatus: displayData.maritalStatus || "SINGLE",
+                photo: displayData.photo || "https://api.dicebear.com/7.x/avataaars/svg?seed=BVN"
               }}
               forwardedRef={documentRef}
             />
@@ -317,9 +329,9 @@ function BVNContent() {
             slipType={slipType === "slip" ? "full" : "plastic"}
             renderCustom={({ onClick, isLoading, error }) => (
               <ProfilePreview
-                user={data}
+                user={displayData}
                 idType="BVN"
-                idNumber={data.bvn}
+                idNumber={displayData.bvn || decodeURIComponent(params.bvn)}
                 onDownload={onClick}
                 isDownloading={isLoading}
                 error={error}

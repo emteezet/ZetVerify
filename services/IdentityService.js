@@ -1,4 +1,5 @@
 import { NinBvnPortalProvider } from "../lib/adapters/NinBvnPortalProvider";
+import { QoreIdProvider } from "../lib/adapters/QoreIdProvider";
 import { walletService } from "./WalletService";
 import { encryptIdentity, maskData } from "../lib/crypto/encryption";
 import { Logger } from "../lib/utils/logger";
@@ -24,6 +25,9 @@ export class IdentityService {
             switch (providerType.toLowerCase()) {
                 case 'ninbvnportal':
                     provider = new NinBvnPortalProvider();
+                    break;
+                case 'qoreid':
+                    provider = new QoreIdProvider();
                     break;
                 default:
                     throw new Error(`Invalid or unsupported KYC provider: ${providerType}`);

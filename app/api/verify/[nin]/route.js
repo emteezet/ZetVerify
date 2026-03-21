@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
 import { identityService } from '@/services/IdentityService';
+import { authenticateRequest } from '@/lib/utils/auth';
 
 export async function GET(request, { params }) {
     try {
         // In Next.js 15+, params is a promise
         const resolvedParams = await params;
-        const { nin } = resolvedParams;
+        const rawNin = resolvedParams.nin;
+        
+        // Import decryption helper
+        const { decryptIdentity } = require('@/lib/crypto/encryption');
+        const nin = decryptIdentity(decodeURIComponent(rawNin));
 
-        console.log(`[API] Verifying NIN: ${nin}`);
+        console.log(`[API] Verifying NIN: ${nin} (Raw: ${rawNin})`);
 
         // Validate NIN format
         if (!nin || !/^\d{11}$/.test(nin)) {
@@ -19,78 +23,11 @@ export async function GET(request, { params }) {
         }
 
         // ── 1. Authenticate the request ──────────────────────────────────
-        const authHeader = request.headers.get('Authorization');
-        const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+        const { user: authUser, error: authErrorMsg } = await authenticateRequest(request);
 
-        if (!token) {
-            console.error('[API Dynamic NIN] Auth token missing or invalid prefix');
+        if (!authUser) {
             return NextResponse.json(
-                { error: 'Unauthorized. Please log in to see results.' },
-                { status: 401 }
-            );
-        }
-
-        let authUser = null;
-        let authError = null;
-        const https = await import('https');
-        
-        try {
-            authUser = await new Promise((resolve) => {
-                const url = new URL(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`);
-                const options = {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-                    },
-                    timeout: 10000
-                };
-
-                const req = https.request(url, options, (res) => {
-                    let data = '';
-                    res.on('data', (chunk) => { data += chunk; });
-                    res.on('end', () => {
-                        try {
-                            const json = JSON.parse(data || '{}');
-                            if (res.statusCode === 200) {
-                                resolve(json);
-                            } else {
-                                authError = { message: json.msg || json.message || 'Auth failed' };
-                                resolve(null);
-                            }
-                        } catch (e) {
-                            authError = { message: 'Invalid server response' };
-                            resolve(null);
-                        }
-                    });
-                });
-
-                req.on('error', (e) => {
-                    console.error('[API Dynamic NIN] HTTPS Request Error:', e.message);
-                    authError = { message: `Auth service unreachable: ${e.message}` };
-                    resolve(null);
-                });
-
-                req.on('timeout', () => {
-                    req.destroy();
-                    authError = { message: 'Authentication timed out' };
-                    resolve(null);
-                });
-
-                req.end();
-            });
-        } catch (err) {
-            console.error('[API Dynamic NIN] Critical auth check failure:', err);
-            authError = { message: 'Authentication internal error' };
-        }
-
-        if (authError || !authUser) {
-            console.error('[API Dynamic NIN] Auth failure:', {
-                message: authError?.message,
-                tokenLength: token?.length
-            });
-            return NextResponse.json(
-                { error: authError?.message || 'Session expired. Please log in again.' },
+                { error: authErrorMsg || 'Session expired. Please log in again.' },
                 { status: 401 }
             );
         }

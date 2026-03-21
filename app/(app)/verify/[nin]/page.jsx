@@ -171,7 +171,17 @@ function VerifyContent() {
     );
   }
 
-  const user = data.user;
+  // 4. Strip [UNENCRYPTED_DEV_MODE]: prefix on the frontend if present
+  // (The full decryption happens on the server, but the frontend needs the raw string for rendering the slip)
+  const displayUser = { ...data.user };
+  if (displayUser.nin && displayUser.nin.startsWith('[UNENCRYPTED_DEV_MODE]:')) {
+      displayUser.nin = displayUser.nin.replace('[UNENCRYPTED_DEV_MODE]:', '');
+  }
+  if (displayUser.bvn && displayUser.bvn.startsWith('[UNENCRYPTED_DEV_MODE]:')) {
+      displayUser.bvn = displayUser.bvn.replace('[UNENCRYPTED_DEV_MODE]:', '');
+  }
+
+  const user = displayUser;
   const fullName = [user.firstName, user.middleName, user.lastName]
     .filter(Boolean)
     .join(" ");
@@ -219,7 +229,7 @@ function VerifyContent() {
             Identity Verified
           </h1>
           <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
-            NIN: {params.nin}
+            NIN: {user.nin || decodeURIComponent(params.nin)}
           </p>
         </div>
 
@@ -249,13 +259,13 @@ function VerifyContent() {
             {(slipType === "premium" || slipType === "regular" || slipType === "improved") ? (
                 <DownloadButton 
                     templateRef={documentRef} 
-                    fileName={`NIN-Slip-${params.nin}`} 
+                    fileName={`NIN-Slip-${user.nin || params.nin}`} 
                     slipType={(slipType === "premium" || slipType === "improved") ? "plastic" : "full"} 
                     renderCustom={({ onClick, isLoading, error }) => (
                         <ProfilePreview
                             user={user}
                             idType="NIN"
-                            idNumber={params.nin}
+                            idNumber={user.nin || decodeURIComponent(params.nin)}
                             onDownload={onClick}
                             isDownloading={isLoading}
                             error={error}

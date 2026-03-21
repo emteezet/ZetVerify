@@ -46,7 +46,17 @@ export class IdentityService {
         Logger.info(`Initiating ${type} verification`, { userId, identifier: maskData(identifier) });
 
         try {
-            // 1. Fetch data from provider first (Verification check)
+            // 1. PRE-CHECK: Ensure user has sufficient balance BEFORE calling provider
+            const currentBalance = await this.walletService.getBalance(userId);
+            if (currentBalance < fee) {
+                Logger.warn(`Insufficient balance for ${type} (Pre-check)`, { userId, balance: currentBalance, fee });
+                throw new IdentityError(
+                    `Insufficient wallet balance. You need at least ₦${fee} to perform this verification.`, 
+                    ErrorCodes.INSUFFICIENT_BALANCE
+                );
+            }
+
+            // 2. Fetch data from provider (Verification check)
             const result = await fetchMethod();
 
             if (result.success) {

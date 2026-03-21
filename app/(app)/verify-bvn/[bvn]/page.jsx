@@ -21,6 +21,15 @@ function BVNContent() {
   const slipType = searchParams.get("slipType") || "slip";
   const documentRef = useRef(null);
 
+  const { isAuthenticated, loading: authLoading } = useAuth();
+
+  // 0. Redirection Logic
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+        window.location.href = "/auth/login";
+    }
+  }, [authLoading, isAuthenticated]);
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/components/AuthContext";
+
 import {
   Hash, Phone, CreditCard, Star, ShieldCheck,
   ChevronRight, AlertCircle, Loader2, FileText, UserCheck, Wallet
@@ -67,6 +69,7 @@ const BVN_SEARCH_TABS = [
 function HubContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const [serviceType, setServiceType] = useState("nin");
   const [searchTab, setSearchTab] = useState("nin");
@@ -76,8 +79,16 @@ function HubContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Authentication Protection
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/auth/login");
+    }
+  }, [authLoading, isAuthenticated, router]);
+
   // Sync with URL params
   useEffect(() => {
+    if (!isAuthenticated) return;
     const type = searchParams.get("type");
     const id = searchParams.get("id");
     const searchBy = searchParams.get("searchBy");

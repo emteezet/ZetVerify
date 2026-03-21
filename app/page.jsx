@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthContext";
 import {
@@ -19,6 +19,13 @@ import {
 
 export default function HomePage() {
     const { isAuthenticated } = useAuth();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Helper to avoid hydration mismatch
 
     return (
         <main className="min-h-screen bg-white text-slate-900 selection:bg-[#008751]/20 overflow-x-hidden">
@@ -34,18 +41,30 @@ export default function HomePage() {
                         </span>
                     </div>
                     <div className="flex items-center gap-6">
-                        {!isAuthenticated && (
-                            <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#008751] transition-colors hidden sm:block">
-                                Login
+                        {mounted ? (
+                            <>
+                                {!isAuthenticated && (
+                                    <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#008751] transition-colors hidden sm:block">
+                                        Login
+                                    </Link>
+                                )}
+                                <Link
+                                    href={isAuthenticated ? "/dashboard" : "/auth/signup"}
+                                    className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                                >
+                                    {isAuthenticated ? "Dashboard" : "Get Started"}
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                            </>
+                        ) : (
+                             <Link
+                                href="/auth/signup"
+                                className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                            >
+                                Get Started
+                                <ArrowRight className="w-4 h-4" />
                             </Link>
                         )}
-                        <Link
-                            href={isAuthenticated ? "/dashboard" : "/auth/signup"}
-                            className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2"
-                        >
-                            {isAuthenticated ? "Go to Dashboard" : "Get Started"}
-                            <ArrowRight className="w-4 h-4" />
-                        </Link>
                     </div>
                 </div>
             </nav>
@@ -79,13 +98,23 @@ export default function HomePage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <Link
-                                    href={isAuthenticated ? "/dashboard/verify" : "/auth/signup"}
-                                    className="px-8 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
-                                >
-                                    <Search className="h-6 w-6" />
-                                    Start Verification
-                                </Link>
+                                {mounted ? (
+                                    <Link
+                                        href={isAuthenticated ? "/verify" : "/auth/login"}
+                                        className="px-8 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
+                                    >
+                                        <Search className="h-6 w-6" />
+                                        Start Verification
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        href="/auth/login"
+                                        className="px-8 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
+                                    >
+                                        <Search className="h-6 w-6" />
+                                        Start Verification
+                                    </Link>
+                                )}
                                 <div className="flex items-center gap-3 px-6 py-5 text-slate-400 font-bold">
                                     <Lock className="w-5 h-5" />
                                     Trusted by 10k+ users

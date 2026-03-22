@@ -52,15 +52,15 @@ export default function BottomNav() {
               href={item.href}
               className="relative flex flex-col items-center gap-1.5 transition-all duration-300 ease-out py-1 px-2"
               style={{
-                color: active ? "#0d6b0d" : "var(--text-secondary)",
+                color: active ? "var(--accent-green)" : "var(--text-secondary)",
                 minWidth: "60px"
               }}
             >
               {/* Active Indicator Background */}
               {active && (
                 <div 
-                  className="absolute inset-0 bg-green-50/20 rounded-xl -z-10 animate-in fade-in zoom-in duration-300"
-                  style={{ background: "rgba(13, 107, 13, 0.08)" }}
+                  className="absolute inset-0 rounded-xl -z-10 animate-in fade-in zoom-in duration-300"
+                  style={{ background: "var(--accent-green-glow)" }}
                 />
               )}
               

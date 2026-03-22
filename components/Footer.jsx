@@ -15,7 +15,7 @@ export default function Footer() {
           Developed by
         </p>
         <p className="text-lg font-bold" style={{ color: "#0d6b0d" }}>
-          Emteezet Tech
+          Emteezet Technologies Ltd.
         </p>
         <p
           className="text-xs mt-4"

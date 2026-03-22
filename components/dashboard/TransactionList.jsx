@@ -15,22 +15,31 @@ import {
     Info,
     Filter
 } from "lucide-react";
+import Link from "next/link";
 import { getTransactionsAction } from "../../actions/wallet";
 import { useNotification } from "../NotificationContext";
 
-export default function TransactionList({ userId, refreshTrigger, limit = 10 }) {
+export default function TransactionList({ userId, refreshTrigger, limit = 10, viewAllHref = null }) {
     const { showNotification } = useNotification();
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("ALL"); // ALL, CREDIT, DEBIT
     const [searchQuery, setSearchQuery] = useState("");
     const [copyingId, setCopyingId] = useState(null);
+    const [displayLimit, setDisplayLimit] = useState(limit);
+    const [hasMore, setHasMore] = useState(true);
  
     const fetchTransactions = async () => {
         setLoading(true);
-        const result = await getTransactionsAction(userId, limit);
+        const result = await getTransactionsAction(userId, displayLimit + 1);
         if (result.success) {
-            setTransactions(result.transactions);
+            if (result.transactions.length > displayLimit) {
+                setTransactions(result.transactions.slice(0, displayLimit));
+                setHasMore(true);
+            } else {
+                setTransactions(result.transactions);
+                setHasMore(false);
+            }
         } else {
             showNotification(result.error, "error");
         }
@@ -38,8 +47,16 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10 }) 
     };
 
     useEffect(() => {
+        setDisplayLimit(limit);
+    }, [limit]);
+
+    useEffect(() => {
         fetchTransactions();
-    }, [userId, refreshTrigger]);
+    }, [userId, refreshTrigger, displayLimit]);
+
+    const handleLoadMore = () => {
+        setDisplayLimit(prev => prev + 10);
+    };
 
     const filteredTransactions = transactions.filter(tx => {
         const matchesSearch = 
@@ -282,13 +299,29 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10 }) 
                 )}
             </div>
 
-            {transactions.length > 0 && (
+            {viewAllHref && transactions.length > 0 ? (
                 <div className="p-4 border-t border-bg-secondary/50 flex justify-center">
-                    <button className="text-[10px] font-bold text-accent-green hover:underline flex items-center gap-1">
+                    <Link 
+                        href={viewAllHref}
+                        className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline flex items-center gap-2 group"
+                    >
                         View Full Audit Log
-                        <ExternalLink className="w-3 h-3" />
-                    </button>
+                        <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                    </Link>
                 </div>
+            ) : (
+                !viewAllHref && hasMore && transactions.length > 0 && (
+                    <div className="p-4 border-t border-bg-secondary/50 flex justify-center">
+                        <button 
+                            onClick={handleLoadMore}
+                            disabled={loading}
+                            className="text-[10px] font-black uppercase tracking-widest text-accent-green hover:underline flex items-center gap-2 group disabled:opacity-50"
+                        >
+                            {loading ? "Loading..." : "Show More Transactions"}
+                            {!loading && <ChevronRight className="w-3 h-3 rotate-90 transition-transform group-hover:translate-y-1" />}
+                        </button>
+                    </div>
+                )
             )}
         </div>
     );

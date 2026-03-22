@@ -92,6 +92,7 @@ export default function WalletPage() {
         <TransactionList
           userId={user.id}
           refreshTrigger={refreshTrigger}
+          limit={10}
         />
       </div>
     </div>

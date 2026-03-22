@@ -102,7 +102,7 @@ export default function TransactionsPage() {
         <TransactionList
           userId={user.id}
           refreshTrigger={refreshTrigger}
-          limit={50}
+          limit={10}
         />
       </div>
     </div>

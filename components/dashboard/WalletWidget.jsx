@@ -27,7 +27,21 @@ export default function WalletWidget({ userId, userEmail }) {
     };
 
     useEffect(() => {
-        fetchBalance();
+        if (userId) {
+            fetchBalance();
+        }
+        
+        // Essential for handling BFCache restoration (common in mobile redirects)
+        const handlePageShow = (event) => {
+            if (event.persisted) {
+                setIsInitializing(false);
+                setLoading(false);
+            }
+        };
+
+        setIsInitializing(false);
+        window.addEventListener("pageshow", handlePageShow);
+        return () => window.removeEventListener("pageshow", handlePageShow);
     }, [userId]);
 
     const handleFund = async (e) => {
@@ -38,14 +52,18 @@ export default function WalletWidget({ userId, userEmail }) {
         }
 
         setIsInitializing(true);
-        const result = await initializePaymentAction(userEmail, Number(amount));
+        try {
+            const result = await initializePaymentAction(userEmail, Number(amount));
 
-        if (result.success && result.data.authorization_url) {
-            showNotification("Redirecting to payment gateway...", "success");
-            // Redirect to Paystack checkout
-            window.location.href = result.data.authorization_url;
-        } else {
-            showNotification(result.error || "Payment initialization failed", "error");
+            if (result.success && result.data.authorization_url) {
+                showNotification("Redirecting to payment gateway...", "success");
+                window.location.href = result.data.authorization_url;
+            } else {
+                showNotification(result.error || "Payment initialization failed", "error");
+                setIsInitializing(false);
+            }
+        } catch (error) {
+            showNotification("A network error occurred", "error");
             setIsInitializing(false);
         }
     };
@@ -132,7 +150,10 @@ export default function WalletWidget({ userId, userEmail }) {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setShowFundInput(false)}
+                            onClick={() => {
+                                setShowFundInput(false);
+                                setIsInitializing(false);
+                            }}
                             className="btn-secondary px-4 py-2.5 text-sm"
                         >
                             Cancel

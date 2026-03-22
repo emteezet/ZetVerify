@@ -14,7 +14,7 @@ export default function OfflineBanner() {
             <p className="text-sm font-bold tracking-tight">
                 You are currently offline. Please check your internet connection.
             </p>
-            <AlertTriangle className="w-4 h-4 opacity-75 hidden sm:block" />
+            <AlertTriangle className="w-4 h-4 opacity-75 hidden md:block" />
         </div>
     );
 }

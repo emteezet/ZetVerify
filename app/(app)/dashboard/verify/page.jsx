@@ -148,7 +148,7 @@ export default function DashboardVerifyPage() {
                     {userData && (
                         <div className="animate-in fade-in slide-in-from-bottom-5 duration-700 space-y-8">
                             <div className="flex flex-col items-center justify-center p-8 bg-slate-50 rounded-[3rem] border-2 border-slate-100 shadow-inner min-h-[450px]">
-                                <div className="scale-75 sm:scale-100 lg:scale-[1.1] transition-all origin-center">
+                                <div className="scale-75 md:scale-100 lg:scale-[1.1] transition-all origin-center">
                                     <PremiumPlasticCard 
                                         user={userData} 
                                         qrCodeData={`NIN:${userData.nin}`} 

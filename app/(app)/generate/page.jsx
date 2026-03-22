@@ -77,9 +77,9 @@ export default function GeneratePage() {
                 </div>
 
                 {/* Master Component */}
-                <div className="bg-white p-1 sm:p-2 rounded-[3.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
+                <div className="bg-white p-1 md:p-2 rounded-[3.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
                     <div className="p-6 md:p-12 flex flex-col items-center gap-12">
-                         <div className="scale-75 sm:scale-100 lg:scale-[1.1] transition-all origin-center">
+                         <div className="scale-75 md:scale-100 lg:scale-[1.1] transition-all origin-center">
                             <PremiumPlasticCard 
                                 user={result.user} 
                                 qrCodeData={`NIN:${result.user.nin}`} 
@@ -96,7 +96,7 @@ export default function GeneratePage() {
                 </div>
 
                 {/* Verification Summary */}
-                <div className="mt-12 grid sm:grid-cols-2 gap-6">
+                <div className="mt-12 grid md:grid-cols-2 gap-6">
                     <div className="bg-[#008751] p-8 rounded-[2.5rem] text-white overflow-hidden relative group">
                         <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full group-hover:scale-110 transition-transform duration-700" />
                         <h3 className="text-xl font-bold mb-2">Verification URL</h3>

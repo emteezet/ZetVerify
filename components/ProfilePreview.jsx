@@ -86,11 +86,11 @@ export default function ProfilePreview({
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-1">Phone Number</p>
                         <p className="text-sm font-semibold text-gray-800">{phone}</p>
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div className="col-span-2 md:col-span-1">
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-1">State / Region</p>
                         <p className="text-sm font-semibold text-gray-800">{stateOrigin}</p>
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
+                    <div className="col-span-2 md:col-span-1">
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-1">LGA of Origin</p>
                         <p className="text-sm font-semibold text-gray-800">{lgaOrigin}</p>
                     </div>

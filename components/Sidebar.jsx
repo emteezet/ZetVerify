@@ -6,25 +6,9 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const pathname = usePathname();
   const { isAuthenticated, loading } = useAuth();
-
-  // Handle responsive behavior
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      // On desktop, always keep sidebar open; on mobile, keep it closed
-      setIsOpen(!mobile);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const menuItems = [
     { name: "Dashboard", href: "/dashboard", icon: "📊" },
@@ -52,15 +36,10 @@ export default function Sidebar() {
     <>
       {/* Sidebar */}
       <aside
-        className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 transition-all duration-300 ease-in-out md:translate-x-0"
+        className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 transition-all duration-300 ease-in-out hidden md:block"
         style={{
           background: "var(--bg-card)",
           borderRight: "1px solid var(--border-color)",
-          transform: isMobile
-            ? isOpen
-              ? "translateX(0)"
-              : "translateX(-100%)"
-            : "translateX(0)",
           zIndex: 40,
         }}
       >
@@ -107,11 +86,6 @@ export default function Sidebar() {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          onClick={() => {
-                            if (isMobile) {
-                              setIsOpen(false);
-                            }
-                          }}
                           className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm block`}
                           style={{
                             background: isActive(subItem.href)
@@ -138,11 +112,6 @@ export default function Sidebar() {
               ) : (
                 <Link
                   href={item.href}
-                  onClick={() => {
-                    if (isMobile) {
-                      setIsOpen(false);
-                    }
-                  }}
                   className={`px-4 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm font-medium`}
                   style={{
                     background: isActive(item.href)
@@ -166,39 +135,6 @@ export default function Sidebar() {
         </nav>
       </aside>
 
-      {/* Mobile Toggle Button - Show on mobile only when authenticated */}
-      {isMobile && isAuthenticated && (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="fixed left-4 top-20 z-50 md:hidden p-2 rounded-lg transition-colors"
-          style={{
-            background: "var(--bg-card)",
-            border: "1px solid var(--border-color)",
-            color: "var(--text-primary)",
-          }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-          >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </button>
-      )}
-
-      {/* Mobile Overlay */}
-      {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 top-16 md:hidden"
-          style={{ background: "rgba(0, 0, 0, 0.5)", zIndex: 30 }}
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </>
   );
 }

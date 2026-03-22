@@ -20,7 +20,7 @@ export default function Navbar() {
         opacity: 0.98,
       }}
     >
-      <div className="max-w-full mx-auto px-4 sm:px-6">
+      <div className="max-w-full mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
@@ -33,7 +33,7 @@ export default function Navbar() {
               NIN
             </div>
             <span
-              className="text-lg font-semibold tracking-tight hidden sm:block"
+              className="text-lg font-semibold tracking-tight hidden md:block"
               style={{
                 fontFamily: "Outfit, sans-serif",
                 color: "var(--text-primary)",
@@ -52,7 +52,7 @@ export default function Navbar() {
                 {isAuthenticated ? (
                   <div className="flex items-center gap-3">
                     <span
-                      className="text-sm hidden sm:inline"
+                      className="text-sm hidden md:inline"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       {user?.firstName || user?.email}

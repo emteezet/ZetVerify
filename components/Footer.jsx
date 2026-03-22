@@ -7,7 +7,7 @@ export default function Footer() {
         borderColor: "var(--border-color)",
       }}
     >
-      <div className="max-w-6xl mx-auto text-center">
+      <div className="max-w-6xl mx-auto px-6 text-center">
         <p
           className="text-sm font-medium mb-2"
           style={{ color: "var(--text-primary)" }}

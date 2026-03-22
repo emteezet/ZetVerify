@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        
+
         if (session?.user) {
           setUser({
             id: session.user.id,
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
       if (password !== confirmPassword) {
         throw new Error("Passwords do not match");
       }
- 
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -89,30 +89,30 @@ export function AuthProvider({ children }) {
           }
         }
       });
- 
+
       if (error) throw error;
- 
+
       return { success: true, user: data.user };
     } catch (error) {
       return { success: false, error: error.message };
     }
   }, []);
- 
+
   const login = useCallback(async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
- 
+
       if (error) throw error;
- 
+
       return { success: true, user: data.user };
     } catch (error) {
       return { success: false, error: error.message };
     }
   }, []);
- 
+
   const logout = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -123,13 +123,13 @@ export function AuthProvider({ children }) {
       return { success: false, error: error.message };
     }
   }, [router]);
- 
+
   // ============================================================
   // INACTIVITY TIMEOUT LOGIC (Security Enhancement)
   // ============================================================
   const timeoutRef = useRef(null);
   const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
- 
+
   const resetInactivityTimer = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (user) {
@@ -139,18 +139,18 @@ export function AuthProvider({ children }) {
       }, INACTIVITY_LIMIT);
     }
   }, [user, logout]);
- 
+
   useEffect(() => {
     if (user) {
       // Initial timer set
       resetInactivityTimer();
- 
+
       // Event listeners for activity
       const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove"];
       events.forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
- 
+
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         events.forEach((event) => {

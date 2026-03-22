@@ -68,7 +68,7 @@ export default function TransactionsPage() {
       {/* Stats + Table */}
       <div className="max-w-6xl mx-auto px-6 -mt-16 space-y-8">
         {/* Live Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass-card p-6 flex items-center gap-4">
             <div className="p-3 bg-accent-green-light rounded-xl">
               <Activity className="w-6 h-6 text-accent-green" />

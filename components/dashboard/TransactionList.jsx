@@ -131,7 +131,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10 }) 
             </div>
 
             {/* Desktop Table View (Hidden on Mobile) */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
                         <tr className="bg-bg-secondary/30 text-text-muted text-[10px] uppercase tracking-wider">
@@ -220,7 +220,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10 }) 
             </div>
 
             {/* Mobile Card View (Hidden on Desktop) */}
-            <div className="block sm:hidden divide-y divide-bg-secondary/30">
+            <div className="block md:hidden divide-y divide-bg-secondary/30">
                 {loading ? (
                     [...Array(3)].map((_, i) => (
                         <div key={i} className="p-4 animate-pulse space-y-3">

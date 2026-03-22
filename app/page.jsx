@@ -56,7 +56,7 @@ export default function HomePage() {
                         ) : (
                             // Post-mount: Guest state
                             <>
-                                <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#008751] transition-colors hidden sm:block">
+                                <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#008751] transition-colors hidden md:block">
                                     Login
                                 </Link>
                                 <Link href="/auth/signup" className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function HomePage() {
                                 </span>
                             </div>
 
-                            <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.95]">
+                            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.95]">
                                 Secure Identity <br />
                                 <span className="text-[#008751]">Made Simple.</span>
                             </h1>
@@ -97,7 +97,7 @@ export default function HomePage() {
                                 Experience the fastest way to verify NIN and BVN records. Generate professional-grade digital IDs and slips with military-grade security.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-col md:flex-row gap-4">
                                 <Link
                                     href={!mounted ? "/auth/login" : (isAuthenticated ? "/verify" : "/auth/login")}
                                     className="px-8 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
@@ -114,7 +114,7 @@ export default function HomePage() {
 
                         {/* Interactive Illustration Placeholder */}
                         <div className="relative animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
-                            <div className="relative z-10 p-4 sm:p-8">
+                            <div className="relative z-10 p-4 md:p-8">
                                 {/* Digital ID Card CSS Illustration */}
                                 <div className="aspect-[1.6/1] bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl overflow-hidden border border-white/10 flex flex-col p-8 text-white relative group transition-transform hover:scale-[1.02] duration-500">
                                     {/* Holographic Mesh */}
@@ -152,7 +152,7 @@ export default function HomePage() {
                                     <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                                         <CheckCircle2 className="w-6 h-6" />
                                     </div>
-                                    <div className="hidden sm:block">
+                                    <div className="hidden md:block">
                                         <p className="text-xs font-black uppercase text-slate-400">Status</p>
                                         <p className="text-sm font-bold text-slate-900">NIN Verified</p>
                                     </div>
@@ -162,7 +162,7 @@ export default function HomePage() {
                                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                                         <Fingerprint className="w-6 h-6" />
                                     </div>
-                                    <div className="hidden sm:block">
+                                    <div className="hidden md:block">
                                         <p className="text-xs font-black uppercase text-slate-400">Security</p>
                                         <p className="text-sm font-bold text-slate-900">AES-256 Encrypted</p>
                                     </div>
@@ -177,7 +177,7 @@ export default function HomePage() {
             <section className="py-24 bg-slate-50/50 relative border-y border-slate-100">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-4">How it Works</h2>
+                        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-4">How it Works</h2>
                         <p className="text-slate-500 font-medium">Verify and generate your ID in three simple steps</p>
                     </div>
 
@@ -249,7 +249,7 @@ export default function HomePage() {
                         </div>
 
                         <div className="lg:w-1/2">
-                            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 mb-8 leading-tight">
+                            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-8 leading-tight">
                                 Built for trust. <br />
                                 Designed for speed.
                             </h2>
@@ -279,17 +279,17 @@ export default function HomePage() {
 
             {/* CTA Section */}
             <section className="py-20 px-6">
-                <div className="max-w-5xl mx-auto bg-slate-900 rounded-[3rem] p-12 sm:p-20 text-center relative overflow-hidden">
+                <div className="max-w-5xl mx-auto bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
                     {/* Background Decor */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#008751]/20 blur-[100px] pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] pointer-events-none" />
 
                     <div className="relative z-10">
-                        <h2 className="text-3xl sm:text-5xl font-black text-white mb-8 tracking-tighter">
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tighter">
                             Ready to generate <br />
                             your digital ID?
                         </h2>
-                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <div className="flex flex-col md:flex-row justify-center gap-4">
                             <Link
                                 href="/auth/signup"
                                 className="px-10 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] transition-all"

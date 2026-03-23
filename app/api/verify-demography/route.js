@@ -8,8 +8,9 @@ export async function POST(request) {
     try {
         const body = await request.json();
         const { firstname, lastname, dob, gender } = body;
+        const { maskData } = require('@/lib/crypto/encryption');
 
-        console.log(`[API] Verifying NIN via Demography: ${firstname} ${lastname}`);
+        console.log(`[API] Verifying NIN via Demography: ${maskData(firstname)} ${maskData(lastname)}`);
 
         if (!firstname || !lastname || !dob || !gender) {
             return NextResponse.json(
@@ -37,8 +38,9 @@ export async function POST(request) {
                 dob
             });
             
-            // Decrypt the result for the frontend
+            // Decrypt the result for the frontend display, but keep encrypted for navigation
             if (result.data && result.data.nin) {
+                result.data.fullNin = encodeURIComponent(result.data.nin); // Keep encrypted + URI safe
                 result.data.nin = decryptIdentity(result.data.nin);
             }
 

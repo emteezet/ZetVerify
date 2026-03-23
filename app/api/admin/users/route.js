@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase/admin';
 import { validateAdminSession, unauthorizedAdminResponse } from '@/lib/auth/admin';
+const { encryptIdentity, decryptIdentity, maskData } = require('@/lib/crypto/encryption');
 
 // GET — List all registry users
 export async function GET(request) {
@@ -15,7 +16,7 @@ export async function GET(request) {
 
         const sanitized = users.map((u) => ({
             id: u.id,
-            nin: u.nin,
+            nin: maskData(decryptIdentity(u.nin)), // Masked for admin security
             phone: u.phone,
             firstName: u.first_name,
             lastName: u.last_name,
@@ -26,6 +27,7 @@ export async function GET(request) {
             dob: u.dob,
             photo: u.photo,
             createdAt: u.created_at,
+            fullNin: u.nin, // Keep encrypted version for actions if needed
         }));
 
         return NextResponse.json({ success: true, users: sanitized });
@@ -77,7 +79,7 @@ export async function POST(request) {
         const { data: user, error } = await supabase
             .from('registry')
             .insert({
-                nin: body.nin,
+                nin: encryptIdentity(body.nin), // ENCRYPTED
                 phone: body.phone,
                 first_name: body.firstName,
                 last_name: body.lastName,

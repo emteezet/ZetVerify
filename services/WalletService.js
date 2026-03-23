@@ -14,15 +14,11 @@ export class WalletService {
      */
     async getBalance(userId) {
         try {
-            console.log('[WalletService.getBalance] Called with userId:', userId);
-            
             const { data: wallet, error: walletError } = await supabase
                 .from('wallets')
                 .select('id')
                 .eq('user_id', userId)
                 .single();
-
-            console.log('[WalletService.getBalance] Wallet query result:', { wallet, walletError: walletError?.message });
 
             if (walletError || !wallet) {
                 Logger.info("[WalletService] No wallet record found for user", { userId });
@@ -34,12 +30,9 @@ export class WalletService {
                 .select('amount')
                 .eq('wallet_id', wallet.id);
 
-            console.log('[WalletService.getBalance] Transactions:', { count: data?.length, error: error?.message });
-
             if (error) throw error;
 
             const balance = data.reduce((acc, curr) => acc + Number(curr.amount), 0);
-            console.log('[WalletService.getBalance] Computed balance:', balance);
             return balance;
         } catch (error) {
             Logger.error("Failed to fetch wallet balance", error, { userId });
@@ -110,31 +103,34 @@ export class WalletService {
         try {
             if (amount <= 0) throw new WalletError("Amount must be positive", ErrorCodes.VALIDATION_ERROR);
 
-            const { data: wallet } = await supabase
-                .from('wallets')
-                .select('id')
-                .eq('user_id', userId)
-                .single();
-
-            const { error } = await supabase
-                .from('transactions')
-                .insert({
-                    wallet_id: wallet.id,
-                    amount: -amount,
-                    type: 'SERVICE_FEE',
-                    metadata: { service: serviceType, date: new Date().toISOString() }
-                });
+            // ATOMIC DATABASE OPERATION: RPC Call
+            // This replaces the manual check-then-insert pattern which is prone to race conditions.
+            const { data, error } = await supabase.rpc('debit_wallet_v2', {
+                p_user_id: userId,
+                p_amount: amount,
+                p_service_type: serviceType,
+                p_metadata: { date: new Date().toISOString() }
+            });
 
             if (error) {
-                console.error('[WalletService.debitWallet] Supabase error:', JSON.stringify(error, null, 2));
-                if (error.message?.includes('no_negative_balance')) {
-                    throw new WalletError("Insufficient wallet balance", ErrorCodes.INSUFFICIENT_BALANCE);
+                Logger.error('[WalletService.debitWallet] Atomic RPC failed', error, { userId });
+                // Fallback for if the RPC function hasn't been created yet
+                if (error.message?.includes('function') && error.message?.includes('does not exist')) {
+                    throw new WalletError("System error: Atomic debit function missing. Please run the provided SQL in Supabase.");
                 }
                 throw error;
             }
 
-            Logger.info("Service debit successful", { userId, amount, serviceType });
-            return { success: true, debited: amount };
+            if (!data.success) {
+                Logger.warn("Service debit denied by RPC", { userId, error: data.error, amount });
+                if (data.code === 'INSUFFICIENT_BALANCE') {
+                    throw new WalletError("Insufficient wallet balance", ErrorCodes.INSUFFICIENT_BALANCE);
+                }
+                throw new WalletError(data.error || "Debit operation failed.");
+            }
+
+            Logger.info("Service debit successful (Atomic)", { userId, amount, serviceType, txId: data.transaction_id });
+            return { success: true, debited: amount, transactionId: data.transaction_id };
         } catch (error) {
             Logger.error("Service debit failure", error, { userId, amount, serviceType });
             throw error instanceof WalletError ? error : new WalletError("Debit operation failed.");
@@ -166,6 +162,41 @@ export class WalletService {
         if (error) throw new Error(`Could not fetch transactions: ${error.message}`);
 
         return data;
+    }
+
+    /**
+     * Refunds a previously debited amount (Atomic Credit)
+     * @param {string} userId 
+     * @param {number} amount 
+     * @param {string} serviceType 
+     */
+    async refundWallet(userId, amount, serviceType) {
+        try {
+            const { data: wallet } = await supabase
+                .from('wallets')
+                .select('id')
+                .eq('user_id', userId)
+                .single();
+
+            if (!wallet) throw new Error("Wallet not found for refund");
+
+            const { error } = await supabase
+                .from('transactions')
+                .insert({
+                    wallet_id: wallet.id,
+                    amount: amount,
+                    type: 'REFUND',
+                    metadata: { service: serviceType, reason: 'Service failure', date: new Date().toISOString() }
+                });
+
+            if (error) throw error;
+
+            Logger.info("Service refund successful", { userId, amount, serviceType });
+            return { success: true, refunded: amount };
+        } catch (error) {
+            Logger.error("Service refund failure", error, { userId, amount, serviceType });
+            throw error instanceof WalletError ? error : new WalletError("Refund operation failed.");
+        }
     }
 }
 

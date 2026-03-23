@@ -43,46 +43,44 @@ export class IdentityService {
      * @private
      */
     async _processVerification(userId, identifier, fee, type, fetchMethod) {
-        Logger.info(`Initiating ${type} verification`, { userId, identifier: maskData(identifier) });
+        Logger.info(`Initiating ${type} verification (Debit-First)`, { userId, identifier: maskData(identifier) });
 
         try {
-            // 1. PRE-CHECK: Ensure user has sufficient balance BEFORE calling provider
-            const currentBalance = await this.walletService.getBalance(userId);
-            if (currentBalance < fee) {
-                Logger.warn(`Insufficient balance for ${type} (Pre-check)`, { userId, balance: currentBalance, fee });
-                throw new IdentityError(
-                    `Insufficient wallet balance. You need at least ₦${fee} to perform this verification.`, 
-                    ErrorCodes.INSUFFICIENT_BALANCE
-                );
+            // 1. Debit wallet first! (Atomic protection against race conditions)
+            // The WalletService.debitWallet method will throw if balance is insufficient.
+            await this.walletService.debitWallet(userId, fee, type);
+
+            // 2. Fetch data from provider
+            let result;
+            try {
+                result = await fetchMethod();
+            } catch (providerError) {
+                // 3. REFUND if the provider call itself fails (Network error, etc.)
+                Logger.error(`${type} Provider system error. Rolling back debit.`, providerError, { userId });
+                await this.walletService.refundWallet(userId, fee, type);
+                throw providerError;
             }
 
-            // 2. Fetch data from provider (Verification check)
-            const result = await fetchMethod();
-
             if (result.success) {
-                // 2. ONLY debit fee if record is found and successful
-                await this.walletService.debitWallet(userId, fee, type);
-
-                Logger.info(`${type} verification successful and debited`, { userId });
+                Logger.info(`${type} verification successful`, { userId });
 
                 const mappedData = { ...result.data };
                 
-                // 3. Normalize and Encrypt sensitive data
+                // 4. Normalize and Encrypt sensitive data
                 if (mappedData.nin) mappedData.nin = encryptIdentity(mappedData.nin);
                 if (mappedData.bvn) mappedData.bvn = encryptIdentity(mappedData.bvn);
                 
-                // Standardize Photo format (Base64 prefixing)
+                // Standardize Photo format
                 if (mappedData.photo && !mappedData.photo.startsWith('http') && !mappedData.photo.startsWith('data:image')) {
                     mappedData.photo = `data:image/jpeg;base64,${mappedData.photo}`;
                 }
 
-                // Standardize DOB format (Ensures YYYY-MM-DD for reliable frontend parsing)
+                // Standardize DOB format
                 if (mappedData.dob) {
                     const dob = mappedData.dob;
                     if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
                         const parts = dob.split(/[-/]/);
                         if (parts.length === 3) {
-                            // Convert DD-MM-YYYY to YYYY-MM-DD
                             if (parts[0].length === 2 && parts[2].length === 4) {
                                 mappedData.dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
                             }
@@ -96,8 +94,11 @@ export class IdentityService {
                 };
             }
 
-            Logger.warn(`${type} verification failed by provider (No debit)`, { userId, error: result.error });
+            // 5. REFUND if provider returns success: false (Record not found)
+            Logger.warn(`${type} verification failed by provider. Rolling back debit.`, { userId, error: result.error });
+            await this.walletService.refundWallet(userId, fee, type);
             throw new IdentityError(result.error || "Identity not found in registry", ErrorCodes.IDENTITY_NOT_FOUND);
+
         } catch (error) {
             Logger.error(`IdentityService ${type} verification failure`, error, { userId });
             throw error instanceof IdentityError ? error : new IdentityError(`Verification system error: ${error.message}`);

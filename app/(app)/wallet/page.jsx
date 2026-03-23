@@ -52,8 +52,6 @@ export default function WalletPage() {
           {/* Wallet Card */}
           <div className="lg:col-span-4">
             <WalletWidget
-              userId={user.id}
-              userEmail={user.email}
               refreshTrigger={refreshTrigger}
               onFunded={() => setRefreshTrigger(p => p + 1)}
             />
@@ -90,7 +88,6 @@ export default function WalletPage() {
 
         {/* Transaction History */}
         <TransactionList
-          userId={user.id}
           refreshTrigger={refreshTrigger}
           limit={10}
         />

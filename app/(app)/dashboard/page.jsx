@@ -80,8 +80,6 @@ export default function DashboardPage() {
         <div className="mb-8">
           <div className="max-w-md animate-in animate-delay-2">
             <WalletWidget
-              userId={user.id || user._id}
-              userEmail={user.email}
               refreshTrigger={refreshTrigger}
             />
           </div>
@@ -91,14 +89,12 @@ export default function DashboardPage() {
           {/* Main Actions */}
           <div className="animate-in animate-delay-3">
             <IdentityRequestForm
-              userId={user.id || user._id}
               onSuccess={handleRefreshBalance}
             />
           </div>
 
           <div className="animate-in animate-delay-3">
             <TransactionList
-              userId={user.id || user._id}
               refreshTrigger={refreshTrigger}
               limit={5}
               viewAllHref="/transactions"

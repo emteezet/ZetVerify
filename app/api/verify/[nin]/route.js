@@ -8,11 +8,10 @@ export async function GET(request, { params }) {
         const resolvedParams = await params;
         const rawNin = resolvedParams.nin;
         
-        // Import decryption helper
-        const { decryptIdentity } = require('@/lib/crypto/encryption');
+        const { decryptIdentity, maskData } = require('@/lib/crypto/encryption');
         const nin = decryptIdentity(decodeURIComponent(rawNin));
 
-        console.log(`[API] Verifying NIN: ${nin} (Raw: ${rawNin})`);
+        console.log(`[API] Verifying NIN: ${maskData(nin)} (Raw: ${maskData(rawNin)})`);
 
         // Validate NIN format
         if (!nin || !/^\d{11}$/.test(nin)) {

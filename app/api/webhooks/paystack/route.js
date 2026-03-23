@@ -9,11 +9,12 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  */
 export async function POST(req) {
     try {
-        const body = await req.json();
+        const rawBody = await req.text();
+        const body = JSON.parse(rawBody);
         const signature = req.headers.get('x-paystack-signature');
 
         // 1. Verify Signature (Security)
-        if (!paystackService.verifyWebhookSignature(JSON.stringify(body), signature)) {
+        if (!paystackService.verifyWebhookSignature(rawBody, signature)) {
             return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
         }
 

@@ -1,24 +1,28 @@
 "use server";
 
 import { adminService } from "../services/AdminService";
+import { getServerUser } from "../lib/auth/session";
 
 /**
- * Server Action: Fetches platform-wide stats for the admin dashboard
- * @param {string} userEmail The email of the user requesting stats
- * @returns {Promise<object>}
+ * Server Action: Fetches platform statistics for the admin dashboard
  */
-export async function getPlatformStatsAction(userEmail) {
+export async function getPlatformStatsAction() {
     try {
+        const user = await getServerUser();
+        
+        // Security Check: Only allow if the logged-in user email matches the admin email
         const adminEmail = (process.env.ADMIN_EMAIL || "emteezetdesigns@gmail.com").toLowerCase().trim();
-        const requestingEmail = userEmail ? userEmail.toLowerCase().trim() : "";
-
-        console.log(`[Admin Auth] Requesting: "${requestingEmail}", Allowed: "${adminEmail}"`);
-
-        if (requestingEmail !== adminEmail) {
-            console.warn(`[Admin Auth] Access Denied for ${requestingEmail}`);
-            throw new Error("Unauthorized access to admin dashboard.");
+        
+        if (!user || user.email.toLowerCase().trim() !== adminEmail) {
+            console.error(`[Admin Auth] Unauthorized access attempt by: ${user?.email || 'Anonymous'}`);
+            return {
+                success: false,
+                error: "Unauthorized access. Admin privileges required.",
+                code: "UNAUTHORIZED"
+            };
         }
 
+        console.log(`[Admin Auth] Authorized access for: ${user.email}`);
         const stats = await adminService.getPlatformStats();
         return { success: true, stats };
     } catch (error) {

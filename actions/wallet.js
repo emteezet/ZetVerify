@@ -3,49 +3,36 @@
 import { headers } from "next/headers";
 import { walletService } from "../services/WalletService";
 import { paystackService } from "../services/PaystackService";
+import { requireAuth } from "../lib/auth/session";
 
 /**
  * Server Action: Fetches the current user balance
- * @param {string} userId 
  */
-export async function getBalanceAction(userId) {
+export async function getBalanceAction() {
     try {
-        const balance = await walletService.getBalance(userId);
+        const user = await requireAuth();
+        const balance = await walletService.getBalance(user.id);
         return { success: true, balance };
     } catch (error) {
         return { success: false, error: error.message, code: error.code || 'WALLET_ERROR' };
     }
 }
 
-/**
- * Server Action: Funds the wallet
- * @param {string} userId 
- * @param {number} amount 
- * @param {string} reference 
- */
-export async function fundWalletAction(userId, amount, reference) {
-    try {
-        const result = await walletService.fundWallet(userId, amount, reference);
-        return { success: true, ...result };
-    } catch (error) {
-        return { success: false, error: error.message, code: error.code || 'WALLET_ERROR' };
-    }
-}
 
 /**
  * Server Action: Initializes a Paystack transaction
- * @param {string} email 
  * @param {number} amount In NGN
  */
-export async function initializePaymentAction(email, amount) {
+export async function initializePaymentAction(amount) {
     try {
+        const user = await requireAuth();
         const headerList = await headers();
         const host = headerList.get("host");
         const protocol = host.includes("localhost") ? "http" : "https";
         const callbackUrl = `${protocol}://${host}/wallet/callback`;
 
         const response = await paystackService.initializeTransaction(
-            email,
+            user.email,
             amount * 100, // Convert to Kobo
             callbackUrl
         );
@@ -65,34 +52,25 @@ export async function initializePaymentAction(email, amount) {
  */
 export async function verifyPaymentAction(reference) {
     try {
+        const user = await requireAuth();
         const response = await paystackService.verifyTransaction(reference);
         
         if (response.status && response.data.status === 'success') {
-            const { amount, customer, reference: txRef } = response.data;
+            const { amount, reference: txRef, customer } = response.data;
             const amountInNGN = amount / 100; // Convert Kobo to NGN
-            const email = customer.email;
 
-            // Look up the user's profile by email
-            const { supabaseAdmin } = await import('../lib/supabase/admin');
-            const { data: profile } = await supabaseAdmin
-                .from('profiles')
-                .select('id')
-                .eq('email', email)
-                .single();
+            // Security Check: Ensure the payment was actually for THIS user
+            if (customer.email.toLowerCase() !== user.email.toLowerCase()) {
+                throw new Error("Transaction email mismatch. Verification failed.");
+            }
 
-            if (profile) {
-                // Credit the wallet (idempotent — skips if reference already exists)
-                try {
-                    await walletService.fundWallet(profile.id, amountInNGN, txRef);
-                } catch (fundErr) {
-                    // Duplicate reference means it was already processed (by webhook) — that's a success case for the UI
-                    const isDuplicate = fundErr.message?.includes('Duplicate') || fundErr.code === '23505' || (fundErr.message?.includes('Duplicate transaction reference'));
-                    
-                    if (!isDuplicate) {
-                        console.error('[verifyPaymentAction] Funding error:', fundErr.message);
-                        // We still return success: true because Paystack confirmed the payment.
-                        // The user's balance should reflect the update via the webhook.
-                    }
+            // Credit the wallet (idempotent — skips if reference already exists)
+            try {
+                await walletService.fundWallet(user.id, amountInNGN, txRef);
+            } catch (fundErr) {
+                const isDuplicate = fundErr.message?.includes('Duplicate') || fundErr.code === '23505';
+                if (!isDuplicate) {
+                    console.error('[verifyPaymentAction] Funding error:', fundErr.message);
                 }
             }
 
@@ -107,11 +85,11 @@ export async function verifyPaymentAction(reference) {
 
 /**
  * Server Action: Fetches recent transactions
- * @param {string} userId 
  */
-export async function getTransactionsAction(userId, limit = 10) {
+export async function getTransactionsAction(limit = 10) {
     try {
-        const transactions = await walletService.getTransactions(userId, limit);
+        const user = await requireAuth();
+        const transactions = await walletService.getTransactions(user.id, limit);
         return { success: true, transactions };
     } catch (error) {
         return { success: false, error: error.message, code: error.code || 'WALLET_ERROR' };

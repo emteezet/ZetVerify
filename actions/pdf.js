@@ -1,6 +1,7 @@
 "use server";
 
 import { pdfService } from "../services/PdfService";
+import { requireAuth } from "../lib/auth/session";
 
 /**
  * Server Action: Generates a PDF document from identity data
@@ -10,6 +11,7 @@ import { pdfService } from "../services/PdfService";
  */
 export async function generatePdfAction(userData, templateId = 'STANDARD') {
     try {
+        await requireAuth();
         const pdfBuffer = await pdfService.generateIdentityDoc(userData, templateId);
 
         // Convert Buffer to base64 for transport over Server Action

@@ -6,10 +6,10 @@ const { decryptIdentity } = require('@/lib/crypto/encryption');
 
 export async function POST(request) {
     try {
-        const body = await request.json();
         const { tracking_id } = body;
+        const { maskData } = require('@/lib/crypto/encryption');
 
-        console.log(`[API] Verifying NIN via Tracking ID: ${tracking_id}`);
+        console.log(`[API] Verifying NIN via Tracking ID: ${maskData(tracking_id)}`);
 
         if (!tracking_id || tracking_id.length < 5) {
             return NextResponse.json(
@@ -32,8 +32,10 @@ export async function POST(request) {
         try {
             const result = await identityService.verifyByNinTracking(authUser.id, tracking_id);
             
-            // Decrypt the result for the frontend
-            if (result.data) {
+            // Decrypt the result for the frontend display, but keep encrypted for navigation
+            if (result.data && (result.data.nin || result.data.bvn)) {
+                const rawVal = result.data.nin || result.data.bvn;
+                result.data.fullNin = encodeURIComponent(rawVal); // Keep encrypted + URI safe
                 if (result.data.nin) result.data.nin = decryptIdentity(result.data.nin);
                 if (result.data.bvn) result.data.bvn = decryptIdentity(result.data.bvn);
             }

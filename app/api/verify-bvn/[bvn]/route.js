@@ -7,11 +7,10 @@ export async function GET(request, { params }) {
         const resolvedParams = await params;
         const rawBvn = resolvedParams.bvn;
         
-        // Import decryption helper
-        const { decryptIdentity } = require('@/lib/crypto/encryption');
+        const { decryptIdentity, maskData } = require('@/lib/crypto/encryption');
         const bvn = decryptIdentity(decodeURIComponent(rawBvn));
 
-        console.log(`[API Dynamic BVN] Retrieving BVN: ${bvn} (Raw: ${rawBvn})`);
+        console.log(`[API Dynamic BVN] Retrieving BVN: ${maskData(bvn)} (Raw: ${maskData(rawBvn)})`);
 
         // Validate BVN format
         if (!bvn || !/^\d{11}$/.test(bvn)) {

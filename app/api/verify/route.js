@@ -32,8 +32,9 @@ export async function POST(request) {
         try {
             const result = await identityService.verifyNin(authUser.id, nin);
             
-            // Decrypt the result for the frontend
+            // Decrypt the result for the frontend display, but keep encrypted for navigation
             if (result.data && result.data.nin) {
+                result.data.fullNin = encodeURIComponent(result.data.nin); // Keep encrypted + URI safe
                 result.data.nin = decryptIdentity(result.data.nin);
             }
 

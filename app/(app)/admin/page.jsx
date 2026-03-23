@@ -28,9 +28,8 @@ export default function AdminDashboardPage() {
     const [error, setError] = useState(null);
 
     const fetchStats = async () => {
-        if (!user) return;
         setFetching(true);
-        const result = await getPlatformStatsAction(user.email);
+        const result = await getPlatformStatsAction();
         if (result.success) {
             setStats(result.stats);
             if (stats) showNotification("Dashboard statistics updated", "success");

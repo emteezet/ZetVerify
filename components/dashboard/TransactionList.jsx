@@ -31,7 +31,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
  
     const fetchTransactions = async () => {
         setLoading(true);
-        const result = await getTransactionsAction(userId, displayLimit + 1);
+        const result = await getTransactionsAction(displayLimit + 1);
         if (result.success) {
             if (result.transactions.length > displayLimit) {
                 setTransactions(result.transactions.slice(0, displayLimit));

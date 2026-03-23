@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase/admin';
 import { validateAdminSession, unauthorizedAdminResponse } from '@/lib/auth/admin';
+const { decryptIdentity, maskData } = require('@/lib/crypto/encryption');
 
 export async function GET(request) {
     if (!await validateAdminSession(request)) return unauthorizedAdminResponse();
@@ -39,7 +40,7 @@ export async function GET(request) {
                 totalUsers: totalUsers || 0,
                 totalSlips: totalSlips || 0,
                 recentSlips: recentSlips.map((s) => ({
-                    nin: s.nin,
+                    nin: maskData(decryptIdentity(s.nin) || s.nin), // Decrypt if encrypted, then mask
                     serialNumber: s.serial_number,
                     generatedAt: s.generated_at,
                 })),

@@ -17,7 +17,7 @@ export default function WalletWidget({ userId, userEmail }) {
 
     const fetchBalance = async () => {
         setLoading(true);
-        const result = await getBalanceAction(userId);
+        const result = await getBalanceAction();
         if (result.success) {
             setBalance(result.balance);
         } else {
@@ -27,9 +27,7 @@ export default function WalletWidget({ userId, userEmail }) {
     };
 
     useEffect(() => {
-        if (userId) {
-            fetchBalance();
-        }
+        fetchBalance();
         
         // Essential for handling BFCache restoration (common in mobile redirects)
         const handlePageShow = (event) => {
@@ -42,7 +40,7 @@ export default function WalletWidget({ userId, userEmail }) {
         setIsInitializing(false);
         window.addEventListener("pageshow", handlePageShow);
         return () => window.removeEventListener("pageshow", handlePageShow);
-    }, [userId]);
+    }, []);
 
     const handleFund = async (e) => {
         e.preventDefault();
@@ -53,7 +51,7 @@ export default function WalletWidget({ userId, userEmail }) {
 
         setIsInitializing(true);
         try {
-            const result = await initializePaymentAction(userEmail, Number(amount));
+            const result = await initializePaymentAction(Number(amount));
 
             if (result.success && result.data.authorization_url) {
                 showNotification("Redirecting to payment gateway...", "success");

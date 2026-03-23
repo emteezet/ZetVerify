@@ -224,11 +224,13 @@ function HubContent() {
           searchBy: searchTab
         }));
 
-        // 7. Redirect based on type
+        // 7. Redirect based on type (Using encrypted identifier for URL)
+        const secureId = identityUser.fullNin || encodeURIComponent(identityUser.nin || identityUser.bvn);
+
         if (serviceType === "nin") {
-          router.push(`/verify/${identityUser.nin}?slipType=${slipType}&searchBy=${searchTab}`);
+          router.push(`/verify/${secureId}?slipType=${slipType}&searchBy=${searchTab}`);
         } else {
-          router.push(`/verify-bvn/${identityUser.bvn || identityUser.nin}?slipType=${slipType}`);
+          router.push(`/verify-bvn/${secureId}?slipType=${slipType}`);
         }
       } catch (fetchErr) {
         if (fetchErr.name === 'AbortError') {

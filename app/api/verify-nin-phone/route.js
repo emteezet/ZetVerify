@@ -32,9 +32,12 @@ export async function POST(request) {
         try {
             const result = await identityService.verifyByNinPhone(authUser.id, phone);
             
-            // Decrypt the result for the frontend
-            if (result.data && result.data.nin) {
-                result.data.nin = decryptIdentity(result.data.nin);
+            // Decrypt the result for the frontend display, but keep encrypted for navigation
+            if (result.data && (result.data.nin || result.data.bvn)) {
+                const rawVal = result.data.nin || result.data.bvn;
+                result.data.fullNin = encodeURIComponent(rawVal); // Keep encrypted + URI safe
+                if (result.data.nin) result.data.nin = decryptIdentity(result.data.nin);
+                if (result.data.bvn) result.data.bvn = decryptIdentity(result.data.bvn);
             }
 
             return NextResponse.json({

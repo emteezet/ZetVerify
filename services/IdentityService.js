@@ -7,8 +7,8 @@ import { IdentityError, ErrorCodes } from "../lib/errors/AppError";
 
 const VERIFICATION_FEES = {
     NIN: 150,           // Verify NIN (Direct)
-    NIN_PHONE: 200,     // Search NIN by Phone
-    NIN_TRACKING: 200,  // Search NIN by Tracking ID
+    NIN_PHONE: 150,     // Search NIN by Phone
+    NIN_TRACKING: 150,  // Search NIN by Tracking ID
     BVN: 150,           // Verify BVN (Direct)
     BVN_PHONE: 150      // Search BVN by Phone
 };

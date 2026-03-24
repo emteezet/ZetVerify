@@ -62,12 +62,12 @@ export default function NinRegularSlip({ user, forwardedRef }) {
                             </div>
                             <div className="w-[220px] border-r border-black p-2 flex items-center">
                                 <span className="font-bold mr-2">Surname:</span>
-                                <span className="uppercase">{user?.lastName || "YAURI"}</span>
+                                <span className="uppercase">{user?.lastName || ""}</span>
                             </div>
                             <div className="flex-1 p-2">
                                 <span className="block font-bold mb-1">Address:</span>
                                 <div className="uppercase">
-                                    {user?.residence_address || user?.address || "6 ALI BABAN GONA STREET NEW EXTENSION"}
+                                    {user?.residence_address || user?.address || ""}
                                 </div>
                             </div>
                         </div>
@@ -76,14 +76,14 @@ export default function NinRegularSlip({ user, forwardedRef }) {
                         <div className="flex border-b border-black">
                             <div className="w-[220px] border-r border-black p-2 flex items-center">
                                 <span className="font-bold mr-2">NIN:</span>
-                                <span className="uppercase">{user?.nin || "87517739098"}</span>
+                                <span className="uppercase">{user?.nin || ""}</span>
                             </div>
                             <div className="w-[220px] border-r border-black p-2 flex items-center">
                                 <span className="font-bold mr-2">First Name:</span>
-                                <span className="uppercase">{user?.firstName || "MANNIR"}</span>
+                                <span className="uppercase">{user?.firstName || ""}</span>
                             </div>
                             <div className="flex-1 p-2 uppercase flex items-end">
-                                {user?.birthlga || user?.lga || "KAWO"}
+                                {user?.birthlga || user?.lga || ""}
                             </div>
                         </div>
 
@@ -94,10 +94,10 @@ export default function NinRegularSlip({ user, forwardedRef }) {
                             </div>
                             <div className="w-[220px] border-r border-black p-2 flex items-center">
                                 <span className="font-bold mr-2">Middle Name:</span>
-                                <span className="uppercase">{user?.middleName || "BAWA"}</span>
+                                <span className="uppercase">{user?.middleName || ""}</span>
                             </div>
                             <div className="flex-1 p-2 uppercase flex items-end">
-                                {user?.birthstate || user?.state || "KD"}
+                                {user?.birthstate || user?.state || ""}
                             </div>
                         </div>
 
@@ -108,7 +108,7 @@ export default function NinRegularSlip({ user, forwardedRef }) {
                             </div>
                             <div className="w-[220px] border-r border-black p-2 flex items-center">
                                 <span className="font-bold mr-2">Gender:</span>
-                                <span className="uppercase">{user?.gender?.charAt(0) || "M"}</span>
+                                <span className="uppercase">{user?.gender?.charAt(0) || ""}</span>
                             </div>
                             <div className="flex-1 p-2"></div>
                         </div>

@@ -47,19 +47,28 @@ export default function DownloadButton({
       hiddenContainer.appendChild(clonedElement);
 
       // ============================================================
-      // WAIT FOR IMAGES (Fix for Missing Photos/Backgrounds)
+      // WAIT FOR ASSETS & REFLOW (Fix for First-Time Positioning Errors)
       // ============================================================
+      // 1. Wait for Images
       const images = Array.from(clonedElement.getElementsByTagName('img'));
       await Promise.all(images.map(img => {
         if (img.complete) return Promise.resolve();
         return new Promise(resolve => {
           img.onload = resolve;
-          img.onerror = resolve; // Continue even if one image fails
+          img.onerror = resolve; 
         });
       }));
 
-      // Small delay to ensure any CSS/layout recalculations are finished
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // 2. Force a layout reflow on the hidden container
+      // Accessing offsetHeight forces the browser to calculate geometry
+      void hiddenContainer.offsetHeight; 
+
+      // 3. Wait for two frames + small buffer to ensure styles are applied
+      await new Promise(resolve => requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(resolve, 300); 
+        });
+      }));
 
       let frontCanvas, backCanvas, mainCanvas;
 

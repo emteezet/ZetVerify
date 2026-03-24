@@ -18,6 +18,7 @@ export default function DashboardVerifyPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null); // Changed to null to store object
     const documentRef = useRef(null);
+    const isSubmitting = useRef(false);
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -36,6 +37,8 @@ export default function DashboardVerifyPage() {
     if (!user) return null;
 
     const handleVerify = async (queryPayload) => {
+        if (isSubmitting.current) return;
+        isSubmitting.current = true;
         setLoading(true);
         setError(null); // Reset error
         setUserData(null);
@@ -93,6 +96,7 @@ export default function DashboardVerifyPage() {
         } catch (err) {
             setError({ message: err.message, code: err.cause });
         } finally {
+            isSubmitting.current = false;
             setLoading(false);
         }
     };

@@ -334,3 +334,51 @@
     }
   }
 }
+/* ── NIN Card & Slip Capture Styles (Shared for PDF) ── */
+.premium-card-container, .improved-card-container {
+    width: 450px !important;
+    height: 280px !important;
+    position: relative !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.premium-card-inner, .improved-card-inner {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+.premium-card-front, .premium-card-back, .improved-card-front, .improved-card-back {
+    position: absolute !important;
+    width: 450px !important;
+    height: 280px !important;
+    border-radius: 0px !important;
+    overflow: hidden !important;
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+}
+.premium-card-front, .premium-card-back {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+.improved-card-front, .improved-card-back {
+    border: 1px solid #000 !important;
+}
+.premium-card-back, .improved-card-back {
+    display: none;
+}
+.premium-label {
+    position: absolute !important;
+    font-size: 8px !important;
+    color: #666 !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    z-index: 10 !important;
+}
+.premium-value, .improved-value {
+    position: absolute !important;
+    font-size: 13px !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-transform: uppercase !important;
+    z-index: 10 !important;
+}

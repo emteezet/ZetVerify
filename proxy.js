@@ -15,7 +15,7 @@ const RATE_LIMIT_MAP = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 10; // 10 requests per minute for identity API
 
-export async function middleware(request) {
+export async function proxy(request) {
     let response = NextResponse.next({
         request: {
             headers: request.headers,

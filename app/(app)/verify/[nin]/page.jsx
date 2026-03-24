@@ -43,7 +43,8 @@ function VerifyContent() {
         if (cached) {
             try {
                 const parsed = JSON.parse(cached);
-                if (parsed.user?.nin === params.nin) {
+                // Compare with both decrypted NIN and encrypted fullNin
+                if (parsed.user?.nin === params.nin || parsed.user?.fullNin === params.nin || encodeURIComponent(parsed.user?.fullNin) === params.nin) {
                     resultData = parsed;
                 }
             } catch (e) {

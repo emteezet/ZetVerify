@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 
@@ -78,6 +78,7 @@ function HubContent() {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const isSubmitting = useRef(false);
 
   // Authentication Protection
   useEffect(() => {
@@ -143,6 +144,8 @@ function HubContent() {
       return;
     }
 
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     setLoading(true);
     setError(null);
 
@@ -244,6 +247,7 @@ function HubContent() {
         message: err.message, 
         code: err.cause 
       });
+      isSubmitting.current = false;
       setLoading(false);
     }
   };

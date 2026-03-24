@@ -73,10 +73,47 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
     });
 
     const getTransactionLabel = (tx) => {
-        if (tx.type === 'SERVICE_FEE' && tx.metadata?.service) {
-            return tx.metadata.service.replace(/_/g, ' ');
+        const SERVICE_LABELS = {
+            // NIN Services
+            'NIN_VERIFY': 'NIN Verification',
+            'NIN_PHONE_VERIFY': 'NIN Search (Phone)',
+            'NIN_TRACKING_VERIFY': 'NIN Search (Tracking ID)',
+            'NIN_DEMO_VERIFY': 'NIN Search (Demography)',
+            
+            // BVN Services
+            'BVN_VERIFY': 'BVN Verification',
+            'BVN_PHONE_VERIFY': 'BVN Search (Phone)',
+            
+            // System
+            'FUNDING': 'Wallet Funding',
+            'REFUND': 'Service Refund',
+            'SERVICE_FEE': 'Identity Verification'
+        };
+
+        // 1. Check metadata.service (Most common)
+        // 2. Check metadata.service_type
+        // 3. Check top-level service_type
+        // 4. Check top-level type
+        const serviceKey = 
+            tx.metadata?.service || 
+            tx.metadata?.service_type || 
+            tx.service_type || 
+            tx.type;
+
+        if (SERVICE_LABELS[serviceKey]) {
+            return SERVICE_LABELS[serviceKey];
         }
-        return tx.type.replace(/_/g, ' ');
+
+        // 5. Special Case: Handle "Uniform Service Fee" or "Service Fee" mentions in metadata
+        const metadataString = JSON.stringify(tx.metadata || {}).toUpperCase();
+        if (metadataString.includes('NIN_PHONE')) return 'NIN Search (Phone)';
+        if (metadataString.includes('NIN_TRACK')) return 'NIN Search (Tracking ID)';
+        if (metadataString.includes('BVN_PHONE')) return 'BVN Search (Phone)';
+        if (metadataString.includes('NIN')) return 'NIN Verification';
+        if (metadataString.includes('BVN')) return 'BVN Verification';
+
+        // 6. Generic Format: Replace underscores and capitalize
+        return serviceKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
     const copyToClipboard = (text, id) => {

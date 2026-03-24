@@ -8,9 +8,12 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
 
     useEffect(() => {
         const generateQR = async () => {
-            if (qrCodeData || user?.nin) {
+            if (user?.nin) {
                 try {
-                    const qrDataUrl = await QRCode.toDataURL(qrCodeData || `NIN:${user?.nin}`, {
+                    const fullName = `${user.firstName || ""} ${user.middleName ? user.middleName + " " : ""}${user.lastName || ""}`.trim().toUpperCase();
+                    const qrText = `NAME: ${fullName}\nNIN: ${user.nin}\nDOB: ${user.dob || ""}`;
+
+                    const qrDataUrl = await QRCode.toDataURL(qrText, {
                         width: 150,
                         margin: 0,
                         color: {
@@ -35,13 +38,13 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
     const formatDOB = (dob) => {
         if (!dob) return "";
         try {
-            const normalized = dob.includes('-') && dob.split('-')[0].length === 2 
-                ? dob.split('-').reverse().join('-') 
+            const normalized = dob.includes('-') && dob.split('-')[0].length === 2
+                ? dob.split('-').reverse().join('-')
                 : dob;
-                
+
             const date = new Date(normalized);
             if (isNaN(date.getTime())) return dob;
-            
+
             return date.toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short",
@@ -101,10 +104,9 @@ export default function ImprovedNinSlip({ user, qrCodeData, forwardedRef }) {
     `;
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center" ref={forwardedRef}>
             <style>{cardStyles}</style>
             <div
-                ref={forwardedRef}
                 className="improved-card-container"
             >
                 <div className="improved-card-inner">

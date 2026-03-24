@@ -51,8 +51,13 @@ function BVNContent() {
         if (cached) {
             try {
                 const parsed = JSON.parse(cached);
-                // Ensure it's the right BVN (sometimes bvn is stored in user.bvn or user.nin)
-                if ((parsed.user?.bvn === params.bvn) || (parsed.user?.nin === params.bvn)) {
+                // Compare with decrypted bvn/nin and encrypted fullNin
+                const match = (parsed.user?.bvn === params.bvn) || 
+                              (parsed.user?.nin === params.bvn) || 
+                              (parsed.user?.fullNin === params.bvn) || 
+                              (encodeURIComponent(parsed.user?.fullNin) === params.bvn);
+                
+                if (match) {
                     resultData = parsed;
                 }
             } catch (e) {

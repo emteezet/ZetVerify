@@ -83,11 +83,11 @@ export default function PWAInstallPrompt() {
         </button>
 
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-accent-green flex items-center justify-center shadow-inner overflow-hidden">
+          <div className="w-12 h-12 rounded-xl bg-[var(--accent-blue)] flex items-center justify-center shadow-inner overflow-hidden">
             <img src="/icon-192x192.png" alt="App Icon" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1">
-            <h4 className="font-bold text-slate-900 text-sm">NIN-Platform</h4>
+            <h4 className="font-bold text-slate-900 text-sm">ZetVerify</h4>
             <p className="text-xs text-slate-500 leading-tight">Install on your home screen for a faster experience.</p>
           </div>
         </div>

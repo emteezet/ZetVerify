@@ -38,7 +38,7 @@ export default function AccountInfoPage() {
   if (loading) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center">
-        <div className="spinner text-accent-green! w-10! h-10! border-4" />
+        <div className="spinner text-primary-500! w-10! h-10! border-4" />
       </div>
     );
   }
@@ -115,7 +115,7 @@ export default function AccountInfoPage() {
             {/* Profile Card */}
             <div className="glass-card p-8">
               <h2 className="font-bold text-text-primary flex items-center gap-2 mb-6">
-                <User className="w-5 h-5 text-accent-green" />
+                <User className="w-5 h-5 text-primary-500" />
                 Profile Information
               </h2>
               <form onSubmit={handleUpdateProfile} className="space-y-5">
@@ -205,7 +205,7 @@ export default function AccountInfoPage() {
             {/* Account Summary */}
             <div className="glass-card p-6">
               <h3 className="font-bold text-text-primary flex items-center gap-2 mb-4">
-                <ShieldCheck className="w-5 h-5 text-accent-green" />
+                <ShieldCheck className="w-5 h-5 text-primary-500" />
                 Account Summary
               </h3>
               <div className="space-y-3">
@@ -231,7 +231,7 @@ export default function AccountInfoPage() {
             {/* Security */}
             <div className="glass-card p-6">
               <h3 className="font-bold text-text-primary flex items-center gap-2 mb-4">
-                <Lock className="w-5 h-5 text-accent-green" />
+                <Lock className="w-5 h-5 text-primary-500" />
                 Security
               </h3>
               <div className="space-y-3">
@@ -244,7 +244,7 @@ export default function AccountInfoPage() {
                   <span>Change Password</span>
                   {passwordLoading
                     ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <span className="text-xs text-accent-green opacity-0 group-hover:opacity-100 transition-opacity">Send Reset Email →</span>
+                    : <span className="text-xs text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity">Send Reset Email →</span>
                   }
                 </button>
                 <button

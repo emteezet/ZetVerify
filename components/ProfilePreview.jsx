@@ -53,7 +53,7 @@ export default function ProfilePreview({
     return (
         <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] w-full max-w-md overflow-hidden border border-gray-100 mx-auto">
             {/* Header / Photo Area */}
-            <div className="px-6 pt-8 pb-16 text-center relative" style={{ background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)" }}>
+            <div className="px-6 pt-8 pb-16 text-center relative" style={{ background: "linear-gradient(135deg, #19325C, #24718A)" }}>
                 <h1 className="text-white text-[11px] font-bold opacity-90 mb-4 tracking-[0.2em] uppercase">Identity Preview</h1>
                 <img
                     src={photoUrl}
@@ -114,7 +114,7 @@ export default function ProfilePreview({
                     disabled={isDownloading}
                     className="w-full text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98]"
                     style={{
-                        background: isDownloading ? "#94a3b8" : "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                        background: isDownloading ? "#94a3b8" : "linear-gradient(135deg, #19325C, #24718A)",
                         cursor: isDownloading ? "not-allowed" : "pointer"
                     }}
                 >
@@ -132,7 +132,7 @@ export default function ProfilePreview({
                 </button>
 
                 {showSuccess && (
-                    <div className="text-center mt-4 text-green-600 text-sm font-medium flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2">
+                    <div className="text-center mt-4 text-primary-600 text-sm font-medium flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2">
                         <CheckCircle className="w-4 h-4" />
                         PDF Download Started!
                     </div>

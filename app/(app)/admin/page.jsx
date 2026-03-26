@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-bg-secondary/30">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="spinner text-accent-green! w-10! h-10! border-4" />
+                    <div className="spinner text-primary-500! w-10! h-10! border-4" />
                     <p className="text-sm font-medium text-text-muted animate-pulse">Initializing Admin Engine...</p>
                 </div>
             </div>
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="animate-in">
-                            <div className="flex items-center gap-2 text-accent-green text-sm font-bold mb-3 uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-primary-500 text-sm font-bold mb-3 uppercase tracking-widest">
                                 <ShieldAlert className="w-4 h-4" />
                                 <span>Admin Control Center</span>
                             </div>
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
                             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
                                 <Users className="w-6 h-6" />
                             </div>
-                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full flex items-center gap-1">
+                            <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-1 rounded-full flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3" /> +12%
                             </span>
                         </div>
@@ -127,10 +127,10 @@ export default function AdminDashboardPage() {
                     {/* Total Revenue */}
                     <div className="glass-card p-6 border-transparent bg-white shadow-xl shadow-slate-200/50">
                         <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-accent-green-light text-accent-green rounded-xl">
+                            <div className="p-3 bg-primary-50 text-primary-500 rounded-xl">
                                 <BarChart3 className="w-6 h-6" />
                             </div>
-                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">LIVE</span>
+                            <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-1 rounded-full">LIVE</span>
                         </div>
                         <h3 className="text-text-muted text-sm font-medium">Platform Revenue (Fees)</h3>
                         <p className="text-3xl font-bold text-text-primary mt-1">₦{stats?.revenue.toLocaleString()}</p>
@@ -168,10 +168,10 @@ export default function AdminDashboardPage() {
                     <div className="lg:col-span-2 glass-card overflow-hidden">
                         <div className="p-6 border-b border-bg-secondary/50 flex items-center justify-between">
                             <h3 className="font-bold text-text-primary flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-accent-green" />
+                                <Activity className="w-5 h-5 text-primary-500" />
                                 Global Activity Feed
                             </h3>
-                            <button className="text-[10px] font-bold text-accent-green hover:underline">Download CSV</button>
+                            <button className="text-[10px] font-bold text-primary-500 hover:underline">Download CSV</button>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
@@ -197,14 +197,14 @@ export default function AdminDashboardPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${tx.type === 'FUNDING' ? "bg-green-50 text-green-600" : "bg-blue-50 text-blue-600"
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${tx.type === 'FUNDING' ? "bg-primary-50 text-primary-600" : "bg-blue-50 text-blue-600"
                                                     }`}>
                                                     {tx.type === 'FUNDING' ? <ArrowDownLeft className="w-3 h-3" /> : <ArrowUpRight className="w-3 h-3" />}
                                                     {tx.type.replace('_', ' ')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className={`text-sm font-bold ${tx.type === 'FUNDING' ? 'text-green-600' : 'text-text-primary'}`}>
+                                                <span className={`text-sm font-bold ${tx.type === 'FUNDING' ? 'text-primary-600' : 'text-text-primary'}`}>
                                                     {tx.type === 'FUNDING' ? '+' : ''}₦{Math.abs(tx.amount).toLocaleString()}
                                                 </span>
                                             </td>
@@ -224,7 +224,7 @@ export default function AdminDashboardPage() {
                     <div className="space-y-8">
                         <div className="glass-card p-6">
                             <h3 className="font-bold text-text-primary mb-6 flex items-center gap-2">
-                                <ShieldAlert className="w-5 h-5 text-accent-green" />
+                                <ShieldAlert className="w-5 h-5 text-primary-500" />
                                 Security Overrides
                             </h3>
                             <div className="space-y-4">
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
                         </div>
 
                         <div className="glass-card p-8 bg-slate-900 text-white border-transparent">
-                            <h4 className="font-bold text-sm mb-2 text-accent-green">Admin Tip</h4>
+                            <h4 className="font-bold text-sm mb-2 text-primary-500">Admin Tip</h4>
                             <p className="text-xs text-white/60 leading-relaxed">
                                 All platform-level transactions are ACID compliant. Revenue figures shown are calculated directly from the service fee ledger entries.
                             </p>

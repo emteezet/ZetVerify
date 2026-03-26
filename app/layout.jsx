@@ -5,29 +5,31 @@ import SWRegistration from "@/components/SWRegistration";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 export const metadata = {
-  title: "NIN Slip Generator | Third-Party Simulation",
+  title: "ZetVerify",
   description:
-    "A school project simulation of a third-party NIN slip and ID card generator. Not affiliated with NIMC or any government agency.",
+    "Securely verify NIN and generate identity slips with ZetVerify. The ultimate identity management solution.",
   keywords: [
+    "ZetVerify",
     "NIN",
     "National Identification Number",
     "Nigeria",
     "ID Card",
-    "simulation",
+    "Identity Verification",
   ],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "NIN-Platform",
+    title: "ZetVerify",
   },
   icons: {
-    apple: "/icon-192x192.png",
+    apple: "/ZetVerify-logo icon.png",
+    shortcut: "/ZetVerify-logo icon.png",
   }
 };
 
 export const viewport = {
-  themeColor: "#008751",
+  themeColor: "#19325C",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

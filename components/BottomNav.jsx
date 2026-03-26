@@ -70,12 +70,12 @@ export default function BottomNav() {
                 <Icon 
                   size={active ? 26 : 24} 
                   strokeWidth={active ? 2.5 : 2} 
-                  className={`transition-all duration-300 ${active ? 'filter drop-shadow-[0_0_8px_rgba(13,107,13,0.3)]' : ''}`}
+                  className={`transition-all duration-300 ${active ? 'filter drop-shadow-[0_0_8px_rgba(25,50,92,0.3)]' : ''}`}
                 />
                 
                 {/* Active Dot */}
                 {active && (
-                  <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-600 rounded-full animate-pulse" />
+                  <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-primary-600 rounded-full animate-pulse" />
                 )}
               </div>
               

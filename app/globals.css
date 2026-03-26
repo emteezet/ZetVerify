@@ -13,9 +13,14 @@
     --text-muted: #94a3b8;
     --border-color: #e2e8f0;
     --border-color-rgb: 226, 232, 240;
-    --accent-green: #0d6b0d;
-    --accent-green-light: #d5ecd5;
-    --accent-green-glow: rgba(13, 107, 13, 0.12);
+    --accent-blue: #19325c;
+    --accent-blue-light: #ccd3e3;
+    --accent-blue-glow: rgba(25, 50, 92, 0.12);
+    --accent-teal: #24718a;
+    --accent-mint: #8eccad;
+    --accent-green: #19325c;
+    --accent-green-light: #8eccad;
+    --accent-green-glow: rgba(25, 50, 92, 0.12);
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
     --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
   }
@@ -30,9 +35,14 @@
     --text-muted: #64748b;
     --border-color: #334155;
     --border-color-rgb: 51, 65, 85;
-    --accent-green: #3da33d;
-    --accent-green-light: #0d3d0d;
-    --accent-green-glow: rgba(61, 163, 61, 0.15);
+    --accent-blue: #ccd3e3;
+    --accent-blue-light: #19325c;
+    --accent-blue-glow: rgba(204, 211, 227, 0.15);
+    --accent-teal: #71a9bb;
+    --accent-mint: #8eccad;
+    --accent-green: #ccd3e3;
+    --accent-green-light: #19325c;
+    --accent-green-glow: rgba(204, 211, 227, 0.15);
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35);
     --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
   }
@@ -83,7 +93,7 @@
 
   /* ── Gradient Backgrounds ── */
   .gradient-hero {
-    background: linear-gradient(135deg, #0d6b0d 0%, #095209 40%, #032903 100%);
+    background: linear-gradient(135deg, #19325c 0%, #24718a 60%, #10333e 100%);
     position: relative;
     overflow: hidden;
   }
@@ -115,7 +125,7 @@
 
   /* ── Button Styles ── */
   .btn-primary {
-    background: linear-gradient(135deg, #0d6b0d, #1a8c1a);
+    background: linear-gradient(135deg, #19325c, #24718a);
     color: white;
     border: none;
     padding: 14px 32px;
@@ -130,7 +140,7 @@
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(13, 107, 13, 0.35);
+    box-shadow: 0 8px 25px rgba(25, 50, 92, 0.35);
   }
 
   .btn-primary:active {
@@ -175,8 +185,8 @@
   }
 
   .input-field:focus {
-    border-color: var(--accent-green);
-    box-shadow: 0 0 0 4px var(--accent-green-glow);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px var(--accent-blue-glow);
   }
 
   .input-field::placeholder {
@@ -205,8 +215,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: linear-gradient(135deg, #d5ecd5, #eef7ee);
-    color: #0d6b0d;
+    background: linear-gradient(135deg, #ccd3e3, #f2f4f8);
+    color: #19325c;
     padding: 6px 16px;
     border-radius: 20px;
     font-weight: 600;
@@ -214,8 +224,8 @@
   }
 
   .dark .badge-valid {
-    background: linear-gradient(135deg, #0d3d0d, #063d06);
-    color: #6fbf6f;
+    background: linear-gradient(135deg, #0b1527, #122544);
+    color: #99a7c7;
   }
 
   /* ── ID Card Styles ── */
@@ -251,12 +261,12 @@
   }
 
   .id-card-front {
-    background: linear-gradient(145deg, #0d6b0d 0%, #095209 60%, #032903 100%);
+    background: linear-gradient(145deg, #19325c 0%, #162d53 60%, #0e1c34 100%);
     color: white;
   }
 
   .id-card-back {
-    background: linear-gradient(145deg, #063d06 0%, #032903 60%, #011801 100%);
+    background: linear-gradient(145deg, #122544 0%, #0e1c34 60%, #0b1527 100%);
     color: white;
     transform: rotateY(180deg);
   }
@@ -354,6 +364,7 @@
   overflow: hidden !important;
   background-color: white !important;
   -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .premium-card-front,

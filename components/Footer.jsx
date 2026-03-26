@@ -14,14 +14,14 @@ export default function Footer() {
         >
           Developed by
         </p>
-        <p className="text-lg font-bold" style={{ color: "#0d6b0d" }}>
+        <p className="text-lg font-bold" style={{ color: "#19325C" }}>
           Emteezet Technologies Ltd.
         </p>
         <p
           className="text-xs mt-4"
           style={{ color: "var(--text-muted)", opacity: 0.6 }}
         >
-          © {new Date().getFullYear()} NIN Platform — All Rights Reserved
+          © {new Date().getFullYear()} ZetVerify — All Rights Reserved
         </p>
       </div>
     </footer>

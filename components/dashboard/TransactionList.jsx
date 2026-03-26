@@ -216,7 +216,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className={`p-2 rounded-lg ${Number(tx.amount) > 0
-                                                ? "bg-green-50 text-green-600"
+                                                ? "bg-primary-50 text-primary-600"
                                                 : "bg-blue-50 text-blue-600"
                                                 }`}>
                                                 {Number(tx.amount) > 0 ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
@@ -242,13 +242,13 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                                     className="p-1 hover:bg-bg-secondary rounded transition-opacity opacity-0 group-hover:opacity-100"
                                                     title="Copy Reference"
                                                 >
-                                                    {copyingId === tx.id ? <CheckCircle2 className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-text-muted" />}
+                                                    {copyingId === tx.id ? <CheckCircle2 className="w-3 h-3 text-primary-600" /> : <Copy className="w-3 h-3 text-text-muted" />}
                                                 </button>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <span className={`text-sm font-bold ${Number(tx.amount) > 0 ? "text-green-600" : "text-text-primary"
+                                        <span className={`text-sm font-bold ${Number(tx.amount) > 0 ? "text-primary-600" : "text-text-primary"
                                             }`}>
                                             {Number(tx.amount) > 0 ? "+" : ""}
                                             ₦{Math.abs(tx.amount).toLocaleString()}
@@ -296,7 +296,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-3">
                                     <div className={`p-2 rounded-lg ${Number(tx.amount) > 0
-                                        ? "bg-green-50 text-green-600"
+                                        ? "bg-primary-50 text-primary-600"
                                         : "bg-blue-50 text-blue-600"
                                         }`}>
                                         {Number(tx.amount) > 0 ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
@@ -310,7 +310,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                         </span>
                                     </div>
                                 </div>
-                                <span className={`text-sm font-black ${Number(tx.amount) > 0 ? "text-green-600" : "text-text-primary"}`}>
+                                <span className={`text-sm font-black ${Number(tx.amount) > 0 ? "text-primary-600" : "text-text-primary"}`}>
                                     {Number(tx.amount) > 0 ? "+" : ""}
                                     ₦{Math.abs(tx.amount).toLocaleString()}
                                 </span>
@@ -324,7 +324,7 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                         onClick={() => copyToClipboard(tx.reference, tx.id)}
                                         className="p-1"
                                     >
-                                        {copyingId === tx.id ? <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-text-muted opacity-50" />}
+                                        {copyingId === tx.id ? <CheckCircle2 className="w-3.5 h-3.5 text-primary-600" /> : <Copy className="w-3.5 h-3.5 text-text-muted opacity-50" />}
                                     </button>
                                     <span className="badge-valid text-[8px] px-1.5 py-0.5">Success</span>
                                 </div>

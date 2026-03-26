@@ -23,24 +23,12 @@ export default function Navbar() {
       <div className="max-w-full mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md"
-              style={{
-                background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
-              }}
-            >
-              NIN
-            </div>
-            <span
-              className="text-lg font-semibold tracking-tight hidden md:block"
-              style={{
-                fontFamily: "Outfit, sans-serif",
-                color: "var(--text-primary)",
-              }}
-            >
-              NIN Platform
-            </span>
+          <Link href="/" className="flex items-center group">
+            <img 
+              src="/ZetVerify-landscape-logo.svg" 
+              alt="ZetVerify Logo" 
+              className="h-10 md:h-14 w-auto"
+            />
           </Link>
 
           {/* Right Side - Theme Toggle + Auth */}
@@ -61,7 +49,7 @@ export default function Navbar() {
                       onClick={handleLogout}
                       className="px-4 py-1.5 rounded-lg text-sm font-medium text-white transition-all hover:shadow-lg"
                       style={{
-                        background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                        background: "linear-gradient(135deg, #19325C, #24718A)",
                       }}
                     >
                       Logout
@@ -80,7 +68,7 @@ export default function Navbar() {
                       href="/auth/signup"
                       className="px-4 py-1.5 rounded-lg text-sm font-medium text-white transition-all hover:shadow-lg"
                       style={{
-                        background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                        background: "linear-gradient(135deg, #19325C, #24718A)",
                       }}
                     >
                       Sign Up

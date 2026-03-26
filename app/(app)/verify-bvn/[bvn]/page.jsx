@@ -128,7 +128,7 @@ function BVNContent() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-accent-green mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
           <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
             Verifying BVN...
           </p>
@@ -180,7 +180,7 @@ function BVNContent() {
               <Link
                 href="/wallet"
                 className="px-6 py-3 rounded-xl font-bold text-white transition-all text-center flex items-center justify-center gap-2 mb-3"
-                style={{ background: "#0d6b0d" }}
+                style={{ background: "#19325C" }}
               >
                 <Wallet className="w-5 h-5" />
                 Top up Wallet
@@ -190,7 +190,7 @@ function BVNContent() {
                 href="/verify-bvn"
                 className="px-4 py-2 rounded-lg font-medium text-white block text-center"
                 style={{
-                  background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                  background: "linear-gradient(135deg, #19325C, #24718A)",
                 }}
               >
                 Try Again
@@ -366,7 +366,7 @@ export default function VerifyBVNPage() {
   return (
     <Suspense fallback={
       <div className="min-h-[80vh] flex items-center justify-center text-center">
-        <Loader2 className="w-10 h-10 animate-spin text-accent-green mx-auto mb-4" />
+        <Loader2 className="w-10 h-10 animate-spin text-primary-500 mx-auto mb-4" />
         <p className="text-text-muted">Loading verification details...</p>
       </div>
     }>

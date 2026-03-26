@@ -262,7 +262,7 @@ function HubContent() {
       <div className="text-center mb-8">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg animate-in"
-          style={{ background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)" }}
+          style={{ background: "linear-gradient(135deg, #19325C, #24718A)" }}
         >
           {serviceType === "nin" ? <ShieldCheck className="w-8 h-8" /> : <UserCheck className="w-8 h-8" />}
         </div>
@@ -287,7 +287,7 @@ function HubContent() {
               key={value}
               onClick={() => handleServiceSwitch(value)}
               className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all ${serviceType === value
-                ? "text-accent-green border-b-4 border-green-800"
+                ? "text-primary border-b-4 border-primary"
                 : "text-text-muted hover:text-text-secondary bg-bg-secondary/30"
                 }`}
             >
@@ -313,7 +313,7 @@ function HubContent() {
                 style={
                   searchTab === value
                     ? {
-                      background: "var(--accent-green)",
+                      background: "#19325C",
                       color: "white",
                       boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
                     }
@@ -341,7 +341,7 @@ function HubContent() {
               style={{
                 background: "var(--bg-secondary)",
                 borderColor: "var(--border-color)",
-                "--tw-ring-color": "#0d6b0d30",
+                "--tw-ring-color": "#19325C30",
               }}
             >
               <div className="pl-4 pr-2 py-3" style={{ color: "var(--text-muted)" }}>
@@ -363,7 +363,7 @@ function HubContent() {
               />
               <div
                 className="pr-4 text-xs font-mono"
-                style={{ color: idValue.length === maxLen ? "#0d6b0d" : "var(--text-muted)" }}
+                style={{ color: idValue.length === maxLen ? "#19325C" : "var(--text-muted)" }}
               >
                 {idValue.length}/{maxLen}
               </div>
@@ -388,14 +388,14 @@ function HubContent() {
                     onClick={() => setSlipType(value)}
                     className="relative flex flex-col items-center text-center p-4 rounded-xl border-2 transition-all duration-200 gap-2"
                     style={{
-                      borderColor: selected ? "#0d6b0d" : "var(--border-color)",
-                      background: selected ? "rgba(13,107,13,0.06)" : "var(--bg-secondary)",
+                      borderColor: selected ? "#19325C" : "var(--border-color)",
+                      background: selected ? "rgba(25, 50, 92, 0.08)" : "var(--bg-secondary)",
                     }}
                   >
                     {badge && (
                       <span
                         className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-black px-2 py-0.5 rounded-full text-white uppercase tracking-tighter"
-                        style={{ background: "#0d6b0d" }}
+                        style={{ background: "#19325C" }}
                       >
                         {badge}
                       </span>
@@ -403,8 +403,8 @@ function HubContent() {
                     <div
                       className="w-9 h-9 rounded-lg flex items-center justify-center shadow-sm"
                       style={{
-                        background: selected ? "rgba(13,107,13,0.15)" : "var(--bg-card)",
-                        color: selected ? "#0d6b0d" : "var(--text-muted)",
+                        background: selected ? "rgba(36, 113, 138, 0.12)" : "var(--bg-card)",
+                        color: selected ? "#19325C" : "var(--text-muted)",
                       }}
                     >
                       <Icon className="w-4 h-4" />
@@ -412,7 +412,7 @@ function HubContent() {
                     <div>
                       <p
                         className="text-[11px] font-bold leading-tight"
-                        style={{ color: selected ? "#0d6b0d" : "var(--text-primary)" }}
+                        style={{ color: selected ? "#19325C" : "var(--text-primary)" }}
                       >
                         {label}
                       </p>
@@ -445,8 +445,8 @@ function HubContent() {
               <div
                 className="w-5 h-5 rounded flex items-center justify-center border-2 transition-all duration-150"
                 style={{
-                  borderColor: consent ? "#0d6b0d" : "var(--border-color)",
-                  background: consent ? "#0d6b0d" : "transparent",
+                  borderColor: consent ? "#19325C" : "var(--border-color)",
+                  background: consent ? "#19325C" : "transparent",
                 }}
               >
                 {consent && (
@@ -475,8 +475,8 @@ function HubContent() {
               {error.code === 'INSUFFICIENT_BALANCE' && (
                 <Link
                   href="/wallet"
-                  className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-accent-green hover:underline"
-                  style={{ color: "#0d6b0d" }}
+                  className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-primary-500 hover:underline"
+                  style={{ color: "#19325C" }}
                 >
                   <Wallet className="w-3.5 h-3.5" />
                   Top up your wallet →
@@ -491,7 +491,7 @@ function HubContent() {
             disabled={loading}
             className="w-full py-4 rounded-xl font-bold text-white text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+              background: "linear-gradient(135deg, #19325C, #24718A)",
               opacity: (loading || idValue.length < 11) ? 0.6 : 1,
               cursor: (loading || idValue.length < 11) ? "not-allowed" : "pointer",
               transform: loading ? "scale(0.98)" : "none"
@@ -509,11 +509,11 @@ function HubContent() {
       {/* Tip */}
       <div
         className="mt-6 px-4 py-4 rounded-2xl flex items-start gap-3 border border-dashed"
-        style={{ background: "rgba(13,107,13,0.03)", borderColor: "rgba(13,107,13,0.2)" }}
+        style={{ background: "rgba(25, 50, 92, 0.03)", borderColor: "rgba(25, 50, 92, 0.2)" }}
       >
         <span className="text-lg">💡</span>
         <div className="space-y-1">
-          <p className="text-xs font-bold text-accent-green uppercase tracking-wider">Registry Sync</p>
+          <p className="text-xs font-bold text-primary-500 uppercase tracking-wider">Registry Sync</p>
           <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             All identity data is fetched in real-time from official NIMC and NIBSS registries. Please ensure you have sufficient balance in your wallet.
           </p>
@@ -528,7 +528,7 @@ export default function VerificationHubPage() {
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
       <Suspense fallback={
         <div className="max-w-lg w-full text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-accent-green mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-primary-500 mx-auto mb-4" />
           <p className="text-text-muted">Loading verification hub...</p>
         </div>
       }>

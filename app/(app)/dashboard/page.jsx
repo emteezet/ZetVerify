@@ -27,7 +27,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center">
-        <div className="spinner text-accent-green! w-10! h-10! border-4" />
+        <div className="spinner text-primary-500! w-10! h-10! border-4" />
       </div>
     );
   }

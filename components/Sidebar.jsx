@@ -50,16 +50,16 @@ export default function Sidebar() {
                 <>
                   <button
                     onClick={() => setServicesOpen(!servicesOpen)}
-                    className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between text-sm font-medium`}
+                    className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between text-sm ${servicesOpen ? 'font-bold' : 'font-medium'}`}
                     style={{
                       background: servicesOpen
-                        ? "linear-gradient(135deg, rgba(13, 107, 13, 0.15), rgba(26, 140, 26, 0.1))"
+                        ? "linear-gradient(135deg, rgba(25, 50, 92, 0.2), rgba(36, 113, 138, 0.15))"
                         : "transparent",
-                      color: servicesOpen ? "#0d6b0d" : "var(--text-secondary)",
+                      color: servicesOpen ? "#19325C" : "var(--text-secondary)",
                       borderLeft: servicesOpen
-                        ? "3px solid #0d6b0d"
-                        : "3px solid transparent",
-                      paddingLeft: servicesOpen ? "13px" : "16px",
+                        ? "4px solid #19325C"
+                        : "4px solid transparent",
+                      paddingLeft: servicesOpen ? "12px" : "16px",
                     }}
                   >
                     <span className="flex items-center gap-3">
@@ -86,19 +86,19 @@ export default function Sidebar() {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm block`}
+                          className={`px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm ${isActive(subItem.href) ? 'font-bold' : 'font-normal'}`}
                           style={{
                             background: isActive(subItem.href)
-                              ? "linear-gradient(135deg, rgba(13, 107, 13, 0.15), rgba(26, 140, 26, 0.1))"
+                              ? "linear-gradient(135deg, rgba(25, 50, 92, 0.2), rgba(36, 113, 138, 0.15))"
                               : "transparent",
                             color: isActive(subItem.href)
-                              ? "#0d6b0d"
+                              ? "#19325C"
                               : "var(--text-secondary)",
                             borderLeft: isActive(subItem.href)
-                              ? "3px solid #0d6b0d"
-                              : "3px solid transparent",
+                              ? "4px solid #19325C"
+                              : "4px solid transparent",
                             paddingLeft: isActive(subItem.href)
-                              ? "13px"
+                              ? "12px"
                               : "16px",
                           }}
                         >
@@ -112,18 +112,18 @@ export default function Sidebar() {
               ) : (
                 <Link
                   href={item.href}
-                  className={`px-4 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm font-medium`}
+                  className={`px-4 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 text-sm ${isActive(item.href) ? 'font-bold' : 'font-medium'}`}
                   style={{
                     background: isActive(item.href)
-                      ? "linear-gradient(135deg, rgba(13, 107, 13, 0.15), rgba(26, 140, 26, 0.1))"
+                      ? "linear-gradient(135deg, rgba(25, 50, 92, 0.2), rgba(36, 113, 138, 0.15))"
                       : "transparent",
                     color: isActive(item.href)
-                      ? "#0d6b0d"
+                      ? "#19325C"
                       : "var(--text-secondary)",
                     borderLeft: isActive(item.href)
-                      ? "3px solid #0d6b0d"
-                      : "3px solid transparent",
-                    paddingLeft: isActive(item.href) ? "13px" : "16px",
+                      ? "4px solid #19325C"
+                      : "4px solid transparent",
+                    paddingLeft: isActive(item.href) ? "12px" : "16px",
                   }}
                 >
                   <span className="text-lg">{item.icon}</span>

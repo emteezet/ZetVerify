@@ -28,8 +28,8 @@ export default function IdentityRequestForm({ userId }) {
     return (
         <div className="glass-card p-8 w-full">
             <div className="flex items-center gap-3 mb-8">
-                <div className="p-2 bg-accent-green-light rounded-lg">
-                    <Shield className="w-6 h-6 text-accent-green" />
+                <div className="p-2 bg-primary-50 rounded-lg">
+                    <Shield className="w-6 h-6 text-primary-500" />
                 </div>
                 <div>
                     <h2 className="text-xl font-bold text-text-primary">Identity Verification</h2>
@@ -48,7 +48,7 @@ export default function IdentityRequestForm({ userId }) {
                                 setValue("");
                             }}
                             className={`px-6 py-2.5 rounded-lg font-medium transition-all ${identityType === type
-                                ? "bg-green-700 text-white shadow-md shadow-accent-green/20"
+                                ? "bg-primary-600 text-white shadow-md shadow-primary-500/20"
                                 : "text-text-muted hover:text-text-primary"
                                 }`}
                         >
@@ -76,8 +76,8 @@ export default function IdentityRequestForm({ userId }) {
                             {value.length}/11
                         </div>
                     </div>
-                    <div className="mt-4 p-4 rounded-xl bg-accent-green/5 border border-accent-green/10 flex items-start gap-3">
-                        <Info className="w-4 h-4 text-accent-green shrink-0 mt-0.5" />
+                    <div className="mt-4 p-4 rounded-xl bg-primary-50/10 border border-primary-500/10 flex items-start gap-3">
+                        <Info className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
                         <p className="text-[11px] text-text-secondary leading-relaxed">
                             Verification requires a <span className="font-bold text-text-primary">₦150</span> fee. You will be able to select your preferred slip template on the next page.
                         </p>

@@ -21,7 +21,7 @@ export default function WalletPage() {
   if (loading) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center">
-        <div className="spinner text-accent-green! w-10! h-10! border-4" />
+        <div className="spinner text-primary-500! w-10! h-10! border-4" />
       </div>
     );
   }
@@ -61,24 +61,24 @@ export default function WalletPage() {
           <div className="lg:col-span-8 space-y-4">
             <div className="glass-card p-6">
               <h3 className="font-bold text-text-primary flex items-center gap-2 mb-4">
-                <Wallet className="w-5 h-5 text-accent-green" />
+                <Wallet className="w-5 h-5 text-primary-500" />
                 How Funding Works
               </h3>
               <ul className="space-y-3 text-sm text-text-muted">
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 bg-accent-green-light text-accent-green rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
+                  <span className="w-6 h-6 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
                   Click <strong className="text-text-primary">Fund</strong> on your wallet and enter an amount (minimum ₦100).
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 bg-accent-green-light text-accent-green rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
+                  <span className="w-6 h-6 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
                   You'll be redirected to <strong className="text-text-primary">Paystack</strong> to complete payment securely.
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 bg-accent-green-light text-accent-green rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
+                  <span className="w-6 h-6 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
                   Your balance is credited instantly and you're returned to the dashboard.
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-6 h-6 bg-accent-green-light text-accent-green rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>
+                  <span className="w-6 h-6 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">4</span>
                   Each NIN or BVN verification costs <strong className="text-text-primary">₦150</strong> and is deducted automatically.
                 </li>
               </ul>

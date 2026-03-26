@@ -115,7 +115,7 @@ function VerifyContent() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-accent-green mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-primary-500 mx-auto mb-4" />
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             Verifying NIN...
           </p>
@@ -156,7 +156,7 @@ function VerifyContent() {
               <Link
                 href="/wallet"
                 className="px-6 py-3 rounded-xl font-bold text-white transition-all text-center flex items-center justify-center gap-2 mb-3"
-                style={{ background: "#0d6b0d" }}
+                style={{ background: "#19325C" }}
               >
                 <Wallet className="w-5 h-5" />
                 Top up Wallet
@@ -165,7 +165,7 @@ function VerifyContent() {
               <Link
                 href="/verify"
                 className="px-4 py-2 rounded-lg font-medium text-white transition-all text-center block"
-                style={{ background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)" }}
+                style={{ background: "linear-gradient(135deg, #19325C, #24718A)" }}
               >
                 Try Another NIN
               </Link>
@@ -220,9 +220,9 @@ function VerifyContent() {
         <div className="text-center mb-8 animate-in text-slate-900">
           <div
             className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #d5ecd5, #eef7ee)" }}
+            style={{ background: "linear-gradient(135deg, #e5e9f1, #f2f4f8)" }}
           >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0d6b0d" strokeWidth="2.5">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#19325C" strokeWidth="2.5">
               <path d="M20 6L9 17l-5-5" />
             </svg>
           </div>
@@ -328,7 +328,7 @@ export default function VerifyPage() {
   return (
     <Suspense fallback={
       <div className="min-h-[80vh] flex items-center justify-center text-center">
-        <Loader2 className="w-10 h-10 animate-spin text-accent-green mx-auto mb-4" />
+        <Loader2 className="w-10 h-10 animate-spin text-primary-500 mx-auto mb-4" />
         <p className="text-text-muted">Loading verification details...</p>
       </div>
     }>

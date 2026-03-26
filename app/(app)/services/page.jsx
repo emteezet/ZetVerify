@@ -22,7 +22,7 @@ export default function ServicesPage() {
           className="w-8 h-8 border-4 rounded-full animate-spin"
           style={{
             borderColor: "var(--border-color)",
-            borderTopColor: "#0d6b0d",
+            borderTopColor: "#19325C",
           }}
         />
       </div>
@@ -64,7 +64,7 @@ export default function ServicesPage() {
               <div
                 className="w-12 h-12 rounded-lg flex items-center justify-center text-white"
                 style={{
-                  background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                  background: "linear-gradient(135deg, #19325C, #24718A)",
                 }}
               >
                 <svg
@@ -109,7 +109,7 @@ export default function ServicesPage() {
               <div
                 className="w-12 h-12 rounded-lg flex items-center justify-center text-white"
                 style={{
-                  background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                  background: "linear-gradient(135deg, #19325C, #24718A)",
                 }}
               >
                 <svg

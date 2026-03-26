@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nin-platform-v1';
+const CACHE_NAME = 'zetverify-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',

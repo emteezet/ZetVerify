@@ -40,7 +40,7 @@ export default function TransactionsPage() {
   if (loading) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center">
-        <div className="spinner text-accent-green! w-10! h-10! border-4" />
+        <div className="spinner text-primary-500! w-10! h-10! border-4" />
       </div>
     );
   }
@@ -70,8 +70,8 @@ export default function TransactionsPage() {
         {/* Live Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass-card p-6 flex items-center gap-4">
-            <div className="p-3 bg-accent-green-light rounded-xl">
-              <Activity className="w-6 h-6 text-accent-green" />
+            <div className="p-3 bg-primary-50 rounded-xl">
+              <Activity className="w-6 h-6 text-primary-500" />
             </div>
             <div>
               <p className="text-xs text-text-muted uppercase font-bold tracking-wide">Total Transactions</p>
@@ -79,12 +79,12 @@ export default function TransactionsPage() {
             </div>
           </div>
           <div className="glass-card p-6 flex items-center gap-4">
-            <div className="p-3 bg-green-50 rounded-xl">
-              <ArrowDownLeft className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-primary-50 rounded-xl">
+              <ArrowDownLeft className="w-6 h-6 text-primary-600" />
             </div>
             <div>
               <p className="text-xs text-text-muted uppercase font-bold tracking-wide">Credits (Funding)</p>
-              <p className="text-3xl font-bold text-green-600 mt-1">{stats.credits}</p>
+              <p className="text-3xl font-bold text-primary-600 mt-1">{stats.credits}</p>
             </div>
           </div>
           <div className="glass-card p-6 flex items-center gap-4">

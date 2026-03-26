@@ -28,38 +28,33 @@ export default function HomePage() {
     // Helper to avoid hydration mismatch
 
     return (
-        <main className="min-h-screen bg-white text-slate-900 selection:bg-[#008751]/20 overflow-x-hidden">
+        <main className="min-h-screen bg-white text-slate-900 selection:bg-[#19325C]/20 overflow-x-hidden">
             {/* Simple Navigation */}
             <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-slate-100/50 px-6 py-4">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 bg-[#008751] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#008751]/20">
-                            <Shield className="w-5 h-5" />
-                        </div>
-                        <span className="font-extrabold text-xl tracking-tight text-slate-900">
-                            NIN<span className="text-[#008751]">Platform</span>
-                        </span>
-                    </div>
+                    <Link href="/" className="flex items-center gap-2">
+                        <img src="/ZetVerify-landscape-logo.svg" alt="ZetVerify" className="h-10 md:h-14 w-auto" />
+                    </Link>
                     <div className="flex items-center gap-6">
                         {!mounted ? (
                             // Server-side and Initial Client-side: Only "Get Started" to match default Guest state
-                            <Link href="/auth/signup" className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            <Link href="/auth/signup" className="bg-[#19325C] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#19325C]/20 hover:bg-primary-600 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                                 Get Started
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         ) : isAuthenticated ? (
                             // Post-mount: Authenticated state
-                            <Link href="/dashboard" className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            <Link href="/dashboard" className="bg-[#19325C] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#19325C]/20 hover:bg-primary-600 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                                 Dashboard
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         ) : (
                             // Post-mount: Guest state
                             <>
-                                <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#008751] transition-colors hidden md:block">
+                                <Link href="/auth/login" className="text-sm font-bold text-slate-600 hover:text-[#19325C] transition-colors hidden md:block">
                                     Login
                                 </Link>
-                                <Link href="/auth/signup" className="bg-[#008751] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#008751]/20 hover:bg-[#007043] hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                <Link href="/auth/signup" className="bg-[#19325C] text-white px-6 py-2.5 rounded-xl font-black text-sm shadow-xl shadow-[#19325C]/20 hover:bg-primary-600 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                                     Get Started
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
@@ -73,24 +68,24 @@ export default function HomePage() {
             <section className="relative pt-40 pb-24 px-6 overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10 opacity-30 pointer-events-none">
-                    <div className="absolute top-20 left-10 w-72 h-72 bg-[#008751]/10 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+                    <div className="absolute top-20 left-10 w-72 h-72 bg-[#19325C]/10 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
                 </div>
 
                 <div className="max-w-7xl mx-auto">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div className="text-left animate-in fade-in slide-in-from-left-8 duration-700">
                             {/* Badge */}
-                            <div className="inline-flex items-center gap-2 bg-[#008751]/5 border border-[#008751]/10 rounded-full px-4 py-2 mb-8">
-                                <Zap className="w-4 h-4 text-[#008751]" />
-                                <span className="text-[#008751] text-xs font-black tracking-wider uppercase">
+                            <div className="inline-flex items-center gap-2 bg-[#19325C]/5 border border-[#19325C]/10 rounded-full px-4 py-2 mb-8">
+                                <Zap className="w-4 h-4 text-[#19325C]" />
+                                <span className="text-[#19325C] text-xs font-black tracking-wider uppercase">
                                     Next-Gen Identity Verification
                                 </span>
                             </div>
 
                             <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.95]">
                                 Secure Identity <br />
-                                <span className="text-[#008751]">Made Simple.</span>
+                                <span className="text-[#19325C]">Made Simple.</span>
                             </h1>
 
                             <p className="text-slate-500 text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
@@ -100,7 +95,7 @@ export default function HomePage() {
                             <div className="flex flex-col md:flex-row gap-4">
                                 <Link
                                     href={!mounted ? "/auth/login" : (isAuthenticated ? "/verify" : "/auth/login")}
-                                    className="px-8 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
+                                    className="px-8 py-5 bg-[#19325C] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#19325C]/30 hover:bg-primary-600 hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
                                 >
                                     <Search className="h-6 w-6" />
                                     Start Verification
@@ -118,7 +113,7 @@ export default function HomePage() {
                                 {/* Digital ID Card CSS Illustration */}
                                 <div className="aspect-[1.6/1] bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl overflow-hidden border border-white/10 flex flex-col p-8 text-white relative group transition-transform hover:scale-[1.02] duration-500">
                                     {/* Holographic Mesh */}
-                                    <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_50%_50%,#008751_0%,transparent_70%)]" />
+                                    <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_50%_50%,#19325C_0%,transparent_70%)]" />
 
                                     <div className="flex justify-between items-start relative z-10 mb-auto">
                                         <div className="flex flex-col gap-1">
@@ -137,7 +132,7 @@ export default function HomePage() {
                                             <div className="h-2 w-16 bg-white/10 rounded-full" />
                                             <div className="h-2 w-16 bg-white/10 rounded-full" />
                                             <div className="ml-auto flex items-center gap-1.5">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#008751]" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#19325C]" />
                                                 <span className="text-[8px] font-bold uppercase tracking-widest opacity-60">Verified</span>
                                             </div>
                                         </div>
@@ -149,7 +144,7 @@ export default function HomePage() {
 
                                 {/* Floating Elements */}
                                 <div className="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 animate-bounce shadow-emerald-100/50">
-                                    <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-primary-50 text-primary-500 rounded-xl flex items-center justify-center">
                                         <CheckCircle2 className="w-6 h-6" />
                                     </div>
                                     <div className="hidden md:block">
@@ -159,7 +154,7 @@ export default function HomePage() {
                                 </div>
 
                                 <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 shadow-blue-100/50">
-                                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-primary-50 text-primary-500 rounded-xl flex items-center justify-center">
                                         <Fingerprint className="w-6 h-6" />
                                     </div>
                                     <div className="hidden md:block">
@@ -223,8 +218,8 @@ export default function HomePage() {
                     <div className="flex flex-col lg:flex-row gap-16 items-center">
                         <div className="lg:w-1/2 grid grid-cols-2 gap-6">
                             <div className="space-y-6 pt-12">
-                                <div className="glass-card p-6 bg-emerald-50/50 border-emerald-100 h-48 flex flex-col justify-end">
-                                    <CreditCard className="w-8 h-8 text-emerald-600 mb-2" />
+                                <div className="glass-card p-6 bg-primary-50/50 border-emerald-100 h-48 flex flex-col justify-end">
+                                    <CreditCard className="w-8 h-8 text-primary-500 mb-2" />
                                     <h4 className="font-bold text-slate-900">HD Rendering</h4>
                                     <p className="text-xs text-slate-500">Crystal clear PDF generation.</p>
                                 </div>
@@ -235,8 +230,8 @@ export default function HomePage() {
                                 </div>
                             </div>
                             <div className="space-y-6">
-                                <div className="glass-card p-6 bg-blue-50/50 border-blue-100 h-48 flex flex-col justify-end">
-                                    <Lock className="w-8 h-8 text-blue-600 mb-2" />
+                                <div className="glass-card p-6 bg-primary-50/50 border-blue-100 h-48 flex flex-col justify-end">
+                                    <Lock className="w-8 h-8 text-primary-500 mb-2" />
                                     <h4 className="font-bold text-slate-900">Encrypted</h4>
                                     <p className="text-xs text-slate-500">Your data is safe with us.</p>
                                 </div>
@@ -265,7 +260,7 @@ export default function HomePage() {
                                     "End-to-End Data Privacy"
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3 font-bold text-slate-700">
-                                        <div className="w-6 h-6 bg-[#008751]/10 text-[#008751] rounded-full flex items-center justify-center">
+                                        <div className="w-6 h-6 bg-[#19325C]/10 text-[#19325C] rounded-full flex items-center justify-center">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </div>
                                         {item}
@@ -281,8 +276,8 @@ export default function HomePage() {
             <section className="py-20 px-6">
                 <div className="max-w-5xl mx-auto bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
                     {/* Background Decor */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#008751]/20 blur-[100px] pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#19325C]/20 blur-[100px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-500/10 blur-[100px] pointer-events-none" />
 
                     <div className="relative z-10">
                         <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tighter">
@@ -292,7 +287,7 @@ export default function HomePage() {
                         <div className="flex flex-col md:flex-row justify-center gap-4">
                             <Link
                                 href="/auth/signup"
-                                className="px-10 py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#008751]/30 hover:bg-[#007043] transition-all"
+                                className="px-10 py-5 bg-[#19325C] text-white rounded-2xl font-black text-lg shadow-2xl shadow-[#19325C]/30 hover:bg-primary-600 transition-all"
                             >
                                 Get Started Now
                             </Link>
@@ -309,12 +304,11 @@ export default function HomePage() {
 
             {/* Footer */}
             <footer className="py-12 px-6 border-t border-slate-100 flex flex-col items-center gap-6">
-                <div className="flex items-center gap-2 grayscale brightness-50 opacity-40">
-                    <Shield className="w-5 h-5" />
-                    <span className="font-extrabold text-lg tracking-tight">NINPlatform</span>
+                <div className="flex items-center gap-2 opacity-50">
+                    <img src="/ZetVerify-landscape-logo.svg" alt="ZetVerify Logo" className="h-7 w-auto grayscale brightness-0" />
                 </div>
                 <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">
-                    © 2026 NINPlatform. Developed with ❤️ for secure identity.
+                    © 2026 ZetVerify. Developed with ❤️ for secure identity.
                 </p>
                 <div className="flex gap-8 text-[10px] font-black uppercase text-slate-400 tracking-widest">
                     <span className="hover:text-slate-900 cursor-pointer">Privacy Policy</span>

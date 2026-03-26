@@ -64,12 +64,11 @@ export default function SignupPage() {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <div
-            className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md mx-auto mb-4"
-            style={{ background: "linear-gradient(135deg, #0d6b0d, #1a8c1a)" }}
-          >
-            NIN
-          </div>
+          <img 
+            src="/ZetVerify-logo icon.png" 
+            alt="ZetVerify" 
+            className="w-16 h-16 mx-auto mb-4 object-contain"
+          />
           <h1
             className="text-2xl font-bold"
             style={{ color: "var(--text-primary)" }}
@@ -247,8 +246,8 @@ export default function SignupPage() {
             className="w-full py-2.5 rounded-lg font-medium text-white transition-all disabled:opacity-50"
             style={{
               background: loading
-                ? "rgba(13, 107, 13, 0.5)"
-                : "linear-gradient(135deg, #0d6b0d, #1a8c1a)",
+                ? "rgba(25, 50, 92, 0.5)"
+                : "linear-gradient(135deg, #19325C, #24718A)",
             }}
           >
             {loading ? "Creating account..." : "Sign Up"}
@@ -278,7 +277,7 @@ export default function SignupPage() {
           Already have an account?{" "}
           <Link
             href="/auth/login"
-            className="font-medium text-green-600 hover:text-green-700 transition-colors"
+            className="font-medium text-primary-600 hover:text-primary-700 transition-colors"
           >
             Sign in here
           </Link>

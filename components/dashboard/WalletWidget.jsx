@@ -70,8 +70,8 @@ export default function WalletWidget({ userId, userEmail }) {
         <div className="glass-card p-6 w-full">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-accent-green-light rounded-lg">
-                        <Wallet className="w-5 h-5 text-accent-green" />
+                    <div className="p-2 bg-primary-50 rounded-lg">
+                        <Wallet className="w-5 h-5 text-primary-500" />
                     </div>
                     <h3 className="font-semibold text-text-primary">Wallet Balance</h3>
                 </div>

@@ -119,10 +119,10 @@ export function AuthProvider({ children }) {
       setLoggingOut(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
+
       // Artificial delay for better UX animation if it's too fast
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       router.push("/");
       return { success: true };
     } catch (error) {

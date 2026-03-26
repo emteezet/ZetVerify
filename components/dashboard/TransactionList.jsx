@@ -124,13 +124,18 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-NG', {
+        const date = new Date(dateString);
+        const d = date.toLocaleDateString('en-NG', {
             day: '2-digit',
             month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
         });
+        const t = date.toLocaleTimeString('en-NG', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        return `${d} • ${t}`;
     };
 
     return (

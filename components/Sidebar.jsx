@@ -36,7 +36,7 @@ export default function Sidebar() {
     <>
       {/* Sidebar */}
       <aside
-        className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 transition-all duration-300 ease-in-out hidden md:block"
+        className="fixed left-0 top-16 h-[calc(100dvh-4rem)] w-64 transition-all duration-300 ease-in-out hidden md:block"
         style={{
           background: "var(--bg-card)",
           borderRight: "1px solid var(--border-color)",

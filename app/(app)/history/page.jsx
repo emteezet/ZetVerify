@@ -10,7 +10,8 @@ import {
   ShieldCheck, 
   CreditCard,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import DownloadButton from "@/components/DownloadButton";
@@ -24,11 +25,28 @@ export default function HistoryPage() {
   const [error, setError] = useState("");
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [loadingId, setLoadingId] = useState(null);
+  const [toast, setToast] = useState(null);
   const documentRef = useRef(null);
+  const downloadBtnRef = useRef(null);
 
   useEffect(() => {
     fetchHistory();
   }, []);
+
+  // Automate download when record is selected
+  useEffect(() => {
+    if (selectedRecord && downloadBtnRef.current) {
+      const timer = setTimeout(() => {
+        downloadBtnRef.current.click();
+        setToast({ message: "Download started!", type: "success" });
+        setTimeout(() => {
+           setSelectedRecord(null);
+           setToast(null);
+        }, 3000);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedRecord]);
 
   const fetchHistory = async () => {
     try {
@@ -45,13 +63,15 @@ export default function HistoryPage() {
 
   const handleDownloadClick = async (recordId) => {
     setLoadingId(recordId);
+    setToast({ message: "Preparing your slip...", type: "loading" });
     try {
       const res = await fetch(`/api/verifications/${recordId}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to fetch details");
       setSelectedRecord(data.record);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      setToast({ message: `Error: ${err.message}`, type: "error" });
+      setTimeout(() => setToast(null), 3000);
     } finally {
       setLoadingId(null);
     }
@@ -67,7 +87,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-24">
       <div className="mb-10">
         <h1 className="text-3xl font-black text-[#19325C] tracking-tight">My Generated Slips</h1>
         <p className="text-slate-500 mt-1">A historical list of all your NIN/BVN verifications.</p>
@@ -133,59 +153,50 @@ export default function HistoryPage() {
         </div>
       )}
 
-      {/* Re-download Modal/Hidden Area */}
+      {/* Background Rendering for PDF */}
       {selectedRecord && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in duration-300 text-center">
-                 <div className="w-20 h-20 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                    <Download className="w-10 h-10 text-emerald-600" />
-                 </div>
-                 
-                 <h2 className="text-2xl font-black text-[#19325C] mb-2">Ready to Download</h2>
-                 <p className="text-slate-500 mb-8">Click the button below to generate and save your {selectedRecord.slip_type} slip.</p>
+        <div style={{ position: "absolute", left: "-9999px", top: 0, opacity: 0, pointerEvents: 'none' }}>
+            <div ref={documentRef} className="bg-white">
+                {selectedRecord.slip_type === "premium" && (
+                    <div className="w-[500px]">
+                        <PremiumPlasticCard user={selectedRecord.user} qrCodeData={selectedRecord.user.qrCode} forwardedRef={documentRef} />
+                    </div>
+                )}
+                {selectedRecord.slip_type === "improved" && (
+                    <div className="w-[500px]">
+                        <ImprovedNinSlip user={selectedRecord.user} qrCodeData={selectedRecord.user.qrCode} forwardedRef={documentRef} />
+                    </div>
+                )}
+                {selectedRecord.slip_type === "regular" && (
+                    <div className="w-[850px]">
+                        <NinRegularSlip user={selectedRecord.user} forwardedRef={documentRef} />
+                    </div>
+                )}
+            </div>
+            
+            <DownloadButton 
+                templateRef={documentRef} 
+                fileName={`NIN-Slip-${selectedRecord.user.nin || selectedRecord.identifier}`} 
+                slipType={(selectedRecord.slip_type === "premium" || selectedRecord.slip_type === "improved") ? "plastic" : "full"} 
+                renderCustom={({ onClick }) => (
+                    <button ref={downloadBtnRef} onClick={onClick} className="hidden" />
+                )}
+            />
+        </div>
+      )}
 
-                 {/* Hidden rendering area for PDF */}
-                 <div ref={documentRef} style={{ position: "absolute", left: "-9999px", top: 0 }}>
-                    {selectedRecord.slip_type === "premium" && (
-                        <div className="w-[500px] bg-white">
-                          <PremiumPlasticCard user={selectedRecord.user} qrCodeData={selectedRecord.user.qrCode} forwardedRef={documentRef} />
-                        </div>
-                    )}
-                    {selectedRecord.slip_type === "improved" && (
-                        <div className="w-[500px] bg-white">
-                          <ImprovedNinSlip user={selectedRecord.user} qrCodeData={selectedRecord.user.qrCode} forwardedRef={documentRef} />
-                        </div>
-                    )}
-                    {selectedRecord.slip_type === "regular" && (
-                        <div className="w-[850px] bg-white">
-                          <NinRegularSlip user={selectedRecord.user} forwardedRef={documentRef} />
-                        </div>
-                    )}
-                </div>
-
-                <div className="space-y-4">
-                    <DownloadButton 
-                        templateRef={documentRef} 
-                        fileName={`NIN-Slip-${selectedRecord.user.nin || selectedRecord.identifier}`} 
-                        slipType={(selectedRecord.slip_type === "premium" || selectedRecord.slip_type === "improved") ? "plastic" : "full"} 
-                        renderCustom={({ onClick, isLoading }) => (
-                            <button 
-                                onClick={onClick}
-                                disabled={isLoading}
-                                className="w-full py-5 bg-[#008751] text-white rounded-2xl font-black text-lg shadow-xl shadow-emerald-200 hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
-                            >
-                                {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Download className="w-6 h-6" />}
-                                {isLoading ? "Generating..." : "Download Now"}
-                            </button>
-                        )}
-                    />
-                    <button 
-                        onClick={() => setSelectedRecord(null)}
-                        className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 transition-all"
-                    >
-                        Close
-                    </button>
-                </div>
+      {/* Toast Notification System */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] animate-in slide-in-from-bottom-4 duration-300">
+            <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border ${
+                toast.type === 'error' ? 'bg-red-50 border-red-100 text-red-600' : 
+                toast.type === 'loading' ? 'bg-white border-slate-100 text-[#19325C]' :
+                'bg-emerald-50 border-emerald-100 text-emerald-600'
+            }`}>
+                {toast.type === 'loading' && <Loader2 className="w-5 h-5 animate-spin" />}
+                {toast.type === 'success' && <ShieldCheck className="w-5 h-5" />}
+                {toast.type === 'error' && <AlertCircle className="w-5 h-5" />}
+                <span className="font-bold text-sm">{toast.message}</span>
             </div>
         </div>
       )}

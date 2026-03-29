@@ -228,6 +228,13 @@ export default function AdminDashboardPage() {
                                 Security Overrides
                             </h3>
                             <div className="space-y-4">
+                                <button 
+                                    onClick={() => router.push("/admin/users")}
+                                    className="w-full py-4 px-6 bg-blue-600 text-white rounded-xl font-bold flex items-center justify-between group hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/20"
+                                >
+                                    Manage Registry Users
+                                    <Users className="w-4 h-4 text-white/70 group-hover:scale-110 transition-transform" />
+                                </button>
                                 <button className="w-full py-4 px-6 bg-slate-900 text-white rounded-xl font-bold flex items-center justify-between group hover:bg-slate-800 transition-all shadow-lg hover:shadow-slate-400/20">
                                     Global Maintenance
                                     <ChevronRight className="w-4 h-4 text-white/40 group-hover:translate-x-1 transition-transform" />

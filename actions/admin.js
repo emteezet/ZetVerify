@@ -33,3 +33,41 @@ export async function getPlatformStatsAction() {
         };
     }
 }
+
+/**
+ * Server Action: Fetches all registered users
+ */
+export async function getAllUsersAction() {
+    try {
+        const user = await getServerUser();
+        const adminEmail = (process.env.ADMIN_EMAIL || "emteezetdesigns@gmail.com").toLowerCase().trim();
+        
+        if (!user || user.email.toLowerCase().trim() !== adminEmail) {
+            throw new Error("Unauthorized access. Admin privileges required.");
+        }
+
+        const users = await adminService.getAllUsers();
+        return { success: true, users };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Server Action: Manually Adjusts user wallet
+ */
+export async function updateUserWalletAction(targetUserId, amount, type, description) {
+    try {
+        const user = await getServerUser();
+        const adminEmail = (process.env.ADMIN_EMAIL || "emteezetdesigns@gmail.com").toLowerCase().trim();
+        
+        if (!user || user.email.toLowerCase().trim() !== adminEmail) {
+            throw new Error("Unauthorized access. Admin privileges required.");
+        }
+
+        const result = await adminService.updateUserWallet(targetUserId, amount, type, description);
+        return { success: true, ...result };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}

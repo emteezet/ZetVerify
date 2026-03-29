@@ -55,7 +55,8 @@
 
   html {
     scroll-behavior: smooth;
-    height: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
     overflow: hidden;
     /* AppLayout handles internal scrolling */
   }
@@ -68,11 +69,12 @@
       background-color 0.3s ease,
       color 0.3s ease;
     height: 100dvh;
+    min-height: 100dvh;
     overflow: hidden;
     margin: 0;
     padding: 0;
     position: relative;
-    overscroll-behavior-y: auto;
+    overscroll-behavior-y: none;
     /* Prevent root bounce */
   }
 }

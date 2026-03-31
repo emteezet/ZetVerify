@@ -3,6 +3,7 @@ import Providers from "@/components/Providers";
 import OfflineBanner from "@/components/OfflineBanner";
 import SWRegistration from "@/components/SWRegistration";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "ZetVerify",
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
         </Providers>
         <SWRegistration />
         <PWAInstallPrompt />
+        <Analytics />
       </body>
     </html>
   );

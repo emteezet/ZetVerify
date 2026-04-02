@@ -523,7 +523,10 @@ export default function AdminUsersPage() {
                                                     {activityData.transactions.length > 0 ? activityData.transactions.map(tx => (
                                                         <tr key={tx.id} className="hover:bg-slate-50/30">
                                                             <td className="px-6 py-5">
-                                                                <div className="font-bold">{tx.type}</div>
+                                                                <div className="font-bold capitalize">
+                                                                    {(tx.metadata?.service || tx.type).replace(/_/g, ' ').toLowerCase()}
+                                                                    {tx.metadata?.identifier && ` (${tx.metadata.identifier})`}
+                                                                </div>
                                                                 {tx.metadata?.description && (
                                                                     <div className="text-[10px] text-text-muted mt-1 italic">{tx.metadata.description}</div>
                                                                 )}

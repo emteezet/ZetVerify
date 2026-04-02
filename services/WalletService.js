@@ -98,8 +98,9 @@ export class WalletService {
      * @param {string} userId 
      * @param {number} amount 
      * @param {string} serviceType e.g., 'NIN_VERIFY'
+     * @param {object} metadata Extra info to store with the transaction
      */
-    async debitWallet(userId, amount, serviceType) {
+    async debitWallet(userId, amount, serviceType, metadata = {}) {
         try {
             if (amount <= 0) throw new WalletError("Amount must be positive", ErrorCodes.VALIDATION_ERROR);
 
@@ -109,7 +110,10 @@ export class WalletService {
                 p_user_id: userId,
                 p_amount: amount,
                 p_service_type: serviceType,
-                p_metadata: { date: new Date().toISOString() }
+                p_metadata: { 
+                    ...metadata,
+                    date: new Date().toISOString() 
+                }
             });
 
             if (error) {

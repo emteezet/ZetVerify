@@ -101,7 +101,11 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
             tx.type;
 
         if (SERVICE_LABELS[serviceKey]) {
-            return SERVICE_LABELS[serviceKey];
+            let label = SERVICE_LABELS[serviceKey];
+            if (tx.metadata?.identifier) {
+                return `${label} (${tx.metadata.identifier})`;
+            }
+            return label;
         }
 
         // 5. Special Case: Handle "Uniform Service Fee" or "Service Fee" mentions in metadata

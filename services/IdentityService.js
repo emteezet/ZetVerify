@@ -52,7 +52,7 @@ export class IdentityService {
 
         try {
             // 1. Debit wallet first! (Atomic protection against race conditions)
-            await this.walletService.debitWallet(userId, fee, type);
+            await this.walletService.debitWallet(userId, fee, type, { identifier });
 
             // 2. Fetch data from provider
             let result;

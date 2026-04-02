@@ -225,6 +225,11 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                                 <span className="block text-sm font-semibold text-text-primary capitalize">
                                                     {getTransactionLabel(tx)}
                                                 </span>
+                                                {tx.metadata?.description && (
+                                                    <span className="block text-[10px] text-accent-green/70 italic mt-0.5">
+                                                        {tx.metadata.description}
+                                                    </span>
+                                                )}
                                                 <span className="block text-[10px] text-text-muted">
                                                     {formatDate(tx.created_at)}
                                                 </span>
@@ -305,6 +310,11 @@ export default function TransactionList({ userId, refreshTrigger, limit = 10, vi
                                         <span className="block text-sm font-bold text-text-primary capitalize">
                                             {getTransactionLabel(tx)}
                                         </span>
+                                        {tx.metadata?.description && (
+                                            <span className="block text-[8px] text-accent-green/70 italic mt-0.5">
+                                                {tx.metadata.description}
+                                            </span>
+                                        )}
                                         <span className="block text-[10px] text-text-muted">
                                             {formatDate(tx.created_at)}
                                         </span>

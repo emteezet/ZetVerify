@@ -522,12 +522,17 @@ export default function AdminUsersPage() {
                                                 <tbody className="divide-y divide-slate-50">
                                                     {activityData.transactions.length > 0 ? activityData.transactions.map(tx => (
                                                         <tr key={tx.id} className="hover:bg-slate-50/30">
-                                                            <td className="px-6 py-5 font-bold">{tx.type}</td>
+                                                            <td className="px-6 py-5">
+                                                                <div className="font-bold">{tx.type}</div>
+                                                                {tx.metadata?.description && (
+                                                                    <div className="text-[10px] text-text-muted mt-1 italic">{tx.metadata.description}</div>
+                                                                )}
+                                                            </td>
                                                             <td className={`px-6 py-5 font-black ${Number(tx.amount) >= 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
                                                                 {Number(tx.amount) >= 0 ? '+' : '-'}₦{Math.abs(Number(tx.amount)).toLocaleString()}
                                                             </td>
                                                             <td className="px-6 py-5 text-text-muted font-mono">{tx.reference?.slice(0, 15)}...</td>
-                                                            <td className="px-6 py-5 text-text-muted">
+                                                            <td className="px-6 py-5 text-text-muted whitespace-nowrap">
                                                                 {new Date(tx.created_at).toLocaleDateString()}
                                                             </td>
                                                         </tr>

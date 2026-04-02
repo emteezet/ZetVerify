@@ -135,7 +135,11 @@ export class AdminService {
                     wallet_id: wallet.id,
                     amount: amount,
                     type: type, // e.g., 'FUNDING', 'SERVICE_FEE', 'REFUND'
-                    description: description,
+                    metadata: { 
+                        description: description,
+                        admin_adjustment: true,
+                        date: new Date().toISOString()
+                    },
                     reference: `ADMIN-${Math.random().toString(36).substring(7).toUpperCase()}`
                 })
                 .select()

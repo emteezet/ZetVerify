@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import { AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const logoutReason = searchParams.get("reason");
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -88,6 +93,21 @@ export default function LoginPage() {
               Sign in to your account
             </p>
           </div>
+
+          {/* Session Expired Notice */}
+          {logoutReason === "expired" && (
+            <div
+              className="mb-6 p-4 rounded-xl text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500"
+              style={{
+                backgroundColor: "rgba(36, 113, 138, 0.08)",
+                color: "var(--primary-600)",
+                border: "1px solid rgba(36, 113, 138, 0.15)",
+              }}
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <p className="font-bold">Your session expired due to inactivity. Please log in again.</p>
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">

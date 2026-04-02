@@ -23,42 +23,9 @@ export function AuthProvider({ children }) {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-
-        if (session?.user) {
-          // Verify status
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('status')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile?.status && profile.status !== 'ACTIVE') {
-            console.warn("[Auth] Restricting initial session for status:", profile.status);
-            await supabase.auth.signOut();
-            setUser(null);
-            return;
-          }
-
-          setUser({
-            id: session.user.id,
-            email: session.user.email,
-            firstName: session.user.user_metadata?.first_name,
-            lastName: session.user.user_metadata?.last_name,
-          });
-        }
-      } catch (err) {
-        console.warn("[Auth] Initial session fetch failed (likely offline):", err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getInitialSession();
+    // Initial loading state is true by default
+    // We rely solely on onAuthStateChange to catch the initial session
+    // This avoids the "Lock broken" error caused by competing getSession calls
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -74,6 +41,7 @@ export function AuthProvider({ children }) {
           console.warn("[Auth] Restricting access for status:", profile.status);
           await supabase.auth.signOut();
           setUser(null);
+          setLoading(false);
           return;
         }
 
@@ -125,6 +93,9 @@ export function AuthProvider({ children }) {
 
       if (error) throw error;
 
+      // Reset inactivity timer on success
+      localStorage.setItem('zetverify_last_activity', Date.now().toString());
+
       return { success: true, user: data.user };
     } catch (error) {
       return { success: false, error: error.message };
@@ -147,12 +118,13 @@ export function AuthProvider({ children }) {
         .eq('id', data.user.id)
         .single();
 
-      if (profileError) throw profileError;
-
       if (profile?.status && profile.status !== 'ACTIVE') {
         await supabase.auth.signOut();
         throw new Error(profile.suspension_reason || `Your account is ${profile.status.toLowerCase()}. Please contact support.`);
       }
+
+      // Reset inactivity timer on success
+      localStorage.setItem('zetverify_last_activity', Date.now().toString());
 
       return { success: true, user: data.user };
     } catch (error) {
@@ -160,7 +132,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (reason = null) => {
     try {
       setLoggingOut(true);
       const { error } = await supabase.auth.signOut();
@@ -172,8 +144,10 @@ export function AuthProvider({ children }) {
       // Clear states and navigate
       setLoggingOut(false);
       setUser(null);
-      router.push("/auth/login");
-
+      
+      const loginUrl = reason ? `/auth/login?reason=${reason}` : "/auth/login";
+      router.push(loginUrl);
+      
       return { success: true };
     } catch (error) {
       console.error("[Auth] Logout failed:", error);
@@ -221,7 +195,7 @@ export function AuthProvider({ children }) {
       // 2. Set client-side timeout for active session
       timeoutRef.current = setTimeout(() => {
         console.log("[Auth] Session expired due to inactivity");
-        logout();
+        logout('expired');
       }, INACTIVITY_LIMIT);
     }
   }, [user, logout]);
@@ -232,7 +206,7 @@ export function AuthProvider({ children }) {
       const lastActivity = localStorage.getItem('zetverify_last_activity');
       if (lastActivity && Date.now() - parseInt(lastActivity) > INACTIVITY_LIMIT) {
         console.log("[Auth] Session expired while away");
-        logout();
+        logout('expired');
         return;
       }
 
@@ -251,7 +225,7 @@ export function AuthProvider({ children }) {
           const last = localStorage.getItem('zetverify_last_activity');
           if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
             console.log("[Auth] Session expired during backgrounding");
-            logout();
+            logout('expired');
           } else {
             resetInactivityTimer(); // Resume timer
           }
@@ -263,7 +237,7 @@ export function AuthProvider({ children }) {
       const interval = setInterval(() => {
         const last = localStorage.getItem('zetverify_last_activity');
         if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
-          logout();
+          logout('expired');
         }
       }, 30000);
 

@@ -173,7 +173,7 @@ export function AuthProvider({ children }) {
       setLoggingOut(false);
       setUser(null);
       router.push("/auth/login");
-      
+
       return { success: true };
     } catch (error) {
       console.error("[Auth] Logout failed:", error);
@@ -181,6 +181,30 @@ export function AuthProvider({ children }) {
       return { success: false, error: error.message };
     }
   }, [router]);
+
+  const sendResetLink = useCallback(async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, []);
+
+  const updatePassword = useCallback(async (newPassword) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, []);
 
   // ============================================================
   // INACTIVITY TIMEOUT LOGIC (Security Enhancement)
@@ -261,6 +285,8 @@ export function AuthProvider({ children }) {
     signup,
     login,
     logout,
+    sendResetLink,
+    updatePassword,
     loggingOut,
     isAuthenticated: !!user,
   };

@@ -195,28 +195,30 @@ export function AuthProvider({ children }) {
         password: newPassword
       });
       
-      if (error) {
-        // Broaden check for "Lock broken" / "AbortError" race conditions
-        const isLockError = 
-          error.name === 'AbortError' || 
-          error.message?.toLowerCase().includes('lock broken') ||
-          error.message?.toLowerCase().includes('steal');
-
-        if (isLockError) {
-          console.warn("[Auth] Ignoring lock contention during update—operation likely succeeded on server");
-          return { success: true };
-        }
-        throw error;
-      }
-
-      // Manually update local user state to avoid triggering onAuthStateChange logic
+      // If we got a user back, the update succeeded on the server!
       if (data?.user) {
+        // Manually update local user state
         setUser({
           id: data.user.id,
           email: data.user.email,
           firstName: data.user.user_metadata?.first_name,
           lastName: data.user.user_metadata?.last_name,
         });
+        return { success: true };
+      }
+
+      if (error) {
+        // Broaden check for "Lock broken" / "AbortError" race conditions during persistence
+        const isLockError = 
+          error.name === 'AbortError' || 
+          error.message?.toLowerCase().includes('lock broken') ||
+          error.message?.toLowerCase().includes('steal');
+
+        if (isLockError) {
+          console.warn("[Auth] Ignoring lock contention—password update should have reached server");
+          return { success: true };
+        }
+        throw error;
       }
 
       return { success: true };

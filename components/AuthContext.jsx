@@ -191,6 +191,10 @@ export function AuthProvider({ children }) {
   const resetInactivityTimer = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (user) {
+      // 1. Update localStorage for cross-tab and PWA background recovery
+      localStorage.setItem('zetverify_last_activity', Date.now().toString());
+
+      // 2. Set client-side timeout for active session
       timeoutRef.current = setTimeout(() => {
         console.log("[Auth] Session expired due to inactivity");
         logout();
@@ -200,23 +204,55 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (user) {
+      // Initial check on mount/login
+      const lastActivity = localStorage.getItem('zetverify_last_activity');
+      if (lastActivity && Date.now() - parseInt(lastActivity) > INACTIVITY_LIMIT) {
+        console.log("[Auth] Session expired while away");
+        logout();
+        return;
+      }
+
       // Initial timer set
       resetInactivityTimer();
 
       // Event listeners for activity
-      const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove"];
+      const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove", "click"];
       events.forEach((event) => {
         window.addEventListener(event, resetInactivityTimer);
       });
 
+      // PWA / Mobile Background Handler: Check when user returns to app
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          const last = localStorage.getItem('zetverify_last_activity');
+          if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
+            console.log("[Auth] Session expired during backgrounding");
+            logout();
+          } else {
+            resetInactivityTimer(); // Resume timer
+          }
+        }
+      };
+      window.addEventListener("visibilitychange", handleVisibilityChange);
+
+      // Periodic check as fallback (every 30 seconds)
+      const interval = setInterval(() => {
+        const last = localStorage.getItem('zetverify_last_activity');
+        if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
+          logout();
+        }
+      }, 30000);
+
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        clearInterval(interval);
         events.forEach((event) => {
           window.removeEventListener(event, resetInactivityTimer);
         });
+        window.removeEventListener("visibilitychange", handleVisibilityChange);
       };
     }
-  }, [user, resetInactivityTimer]);
+  }, [user, resetInactivityTimer, logout]);
 
   const value = {
     user,

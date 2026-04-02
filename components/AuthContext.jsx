@@ -108,6 +108,10 @@ export function AuthProvider({ children }) {
         throw new Error("Passwords do not match");
       }
 
+      if (!firstName || !lastName || firstName.trim() === "" || lastName.trim() === "") {
+        throw new Error("First and Last names are required");
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

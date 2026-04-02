@@ -108,6 +108,7 @@ export default function SignupPage() {
                 color: "var(--text-primary)",
               }}
               placeholder="John"
+              required
             />
           </div>
 
@@ -133,6 +134,7 @@ export default function SignupPage() {
                 color: "var(--text-primary)",
               }}
               placeholder="Doe"
+              required
             />
           </div>
 

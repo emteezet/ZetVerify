@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
   const [isOnline, setIsOnline] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
   const router = useRouter();
+  const inactivityIntervalRef = useRef(null);
 
   useEffect(() => {
     // Check initial online status
@@ -133,20 +134,29 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(async (reason = null) => {
+    if (loggingOut) return { success: true };
+    
     try {
       setLoggingOut(true);
+      
+      // Stop further inactivity checks immediately
+      if (inactivityIntervalRef.current) {
+        clearInterval(inactivityIntervalRef.current);
+        inactivityIntervalRef.current = null;
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
-      // Artificial delay for better UX animation if it's too fast
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Artificial delay for better UX animation
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Clear states and navigate
-      setLoggingOut(false);
+      // Clear states
       setUser(null);
       
+      // Use hard redirect to ensure all application state is wiped
       const loginUrl = reason ? `/auth/login?reason=${reason}` : "/auth/login";
-      router.push(loginUrl);
+      window.location.href = loginUrl;
       
       return { success: true };
     } catch (error) {
@@ -154,7 +164,7 @@ export function AuthProvider({ children }) {
       setLoggingOut(false);
       return { success: false, error: error.message };
     }
-  }, [router]);
+  }, [router, loggingOut]);
 
   const sendResetLink = useCallback(async (email) => {
     try {
@@ -234,7 +244,7 @@ export function AuthProvider({ children }) {
       window.addEventListener("visibilitychange", handleVisibilityChange);
 
       // Periodic check as fallback (every 30 seconds)
-      const interval = setInterval(() => {
+      inactivityIntervalRef.current = setInterval(() => {
         const last = localStorage.getItem('zetverify_last_activity');
         if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
           logout('expired');
@@ -243,7 +253,10 @@ export function AuthProvider({ children }) {
 
       return () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        clearInterval(interval);
+        if (inactivityIntervalRef.current) {
+          clearInterval(inactivityIntervalRef.current);
+          inactivityIntervalRef.current = null;
+        }
         events.forEach((event) => {
           window.removeEventListener(event, resetInactivityTimer);
         });

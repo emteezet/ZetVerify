@@ -26,17 +26,7 @@ export default function Navbar() {
       <div className="max-w-full mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
-            {/* Mobile Menu Toggle */}
-            {isAuthenticated && (
-              <button 
-                onClick={toggleSidebar}
-                className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors"
-                aria-label="Toggle Sidebar"
-              >
-                <Menu className="w-6 h-6 text-slate-700" />
-              </button>
-            )}
-
+            {/* Mobile Menu Toggle removed because of bottom MobileNav */}
             {/* Logo */}
             <Link href="/" className="flex items-center group">
               <img 

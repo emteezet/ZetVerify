@@ -42,6 +42,7 @@ export class PaystackService {
                     email,
                     amount,
                     callback_url: callbackUrl,
+                    channels: ['bank_transfer', 'bank'],
                 }),
             });
 

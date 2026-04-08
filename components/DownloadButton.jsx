@@ -94,7 +94,9 @@ export default function DownloadButton({
           useCORS: true, 
           allowTaint: true, // Fallback if CORS fails
           backgroundColor: null, 
-          logging: false 
+          logging: false,
+          windowWidth: 1024,
+          windowHeight: 768
         };
         
         frontCanvas = await html2canvas(frontClone, captureOptions);
@@ -108,7 +110,9 @@ export default function DownloadButton({
           useCORS: true,
           allowTaint: true, // Fallback if CORS fails
           logging: false,
-          width: 850
+          width: 850,
+          windowWidth: 1024,
+          windowHeight: 768
         });
       }
 

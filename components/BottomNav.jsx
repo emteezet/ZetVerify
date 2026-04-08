@@ -32,6 +32,9 @@ export default function BottomNav() {
     return null;
   }
 
+  // Admin routes have their own shell — hide the shared BottomNav
+  if (pathname?.startsWith('/admin')) return null;
+
   return (
     <nav 
       className="md:hidden fixed bottom-6 left-4 right-4 z-50 px-4 py-3 rounded-2xl border backdrop-blur-xl shadow-2xl transition-all duration-300"

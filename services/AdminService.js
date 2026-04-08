@@ -364,6 +364,131 @@ export class AdminService {
             throw error;
         }
     }
+    /**
+     * Groups SERVICE_FEE transactions by day for the last 30 days (revenue chart)
+     */
+    async getRevenueChartData() {
+        try {
+            const since = new Date();
+            since.setDate(since.getDate() - 30);
+
+            const { data, error } = await supabase
+                .from('transactions')
+                .select('amount, created_at')
+                .eq('type', 'SERVICE_FEE')
+                .gte('created_at', since.toISOString())
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            // Group by date string
+            const grouped = {};
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                grouped[d.toISOString().slice(0, 10)] = 0;
+            }
+            (data || []).forEach(tx => {
+                const day = tx.created_at.slice(0, 10);
+                if (grouped[day] !== undefined) {
+                    grouped[day] += Math.abs(Number(tx.amount));
+                }
+            });
+
+            return Object.entries(grouped).map(([date, value]) => ({ date, value }));
+        } catch (error) {
+            console.error('[AdminService] getRevenueChartData error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Groups verifications by day + type for the last 30 days, and top users by spend
+     */
+    async getVerificationChartData() {
+        try {
+            const since = new Date();
+            since.setDate(since.getDate() - 30);
+
+            const { data: verifs, error: vError } = await supabase
+                .from('verification_history')
+                .select('type, created_at')
+                .gte('created_at', since.toISOString())
+                .order('created_at', { ascending: true });
+
+            if (vError) throw vError;
+
+            // Daily volume
+            const dailyMap = {};
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                dailyMap[d.toISOString().slice(0, 10)] = { nin: 0, bvn: 0 };
+            }
+            (verifs || []).forEach(v => {
+                const day = v.created_at.slice(0, 10);
+                if (dailyMap[day]) {
+                    if (v.type?.includes('BVN')) dailyMap[day].bvn++;
+                    else dailyMap[day].nin++;
+                }
+            });
+            const daily = Object.entries(dailyMap).map(([date, counts]) => ({ date, ...counts }));
+
+            // Overall split totals
+            const ninTotal = (verifs || []).filter(v => !v.type?.includes('BVN')).length;
+            const bvnTotal = (verifs || []).filter(v => v.type?.includes('BVN')).length;
+
+            // Top 5 spenders (by SERVICE_FEE)
+            const { data: spenders, error: sError } = await supabase
+                .from('transactions')
+                .select('amount, wallet:wallets(user:profiles(first_name, last_name, email))')
+                .eq('type', 'SERVICE_FEE');
+
+            if (sError) throw sError;
+
+            const spendMap = {};
+            (spenders || []).forEach(tx => {
+                const u = tx.wallet?.user;
+                if (!u) return;
+                const key = u.email;
+                if (!spendMap[key]) spendMap[key] = { name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email, total: 0 };
+                spendMap[key].total += Math.abs(Number(tx.amount));
+            });
+            const topSpenders = Object.values(spendMap)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 5);
+
+            return { daily, ninTotal, bvnTotal, topSpenders };
+        } catch (error) {
+            console.error('[AdminService] getVerificationChartData error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Fetches all verification_history records (paginated) for the identity logs page
+     */
+    async getAllVerifications(limit = 20, offset = 0) {
+        try {
+            const { data, error, count } = await supabase
+                .from('verification_history')
+                .select('*, user:profiles(first_name, last_name, email)', { count: 'exact' })
+                .order('created_at', { ascending: false })
+                .range(offset, offset + limit - 1);
+
+            if (error) throw error;
+
+            const decrypted = (data || []).map(v => ({
+                ...v,
+                decrypted_identifier: decryptIdentity(v.identifier)
+            }));
+
+            return { verifications: decrypted, total: count || 0 };
+        } catch (error) {
+            console.error('[AdminService] getAllVerifications error:', error);
+            throw error;
+        }
+    }
 }
 
 export const adminService = new AdminService();

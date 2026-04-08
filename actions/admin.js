@@ -123,3 +123,43 @@ export async function deleteUserAction(targetUserId) {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Server Action: Gets daily revenue data for the last 30 days (analytics chart)
+ */
+export async function getRevenueChartDataAction() {
+    try {
+        await requireAdmin();
+        const data = await adminService.getRevenueChartData();
+        return { success: true, data };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Server Action: Gets verification volume + breakdown for analytics
+ */
+export async function getVerificationChartDataAction() {
+    try {
+        await requireAdmin();
+        const data = await adminService.getVerificationChartData();
+        return { success: true, data };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Server Action: Gets all verification_history records (paginated)
+ */
+export async function getAllVerificationsAction(page = 1, pageSize = 20) {
+    try {
+        await requireAdmin();
+        const offset = (page - 1) * pageSize;
+        const result = await adminService.getAllVerifications(pageSize, offset);
+        return { success: true, ...result };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}

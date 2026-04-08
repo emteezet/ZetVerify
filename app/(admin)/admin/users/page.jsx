@@ -3,20 +3,20 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import AdminTopBar from "@/components/admin/AdminTopBar";
 import {
     Users,
     Search,
     ShieldAlert,
-    ChevronLeft,
     Wallet,
-    ArrowUpRight,
-    ArrowDownLeft,
     Loader2,
     CheckCircle2,
-    XCircle,
     History,
+    Trash2,
+    ArrowUpRight,
+    ArrowDownLeft,
     ChevronRight,
-    Trash2
+    ChevronLeft
 } from "lucide-react";
 import { 
     getAllUsersAction, 
@@ -47,6 +47,7 @@ export default function AdminUsersPage() {
     const [statusModalUser, setStatusModalUser] = useState(null);
     const [newStatus, setNewStatus] = useState("ACTIVE");
     const [statusReason, setStatusReason] = useState("");
+    
     // Delete Modal State
     const [deleteModalUser, setDeleteModalUser] = useState(null);
 
@@ -170,75 +171,78 @@ export default function AdminUsersPage() {
 
     if (authLoading || (fetching && users.length === 0)) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                 <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
+            <div className="flex flex-col h-screen bg-slate-950">
+                <AdminTopBar />
+                <div className="flex-1 flex items-center justify-center">
+                    <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-bg-secondary/30 pb-20 pt-24 px-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Breadcrumb */}
-                <button 
-                    onClick={() => router.push("/admin")}
-                    className="flex items-center gap-2 text-text-muted hover:text-text-primary mb-6 transition-colors font-semibold text-sm"
-                >
-                    <ChevronLeft className="w-4 h-4" />
-                    Back to Overview
-                </button>
+        <div className="flex flex-col min-h-screen bg-slate-950 text-white">
+            <AdminTopBar onRefresh={fetchUsers} isRefreshing={fetching} />
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div className="flex-1 p-6 space-y-6 max-w-[1400px] w-full mx-auto">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-text-primary tracking-tight">User Management</h1>
-                        <p className="text-text-muted mt-1">Monitor all registered accounts and balance histories.</p>
+                        <h1 className="text-lg font-black text-white">User Management</h1>
+                        <p className="text-slate-500 text-sm mt-0.5">Monitor all registered accounts and balance histories.</p>
                     </div>
 
-                    <div className="relative w-full md:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <div className="relative w-full md:w-72">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                         <input 
                             type="text"
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input-field pl-12 h-12 bg-white border-transparent shadow-sm"
+                            className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-600 transition-colors"
                         />
                     </div>
                 </div>
 
                 {/* Users Table */}
-                <div className="glass-card overflow-hidden bg-white shadow-xl shadow-slate-200/50">
+                <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-bg-secondary/50 text-text-muted text-[10px] uppercase tracking-wider font-bold">
+                                <tr className="bg-slate-800/60 text-slate-400 text-[10px] uppercase tracking-wider font-bold border-b border-slate-700/50">
                                     <th className="px-6 py-4">User Details</th>
                                     <th className="px-6 py-4">Status</th>
                                     <th className="px-6 py-4">Wallet Balance</th>
-                                    <th className="px-6 py-4">Joined At</th>
+                                    <th className="px-6 py-4 hidden md:table-cell">Joined At</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-bg-secondary/30">
-                                {filteredUsers.map((u) => (
-                                    <tr key={u.id} className="hover:bg-bg-secondary/10 transition-colors">
+                            <tbody className="divide-y divide-slate-800/60">
+                                {filteredUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-16 text-center">
+                                            <Users className="w-10 h-10 text-slate-700 mx-auto mb-3" />
+                                            <p className="text-slate-500 text-sm">No users found.</p>
+                                        </td>
+                                    </tr>
+                                ) : filteredUsers.map((u) => (
+                                    <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-text-primary uppercase">
+                                                <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-indigo-400 uppercase">
                                                     {u.first_name?.[0] || u.email[0]}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-bold text-text-primary">
+                                                    <span className="text-sm font-bold text-slate-200">
                                                         {u.first_name ? `${u.first_name} ${u.last_name}` : "Pending Setup"}
                                                     </span>
-                                                    <span className="text-xs text-text-muted">{u.email}</span>
+                                                    <span className="text-xs text-slate-500">{u.email}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-sm ${
-                                                u.status === 'SUSPENDED' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 
-                                                'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                                u.status === 'SUSPENDED' ? 'bg-amber-900/40 text-amber-500 border border-amber-800' : 
+                                                'bg-emerald-900/40 text-emerald-400 border border-emerald-800/50'
                                             }`}>
                                                 {u.status === 'SUSPENDED' ? <ShieldAlert className="w-3.5 h-3.5" /> : 
                                                  <CheckCircle2 className="w-3.5 h-3.5" />} 
@@ -247,27 +251,27 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-black text-text-primary">
+                                                <span className="text-sm font-black text-slate-200">
                                                     ₦{u.wallet_balance?.toLocaleString() || "0"}
                                                 </span>
-                                                <span className="text-[10px] text-text-muted">Wallet Balance</span>
+                                                <span className="text-[10px] text-slate-500">Wallet Balance</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5 text-xs text-text-muted">
+                                        <td className="px-6 py-5 text-xs text-slate-500 hidden md:table-cell">
                                             {u.updated_at ? new Date(u.updated_at).toLocaleDateString() : "N/A"}
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button 
                                                     onClick={() => setSelectedUser(u)}
-                                                    className="p-2 hover:bg-primary-50 text-primary-500 rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-slate-800 text-indigo-400 rounded-lg transition-colors"
                                                     title="Manage Wallet"
                                                 >
                                                     <Wallet className="w-5 h-5" />
                                                 </button>
                                                 <button 
                                                     onClick={() => handleViewActivity(u)}
-                                                    className="p-2 hover:bg-bg-secondary text-text-muted rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg transition-colors"
                                                     title="View Activity"
                                                 >
                                                     <History className="w-5 h-5" />
@@ -277,8 +281,8 @@ export default function AdminUsersPage() {
                                                         setStatusModalUser(u);
                                                         setNewStatus(u.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE');
                                                     }}
-                                                    className={`p-2 rounded-lg transition-colors ${
-                                                        u.status === 'ACTIVE' ? 'hover:bg-amber-50 text-amber-500' : 'hover:bg-emerald-50 text-emerald-500'
+                                                    className={`p-2 rounded-lg transition-colors hover:bg-slate-800 ${
+                                                        u.status === 'ACTIVE' ? 'text-amber-500' : 'text-emerald-500'
                                                     }`}
                                                     title={u.status === 'ACTIVE' ? "Suspend User" : "Activate User"}
                                                 >
@@ -286,7 +290,7 @@ export default function AdminUsersPage() {
                                                 </button>
                                                 <button 
                                                     onClick={() => setDeleteModalUser(u)}
-                                                    className="p-2 hover:bg-rose-50 text-rose-500 rounded-lg transition-colors group"
+                                                    className="p-2 hover:bg-rose-900/40 text-rose-500 rounded-lg transition-colors group"
                                                     title="Delete User"
                                                 >
                                                     <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -303,27 +307,27 @@ export default function AdminUsersPage() {
 
             {/* Wallet Adjustment Modal */}
             {selectedUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in duration-300">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-slate-900 border border-slate-700 rounded-[2rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in duration-300">
                         <div className="flex items-center gap-4 mb-8">
-                            <div className="p-3 bg-primary-50 text-primary-500 rounded-2xl">
+                            <div className="p-3 bg-indigo-900/40 text-indigo-400 border border-indigo-500/30 rounded-2xl">
                                 <Wallet className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-text-primary">Adjust Wallet</h2>
-                                <p className="text-sm text-text-muted">{selectedUser.email}</p>
+                                <h2 className="text-xl font-bold text-white">Adjust Wallet</h2>
+                                <p className="text-sm text-slate-400">{selectedUser.email}</p>
                             </div>
                         </div>
 
                         <form onSubmit={handleUpdateWallet} className="space-y-6">
-                            <div className="grid grid-cols-2 gap-3 p-1 bg-bg-secondary rounded-xl">
+                            <div className="grid grid-cols-2 gap-3 p-1 bg-slate-950 rounded-xl border border-slate-800">
                                 {["FUNDING", "DEBIT"].map(type => (
                                     <button 
                                         key={type}
                                         type="button"
                                         onClick={() => setAdjustType(type)}
                                         className={`py-2.5 rounded-lg text-xs font-bold transition-all ${
-                                            adjustType === type ? 'bg-white shadow-sm text-primary-500' : 'text-text-muted'
+                                            adjustType === type ? 'bg-slate-800 shadow-xl border border-slate-700 text-indigo-400' : 'text-slate-500 hover:text-slate-300'
                                         }`}
                                     >
                                         {type === "FUNDING" ? "Add Funds" : "Debit Funds"}
@@ -332,24 +336,24 @@ export default function AdminUsersPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Amount (₦)</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Amount (₦)</label>
                                 <input 
                                     type="number"
                                     value={adjustAmount}
                                     onChange={(e) => setAdjustAmount(e.target.value)}
                                     placeholder="Enter amount..."
-                                    className="input-field h-14"
+                                    className="w-full h-12 bg-slate-950 border border-slate-800 rounded-xl px-4 text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700"
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Adjustment Reason</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Adjustment Reason</label>
                                 <textarea 
                                     value={adjustReason}
                                     onChange={(e) => setAdjustReason(e.target.value)}
                                     placeholder="Why are you adjusting this?"
-                                    className="input-field min-h-[100px] py-4"
+                                    className="w-full min-h-[100px] py-4 px-4 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-700 resize-none"
                                     required
                                 />
                             </div>
@@ -358,17 +362,17 @@ export default function AdminUsersPage() {
                                 <button 
                                     type="button"
                                     onClick={() => setSelectedUser(null)}
-                                    className="flex-1 py-4 text-sm font-bold text-text-muted hover:text-text-primary transition-colors"
+                                    className="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700 rounded-xl"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
                                     disabled={isSubmitting || !adjustAmount}
-                                    className="flex-3 btn-primary py-4 flex items-center justify-center gap-2"
+                                    className="flex-1 py-4 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl disabled:opacity-50 transition-colors"
                                 >
                                     {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldAlert className="w-5 h-5" />}
-                                    Confirm Adjustment
+                                    Confirm
                                 </button>
                             </div>
                         </form>
@@ -378,18 +382,18 @@ export default function AdminUsersPage() {
 
             {/* Status Update Modal */}
             {statusModalUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in duration-300 text-center">
-                        <div className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                            newStatus === 'ACTIVE' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-slate-900 border border-slate-700 rounded-[2rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in duration-300 text-center">
+                        <div className={`mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border ${
+                            newStatus === 'ACTIVE' ? 'bg-emerald-900/30 text-emerald-500 border-emerald-500/30' : 'bg-amber-900/30 text-amber-500 border-amber-500/30'
                         }`}>
                             {newStatus === 'ACTIVE' ? <CheckCircle2 className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8" />}
                         </div>
                         
-                        <h2 className="text-xl font-black text-text-primary mb-2">
+                        <h2 className="text-xl font-black text-white mb-2">
                             {newStatus === 'ACTIVE' ? 'Activate User?' : 'Suspend/Block User?'}
                         </h2>
-                        <p className="text-sm text-text-muted mb-8">
+                        <p className="text-sm text-slate-400 mb-8">
                             {newStatus === 'ACTIVE' 
                                 ? `Are you sure you want to restore access for ${statusModalUser.email}?` 
                                 : `Prevent ${statusModalUser.email} from accessing verification services.`}
@@ -397,11 +401,11 @@ export default function AdminUsersPage() {
 
                         <form onSubmit={handleUpdateStatus} className="space-y-6 text-left">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Select Action</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Select Action</label>
                                 <select 
                                     value={newStatus}
                                     onChange={(e) => setNewStatus(e.target.value)}
-                                    className="input-field h-12"
+                                    className="w-full h-12 px-4 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-colors"
                                 >
                                     <option value="ACTIVE">ACTIVATE ACCOUNT</option>
                                     <option value="SUSPENDED">SUSPEND ACCOUNT</option>
@@ -409,12 +413,12 @@ export default function AdminUsersPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Reason (Optional)</label>
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Reason (Optional)</label>
                                 <textarea 
                                     value={statusReason}
                                     onChange={(e) => setStatusReason(e.target.value)}
                                     placeholder="Brief explanation for records..."
-                                    className="input-field min-h-[80px] py-4"
+                                    className="w-full min-h-[80px] p-4 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-colors resize-none placeholder:text-slate-700"
                                 />
                             </div>
 
@@ -422,18 +426,18 @@ export default function AdminUsersPage() {
                                 <button 
                                     type="button"
                                     onClick={() => setStatusModalUser(null)}
-                                    className="flex-1 py-4 text-sm font-bold text-text-muted hover:text-text-primary transition-colors"
+                                    className="flex-1 py-4 text-sm font-bold text-slate-400 hover:text-white transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className={`flex-2 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-white shadow-lg transition-all active:scale-95 ${
-                                        newStatus === 'ACTIVE' ? 'bg-emerald-600 shadow-emerald-200' : 'bg-rose-600 shadow-rose-200'
+                                    className={`flex-1 py-4 rounded-xl font-bold flex items-center justify-center gap-2 text-white shadow-lg transition-all active:scale-95 disabled:opacity-50 ${
+                                        newStatus === 'ACTIVE' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-amber-600 hover:bg-amber-500'
                                     }`}
                                 >
-                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Changes'}
+                                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm'}
                                 </button>
                             </div>
                         </form>
@@ -443,109 +447,96 @@ export default function AdminUsersPage() {
 
             {/* Activity Modal */}
             {activityUser && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[85vh] p-10 shadow-2xl animate-in zoom-in duration-300 flex flex-col overflow-hidden">
-                        <div className="flex items-center justify-between mb-8">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-slate-900 border border-slate-700 rounded-[2.5rem] w-full max-w-4xl max-h-[85vh] p-8 md:p-10 shadow-3xl animate-in zoom-in duration-300 flex flex-col overflow-hidden">
+                        <div className="flex items-center justify-between mb-8 shrink-0">
                             <div className="flex items-center gap-4">
-                                <div className="p-4 bg-slate-100 rounded-2xl">
-                                    <History className="w-6 h-6 text-text-primary" />
+                                <div className="p-3 bg-slate-800 border border-slate-700 rounded-xl">
+                                    <History className="w-6 h-6 text-indigo-400" />
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-black text-text-primary tracking-tight">User Activity Details</h2>
-                                    <p className="text-sm text-text-muted">Monitoring logs for {activityUser.email}</p>
+                                <div className="min-w-0">
+                                    <h2 className="text-xl md:text-2xl font-black text-white tracking-tight truncate">User Activity</h2>
+                                    <p className="text-xs md:text-sm text-slate-400 truncate">{activityUser.email}</p>
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setActivityUser(null)}
-                                className="p-3 hover:bg-bg-secondary rounded-2xl text-text-muted transition-colors"
+                                className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 hover:text-white transition-colors"
                             >
-                                <ChevronLeft className="w-6 h-6 rotate-180" />
+                                <ChevronLeft className="w-5 h-5 rotate-180" />
                             </button>
                         </div>
 
                         {loadingActivity ? (
                             <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-                                <Loader2 className="w-12 h-12 animate-spin text-primary-500" />
-                                <p className="text-text-muted animate-pulse font-medium">Fetching activity data...</p>
+                                <Loader2 className="w-10 h-10 animate-spin text-indigo-500" />
+                                <p className="text-slate-400 animate-pulse font-medium text-sm">Fetching activity data...</p>
                             </div>
                         ) : activityData ? (
-                            <div className="flex-1 overflow-y-auto pr-2 space-y-10 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto pr-2 space-y-8 custom-scrollbar">
                                 {/* Summary Cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="p-6 rounded-3xl bg-primary-50/50 border border-primary-100">
-                                        <p className="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Total Spent</p>
-                                        <p className="text-3xl font-black text-primary-900">₦{activityData.stats.totalSpent.toLocaleString()}</p>
+                                    <div className="p-5 rounded-2xl bg-indigo-900/20 border border-indigo-500/20">
+                                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Total Spent</p>
+                                        <p className="text-2xl font-black text-white">₦{activityData.stats.totalSpent.toLocaleString()}</p>
                                     </div>
-                                    <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100">
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Verification Volume</p>
-                                        <p className="text-3xl font-black text-slate-900">{activityData.stats.totalVerifications} Records</p>
+                                    <div className="p-5 rounded-2xl bg-slate-800 border border-slate-700">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Verification Volume</p>
+                                        <p className="text-2xl font-black text-white">{activityData.stats.totalVerifications} Records</p>
                                     </div>
                                 </div>
 
                                 {/* Tabs Switcher */}
-                                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-2xl w-fit">
+                                <div className="flex items-center gap-1 p-1 bg-slate-950 rounded-xl w-fit border border-slate-800">
                                     <button 
                                         onClick={() => setActiveTab("TRANSACTIONS")}
-                                        className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                                            activeTab === "TRANSACTIONS" ? 'bg-white text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-primary'
+                                        className={`px-5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                                            activeTab === "TRANSACTIONS" ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'text-slate-500 hover:text-slate-300'
                                         }`}
                                     >
-                                        Transaction History
+                                        Wallet LEDGER
                                     </button>
                                     <button 
                                         onClick={() => setActiveTab("VERIFICATIONS")}
-                                        className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                                            activeTab === "VERIFICATIONS" ? 'bg-white text-primary-600 shadow-sm' : 'text-text-muted hover:text-text-primary'
+                                        className={`px-5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                                            activeTab === "VERIFICATIONS" ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'text-slate-500 hover:text-slate-300'
                                         }`}
                                     >
-                                        Identity History
+                                        Identity Logs
                                     </button>
                                 </div>
 
                                 {/* Tab Content */}
                                 {activeTab === "TRANSACTIONS" ? (
                                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center gap-2 mb-2 px-1">
-                                            <Wallet className="w-4 h-4 text-primary-500" />
-                                            <h3 className="text-xs font-black text-text-primary uppercase tracking-wider">Recent Transactions</h3>
-                                        </div>
-                                        <div className="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                                        <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
                                             <table className="w-full text-left text-xs">
                                                 <thead>
-                                                    <tr className="bg-slate-50/80 text-text-muted font-bold uppercase tracking-tighter">
-                                                        <th className="px-6 py-4">Type</th>
-                                                        <th className="px-6 py-4">Amount</th>
-                                                        <th className="px-6 py-4">Reference</th>
-                                                        <th className="px-6 py-4">Date</th>
+                                                    <tr className="bg-slate-900 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-800">
+                                                        <th className="px-5 py-3">Details</th>
+                                                        <th className="px-5 py-3">Amount</th>
+                                                        <th className="px-5 py-3 hidden md:table-cell">Reference</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-50">
+                                                <tbody className="divide-y divide-slate-800/60">
                                                     {activityData.transactions.length > 0 ? activityData.transactions.map(tx => (
-                                                        <tr key={tx.id} className="hover:bg-slate-50/30">
-                                                            <td className="px-6 py-5">
-                                                                <div className="font-bold capitalize">
+                                                        <tr key={tx.id} className="hover:bg-slate-900/50">
+                                                            <td className="px-5 py-4">
+                                                                <div className="font-bold text-slate-200 capitalize">
                                                                     {(tx.metadata?.service || tx.type).replace(/_/g, ' ').toLowerCase()}
                                                                     {tx.metadata?.identifier && ` (${tx.metadata.identifier})`}
                                                                 </div>
-                                                                {tx.metadata?.description && (
-                                                                    <div className="text-[10px] text-text-muted mt-1 italic">{tx.metadata.description}</div>
-                                                                )}
+                                                                <div className="text-[10px] text-slate-500 mt-1">{new Date(tx.created_at).toLocaleDateString()}</div>
                                                             </td>
-                                                            <td className={`px-6 py-5 font-black ${Number(tx.amount) >= 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                                                            <td className={`px-5 py-4 font-black ${Number(tx.amount) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                                                                 {Number(tx.amount) >= 0 ? '+' : '-'}₦{Math.abs(Number(tx.amount)).toLocaleString()}
                                                             </td>
-                                                            <td className="px-6 py-5 text-text-muted font-mono">{tx.reference?.slice(0, 15)}...</td>
-                                                            <td className="px-6 py-5 text-text-muted whitespace-nowrap">
-                                                                {new Date(tx.created_at).toLocaleDateString()}
-                                                            </td>
+                                                            <td className="px-5 py-4 text-slate-600 font-mono hidden md:table-cell">{tx.reference?.slice(0, 15)}...</td>
                                                         </tr>
                                                     )) : (
                                                         <tr>
-                                                            <td colSpan="4" className="px-6 py-20 text-center">
-                                                                <div className="flex flex-col items-center gap-2 text-text-muted">
-                                                                    <Wallet className="w-10 h-10 opacity-20" />
-                                                                    <p className="italic">No transactions found</p>
-                                                                </div>
+                                                            <td colSpan="3" className="px-5 py-12 text-center text-slate-500 italic">
+                                                                No transactions found
                                                             </td>
                                                         </tr>
                                                     )}
@@ -553,66 +544,48 @@ export default function AdminUsersPage() {
                                             </table>
                                         </div>
 
-                                        {/* Load More Button */}
                                         {activityData.hasMoreTransactions && (
-                                            <div className="flex justify-center pt-2">
+                                            <div className="flex justify-center pt-2 pb-6">
                                                 <button
                                                     onClick={handleLoadMore}
                                                     disabled={loadingMore}
-                                                    className="px-8 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-primary-600 hover:border-primary-200 hover:bg-primary-50/30 transition-all disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                                                    className="px-6 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition-all disabled:opacity-50 flex items-center gap-2"
                                                 >
-                                                    {loadingMore ? (
-                                                        <>
-                                                            <span className="w-3 h-3 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></span>
-                                                            Loading...
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <ChevronRight className="w-3 h-3 rotate-90" />
-                                                            Load More History
-                                                        </>
-                                                    )}
+                                                    {loadingMore ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Load More"}
                                                 </button>
                                             </div>
                                         )}
                                     </div>
                                 ) : (
                                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center gap-2 mb-2 px-1">
-                                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                            <h3 className="text-xs font-black text-text-primary uppercase tracking-wider">Verification Log</h3>
-                                        </div>
-                                        <div className="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                                        <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
                                             <table className="w-full text-left text-xs">
                                                 <thead>
-                                                    <tr className="bg-slate-50/80 text-text-muted font-bold uppercase tracking-tighter">
-                                                        <th className="px-6 py-4">Identity Number</th>
-                                                        <th className="px-6 py-4">Service</th>
-                                                        <th className="px-6 py-4">Slip Type</th>
-                                                        <th className="px-6 py-4">Date</th>
+                                                    <tr className="bg-slate-900 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-800">
+                                                        <th className="px-5 py-3">Identity Number</th>
+                                                        <th className="px-5 py-3">Service</th>
+                                                        <th className="px-5 py-3">Slip Type</th>
+                                                        <th className="px-5 py-3 hidden md:table-cell">Date</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-slate-50">
+                                                <tbody className="divide-y divide-slate-800/60">
                                                     {activityData.verifications.length > 0 ? activityData.verifications.map(v => (
-                                                        <tr key={v.id} className="hover:bg-slate-50/30">
-                                                            <td className="px-6 py-5">
-                                                                <div className="font-black text-primary-600 text-sm">{v.decrypted_identifier || 'N/A'}</div>
+                                                        <tr key={v.id} className="hover:bg-slate-900/50">
+                                                            <td className="px-5 py-4">
+                                                                <div className="font-mono text-indigo-400 font-black">{v.decrypted_identifier || 'N/A'}</div>
                                                             </td>
-                                                            <td className="px-6 py-5">
-                                                                <div className="font-bold text-text-primary capitalize">{v.type?.replace('_VERIFY', '').replace('_', ' ').toLowerCase()}</div>
+                                                            <td className="px-5 py-4 text-slate-200 capitalize font-medium">
+                                                                {v.type?.replace('_VERIFY', '').replace('_', ' ').toLowerCase()}
                                                             </td>
-                                                            <td className="px-6 py-5 uppercase text-[10px] font-black">{v.slip_type || 'STANDARD'}</td>
-                                                            <td className="px-6 py-5 text-text-muted">
+                                                            <td className="px-5 py-4 uppercase text-[10px] font-bold text-slate-400 bg-slate-900 rounded px-2 w-fit inline-block mt-2">{v.slip_type || 'STANDARD'}</td>
+                                                            <td className="px-5 py-4 text-slate-500 hidden md:table-cell">
                                                                 {new Date(v.created_at).toLocaleDateString()}
                                                             </td>
                                                         </tr>
                                                     )) : (
                                                         <tr>
-                                                            <td colSpan="4" className="px-6 py-20 text-center">
-                                                                <div className="flex flex-col items-center gap-2 text-text-muted">
-                                                                    <CheckCircle2 className="w-10 h-10 opacity-20" />
-                                                                    <p className="italic">No verification records found</p>
-                                                                </div>
+                                                            <td colSpan="4" className="px-5 py-12 text-center text-slate-500 italic">
+                                                                No verification records found
                                                             </td>
                                                         </tr>
                                                     )}
@@ -626,36 +599,36 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
             )}
+
             {/* Delete Confirmation Modal */}
             {deleteModalUser && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl animate-in zoom-in duration-300 text-center border-t-8 border-rose-500">
-                        <div className="mx-auto w-20 h-20 rounded-3xl bg-rose-50 text-rose-600 flex items-center justify-center mb-8 rotate-3 shadow-lg shadow-rose-100">
-                            <Trash2 className="w-10 h-10" />
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-slate-900 border border-slate-700 rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl animate-in zoom-in duration-300 text-center border-t-4 border-t-rose-500">
+                        <div className="mx-auto w-16 h-16 rounded-2xl bg-rose-900/30 text-rose-500 flex items-center justify-center mb-6">
+                            <Trash2 className="w-8 h-8" />
                         </div>
                         
-                        <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">
-                            Permanent Deletion?
+                        <h2 className="text-xl font-black text-white mb-3">
+                            Delete Account?
                         </h2>
-                        <p className="text-sm text-slate-500 mb-10 leading-relaxed px-4">
-                            You are about to permanently delete <span className="font-bold text-slate-900 underline decoration-rose-200 decoration-4">{deleteModalUser.email}</span>. This action is irreversible and removes all account history.
+                        <p className="text-sm text-slate-400 mb-8 leading-relaxed">
+                            You are about to permanently delete <span className="font-bold text-white bg-slate-800 px-1 py-0.5 rounded">{deleteModalUser.email}</span>. This action is irreversible.
                         </p>
 
                         <div className="flex flex-col gap-3">
                             <button 
                                 onClick={handleDeleteUser}
                                 disabled={isSubmitting}
-                                className="w-full py-5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-2 group active:scale-95 disabled:opacity-50"
+                                className="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
                             >
-                                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5 group-hover:animate-bounce" />}
-                                DELETE PERMANENTLY
+                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Permanently Delete"}
                             </button>
                             <button 
                                 type="button"
                                 onClick={() => setDeleteModalUser(null)}
-                                className="w-full py-4 text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest"
+                                className="w-full py-3.5 text-sm font-bold text-slate-400 hover:text-white transition-colors"
                             >
-                                I changed my mind
+                                Cancel
                             </button>
                         </div>
                     </div>

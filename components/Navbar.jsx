@@ -5,10 +5,15 @@ import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "./AuthContext";
 import { useUI } from "./UIContext";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { user, logout, isAuthenticated, loading } = useAuth();
   const { toggleSidebar } = useUI();
+  const pathname = usePathname();
+
+  // Admin routes have their own shell — hide the shared Navbar
+  if (pathname?.startsWith('/admin')) return null;
 
   const handleLogout = async () => {
     await logout();

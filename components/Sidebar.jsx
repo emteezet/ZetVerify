@@ -25,11 +25,9 @@ export default function Sidebar() {
     const pathname = usePathname();
     const { isAuthenticated, loading } = useAuth();
     const { isSidebarOpen, closeSidebar } = useUI();
-    const [isAdminMode, setIsAdminMode] = useState(false);
 
-    useEffect(() => {
-        setIsAdminMode(pathname.startsWith('/admin'));
-    }, [pathname]);
+    // Admin routes have their own dedicated sidebar
+    if (pathname?.startsWith('/admin')) return null;
 
     const userMenuItems = [
         { name: "Dashboard", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -47,15 +45,7 @@ export default function Sidebar() {
         { name: "Account Info", href: "/account-info", icon: <User className="w-5 h-5" /> },
     ];
 
-    const adminMenuItems = [
-        { name: "Platform Overview", href: "/admin", icon: <LayoutDashboard className="w-5 h-5" /> },
-        { name: "User Management", href: "/admin/users", icon: <Users className="w-5 h-5" /> },
-        { name: "Global Transactions", href: "/admin/transactions", icon: <Activity className="w-5 h-5" /> },
-        { name: "Identity Logs", href: "/admin/verifications", icon: <Shield className="w-5 h-5" /> },
-        { name: "Return to App", href: "/dashboard", icon: <ArrowLeft className="w-5 h-5" /> },
-    ];
-
-    const menuItems = isAdminMode ? adminMenuItems : userMenuItems;
+    const menuItems = userMenuItems;
 
     const isActive = (href) => pathname === href;
 
@@ -95,14 +85,7 @@ export default function Sidebar() {
                         </button>
                     </div>
 
-                    {isAdminMode && (
-                        <div className="px-4 mb-6">
-                            <div className="p-4 bg-slate-900 rounded-2xl text-white">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 mb-1">Administrator</p>
-                                <h2 className="text-sm font-bold opacity-90">Control Center</h2>
-                            </div>
-                        </div>
-                    )}
+
 
                     <nav className="flex-1 space-y-1.5 overflow-y-auto custom-scrollbar pr-2 pb-24 md:pb-6">
                         {menuItems.map((item) => (
@@ -149,11 +132,11 @@ export default function Sidebar() {
                                         onClick={() => closeSidebar()}
                                         className={`px-4 py-3.5 rounded-2xl transition-all flex items-center gap-3.5 text-sm group ${
                                             isActive(item.href)
-                                                ? (isAdminMode ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' : 'bg-primary-50 text-primary-600 shadow-sm shadow-primary-100')
+                                                ? 'bg-primary-50 text-primary-600 shadow-sm shadow-primary-100'
                                                 : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                         }`}
                                     >
-                                        <div className={`${isActive(item.href) ? (isAdminMode ? 'text-primary-500' : 'text-primary-600') : 'text-slate-400 group-hover:text-primary-600'}`}>
+                                        <div className={`${isActive(item.href) ? 'text-primary-600' : 'text-slate-400 group-hover:text-primary-600'}`}>
                                             {item.icon}
                                         </div>
                                         <span className={`tracking-tight ${isActive(item.href) ? 'font-black' : 'font-bold'}`}>{item.name}</span>

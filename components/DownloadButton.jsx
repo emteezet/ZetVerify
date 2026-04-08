@@ -54,8 +54,10 @@ export default function DownloadButton({
       await Promise.all(images.map(img => {
         if (img.complete) return Promise.resolve();
         return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve; 
+          const fallbackTimeout = setTimeout(resolve, 4000); // 4 seconds max per image
+          img.onload = () => { clearTimeout(fallbackTimeout); resolve(); };
+          img.onerror = () => { clearTimeout(fallbackTimeout); resolve(); };
+          if (!img.src) { clearTimeout(fallbackTimeout); resolve(); }
         });
       }));
 

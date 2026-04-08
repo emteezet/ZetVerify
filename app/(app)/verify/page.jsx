@@ -120,6 +120,8 @@ function HubContent() {
     setIdValue("");
     setError("");
     setConsent(false);
+    setLoading(false);
+    isSubmitting.current = false;
   };
 
   const handleVerify = async (e) => {

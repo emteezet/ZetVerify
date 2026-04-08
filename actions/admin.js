@@ -8,9 +8,18 @@ import { getServerUser } from "../lib/auth/session";
  */
 async function requireAdmin() {
     const user = await getServerUser();
-    const adminEmail = (process.env.ADMIN_EMAIL || "emteezetdesigns@gmail.com").toLowerCase().trim();
+    const userEmail = user ? user.email.toLowerCase().trim() : null;
     
-    if (!user || user.email.toLowerCase().trim() !== adminEmail) {
+    const allowedAdmins = [
+        "emteezetdesigns@gmail.com",
+        "abubakarhgyaza@gmail.com"
+    ];
+    
+    if (process.env.ADMIN_EMAIL) {
+        allowedAdmins.push(process.env.ADMIN_EMAIL.toLowerCase().trim());
+    }
+    
+    if (!user || !allowedAdmins.includes(userEmail)) {
         console.error(`[Admin Auth] Unauthorized access attempt by: ${user?.email || 'Anonymous'}`);
         throw new Error("Unauthorized access. Admin privileges required.");
     }

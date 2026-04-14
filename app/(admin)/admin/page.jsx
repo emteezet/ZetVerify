@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import AdminTopBar from "@/components/admin/AdminTopBar";
 import { getPlatformStatsAction, getPaginatedGlobalActivityAction } from "@/actions/admin";
 import { useNotification } from "@/components/NotificationContext";
 import {
-    Users, BarChart3, CreditCard, Activity,
+    Users, BarChart3, CreditCard, Activity, RefreshCw,
     ArrowUpRight, ArrowDownLeft, TrendingUp, Zap,
 } from "lucide-react";
 
@@ -90,9 +90,12 @@ export default function AdminOverviewPage() {
     const [fetchingActivity, setFetchingActivity] = useState(false);
     const pageSize = 10;
 
+    // Ref to always hold the latest fetchStats without triggering channel re-subscription
+    const fetchStatsRef = useRef(null);
+
     useEffect(() => {
         if (!loading && !isAuthenticated) router.push("/auth/login");
-    }, [loading, isAuthenticated]);
+    }, [loading, isAuthenticated, router]);
 
     const fetchActivity = useCallback(async (page) => {
         setFetchingActivity(true);
@@ -102,7 +105,7 @@ export default function AdminOverviewPage() {
             setActivityPage(page);
         }
         setFetchingActivity(false);
-    }, []);
+    }, [pageSize]);
 
     const fetchStats = useCallback(async () => {
         setFetching(true);
@@ -116,15 +119,64 @@ export default function AdminOverviewPage() {
         setFetching(false);
     }, [fetchActivity, showNotification]);
 
-    useEffect(() => {
-        if (!loading && isAuthenticated) fetchStats();
-    }, [loading, isAuthenticated]);
+    // Keep the ref up-to-date with the latest fetchStats on every render
+    fetchStatsRef.current = fetchStats;
 
-    // Auto-refresh every 30s
+    // Initial data load
     useEffect(() => {
-        const id = setInterval(() => fetchActivity(activityPage), 30000);
-        return () => clearInterval(id);
-    }, [activityPage, fetchActivity]);
+        if (!loading && isAuthenticated) {
+            fetchStats();
+        }
+    }, [loading, isAuthenticated, fetchStats]);
+
+    /**
+     * Focus-Aware Intelligent Polling
+     * - Refresh data when tab becomes visible or gains focus.
+     * - Background interval (2-min) that ONLY runs when tab is active.
+     */
+    useEffect(() => {
+        if (!loading && isAuthenticated) {
+            const SMART_POLL_INTERVAL = 120000; // 2 minutes (conservative for free tier)
+            let pollTimer = null;
+
+            const handleVisibilityChange = () => {
+                if (document.visibilityState === 'visible') {
+                    console.log("[Smart Refresh] Tab focused. Refreshing data...");
+                    fetchStatsRef.current?.();
+                    
+                    // Restart background poll timer
+                    if (!pollTimer) {
+                        pollTimer = setInterval(() => {
+                            if (document.visibilityState === 'visible') {
+                                console.log("[Smart Refresh] Active interval check.");
+                                fetchStatsRef.current?.();
+                            }
+                        }, SMART_POLL_INTERVAL);
+                    }
+                } else if (pollTimer) {
+                    // Stop polling completely if backgrounded to save resources
+                    clearInterval(pollTimer);
+                    pollTimer = null;
+                }
+            };
+
+            // Setup initial timer if visible
+            if (document.visibilityState === 'visible') {
+                pollTimer = setInterval(() => {
+                    fetchStatsRef.current?.();
+                }, SMART_POLL_INTERVAL);
+            }
+
+            window.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('focus', handleVisibilityChange);
+
+            return () => {
+                window.removeEventListener('visibilitychange', handleVisibilityChange);
+                window.removeEventListener('focus', handleVisibilityChange);
+                if (pollTimer) clearInterval(pollTimer);
+            };
+        }
+    }, [loading, isAuthenticated]);
 
     const totalPages = Math.ceil(activityData.total / pageSize);
 
@@ -185,7 +237,17 @@ export default function AdminOverviewPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" /> LIVE
                                 </span>
                             </div>
-                            <span className="text-[10px] text-slate-500">Auto-refresh 30s</span>
+                            <div className="flex items-center gap-3">
+                                <span className="text-[10px] text-slate-500">Smart Refresh (Active Only)</span>
+                                <button
+                                    onClick={fetchStats}
+                                    disabled={fetching || fetchingActivity}
+                                    className="p-1.5 rounded-md text-slate-500 hover:text-indigo-400 hover:bg-slate-800 transition-all disabled:opacity-20"
+                                    title="Manual Refresh activity"
+                                >
+                                    <RefreshCw className={`w-3 h-3 ${(fetching || fetchingActivity) ? "animate-spin" : ""}`} />
+                                </button>
+                            </div>
                         </div>
 
                         <div className={`overflow-x-auto transition-opacity duration-300 ${fetchingActivity ? "opacity-50" : ""}`}>

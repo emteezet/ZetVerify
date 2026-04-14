@@ -60,7 +60,11 @@ function LoginContent() {
         localStorage.removeItem('zetverify_remember_email');
       }
 
-      const isAdmin = formData.email.toLowerCase().trim() === "emteezetdesigns@gmail.com";
+      const allowedAdmins = [
+        "emteezetdesigns@gmail.com",
+        "abubakarhgyaza@gmail.com"
+      ];
+      const isAdmin = allowedAdmins.includes(formData.email.toLowerCase().trim());
       router.push(isAdmin ? "/admin" : "/dashboard");
     } else {
       setError(result.error);

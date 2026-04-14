@@ -19,10 +19,20 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push("/auth/login");
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.push("/auth/login");
+      } else {
+        const allowedAdmins = [
+          "emteezetdesigns@gmail.com",
+          "abubakarhgyaza@gmail.com"
+        ];
+        if (user?.email && allowedAdmins.includes(user.email.toLowerCase().trim())) {
+          router.replace("/admin");
+        }
+      }
     }
-  }, [loading, isAuthenticated, router]);
+  }, [loading, isAuthenticated, router, user]);
 
   if (loading) {
     return (

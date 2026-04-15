@@ -20,6 +20,8 @@ export function AuthProvider({ children }) {
   // True when the app is mounted on the password-reset page (set once on mount).
   // Used to skip account-status checks during the reset flow.
   const isOnResetPageRef = useRef(false);
+  // Tracks when the tab was last hidden — used to calculate elapsed time on restore.
+  const hiddenAtRef = useRef(null);
 
   useEffect(() => {
     // Check initial online status
@@ -266,21 +268,40 @@ export function AuthProvider({ children }) {
   const timeoutRef = useRef(null);
   const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
 
+  /**
+   * Lightweight expiry redirect — NO overlay, NO async, NO React state.
+   * Used for all automated/background session expiry scenarios to avoid
+   * the overlay-freeze bug caused by browser tab throttling.
+   */
+  const silentExpiredRedirect = useCallback(() => {
+    if (loggingOutRef.current) return; // prevent double-fire
+    localStorage.removeItem('zetverify_last_activity');
+    window.location.href = '/auth/login?reason=expired';
+  }, []);
+
   const resetInactivityTimer = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (user) {
       localStorage.setItem('zetverify_last_activity', Date.now().toString());
       timeoutRef.current = setTimeout(() => {
-        logout('expired');
+        // Only redirect if the tab is still visible.
+        // If hidden, the visibilitychange handler will catch it when restored.
+        if (document.visibilityState === 'visible') {
+          silentExpiredRedirect();
+        }
       }, INACTIVITY_LIMIT);
     }
-  }, [user, logout]);
+  }, [user, silentExpiredRedirect]);
 
   useEffect(() => {
     if (user) {
+      // ── MOUNT CHECK ─────────────────────────────────────────────────────
+      // If the stored timestamp is stale on mount, redirect silently.
+      // Do NOT call logout() here — it would show the overlay before
+      // the page is even interactive.
       const lastActivity = localStorage.getItem('zetverify_last_activity');
       if (lastActivity && Date.now() - parseInt(lastActivity) > INACTIVITY_LIMIT) {
-        logout('expired');
+        silentExpiredRedirect();
         return;
       }
 
@@ -291,22 +312,66 @@ export function AuthProvider({ children }) {
         window.addEventListener(event, resetInactivityTimer);
       });
 
-      const handleVisibilityChange = () => {
-        if (document.visibilityState === "visible") {
+      // ── VISIBILITY HANDLER ───────────────────────────────────────────────
+      // This is the core fix:
+      // - On HIDDEN: pause the interval to stop background firing.
+      // - On VISIBLE: use Supabase as the authoritative source of truth
+      //   (fixes cross-device false logouts), THEN check localStorage.
+      const handleVisibilityChange = async () => {
+        if (document.visibilityState === 'hidden') {
+          // Tab going background — pause interval, record time.
+          hiddenAtRef.current = Date.now();
+          if (inactivityIntervalRef.current) {
+            clearInterval(inactivityIntervalRef.current);
+            inactivityIntervalRef.current = null;
+          }
+        } else if (document.visibilityState === 'visible') {
+          // Tab restored — verify Supabase session FIRST.
+          // This is the cross-device fix: if the user logged out on another
+          // device or the server revoked the session, getSession() will return
+          // null here, regardless of what localStorage timestamp says.
+          try {
+            const { data } = await supabase.auth.getSession();
+            if (!data?.session) {
+              silentExpiredRedirect();
+              return;
+            }
+          } catch {
+            // Network error — fall through to localStorage check below.
+          }
+
+          // Supabase session is valid. Now check local inactivity timestamp.
           const last = localStorage.getItem('zetverify_last_activity');
           if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
-            logout('expired');
-          } else {
-            resetInactivityTimer();
+            silentExpiredRedirect();
+            return;
+          }
+
+          // All good — restart timer and resume the interval.
+          resetInactivityTimer();
+          if (!inactivityIntervalRef.current) {
+            inactivityIntervalRef.current = setInterval(() => {
+              if (document.visibilityState === 'visible') {
+                const l = localStorage.getItem('zetverify_last_activity');
+                if (l && Date.now() - parseInt(l) > INACTIVITY_LIMIT) {
+                  silentExpiredRedirect();
+                }
+              }
+            }, 10000);
           }
         }
       };
       window.addEventListener("visibilitychange", handleVisibilityChange);
 
+      // ── INITIAL INTERVAL ─────────────────────────────────────────────────
+      // Guarded to only fire when the tab is visible. If it fires while
+      // hidden it would show an overlay on a backgrounded/throttled tab.
       inactivityIntervalRef.current = setInterval(() => {
-        const last = localStorage.getItem('zetverify_last_activity');
-        if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
-          logout('expired');
+        if (document.visibilityState === 'visible') {
+          const last = localStorage.getItem('zetverify_last_activity');
+          if (last && Date.now() - parseInt(last) > INACTIVITY_LIMIT) {
+            silentExpiredRedirect();
+          }
         }
       }, 10000);
 
@@ -322,7 +387,7 @@ export function AuthProvider({ children }) {
         window.removeEventListener("visibilitychange", handleVisibilityChange);
       };
     }
-  }, [user, resetInactivityTimer, logout]);
+  }, [user, resetInactivityTimer, silentExpiredRedirect]);
 
   const value = {
     user,
